@@ -1,0 +1,18 @@
+{
+  "@@last_modified": "2019-06-30T13:57:38.160122",
+  "title": "Hello World",
+  "@title": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "home": "Home",
+  "@home": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "settings": "Settings",
+  "@settings": {
+    "type": "text",
+    "placeholders": {}
+  }
+}

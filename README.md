@@ -15,3 +15,9 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials, 
 samples, guidance on mobile development, and a full API reference.
 # polysleep
+
+## To generate localization strings:
+`flutter pub run intl_translation:extract_to_arb --output-dir=lib/l10n lib/localizations.dart`
+
+`flutter pub run intl_translation:generate_from_arb --output-dir=lib/l10n
+--no-use-deferred-loading lib/main.dart lib/l10n/intl_messages.arb`
