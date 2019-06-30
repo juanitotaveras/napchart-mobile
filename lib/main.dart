@@ -83,12 +83,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             ListTile(
+                leading: Icon(Icons.home),
               title: Text('Home'),
               onTap: () {
 
               }
             ),
             ListTile(
+              leading: Icon(Icons.create),
               title: Text('Schedule creator'),
               onTap: () {
                 // update app status
