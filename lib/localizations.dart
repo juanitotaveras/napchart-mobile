@@ -26,7 +26,7 @@ class AppLocalizations {
 
   String get home {
     return Intl.message(
-        'Home',
+        'My schedule',
     name: 'home');
   }
 
@@ -40,6 +40,27 @@ class AppLocalizations {
     return Intl.message(
       'Information',
       name: 'information'
+    );
+  }
+
+  String get shortPolysleepDescTitle {
+    return Intl.message(
+        'What is polyphasic sleep?',
+        name: 'shortPolysleepDescTitle'
+    );
+  }
+
+  String get dismissCaps {
+    return Intl.message(
+      'DISMISS',
+      name: 'dismissCaps'
+    );
+  }
+
+  String get createSleepSchedule {
+    return Intl.message(
+      'Create sleep schedule',
+      name: 'createSleepSchedule'
     );
   }
 }

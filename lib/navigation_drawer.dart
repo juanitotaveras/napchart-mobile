@@ -47,6 +47,18 @@ class NavigationDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
+                title: Text('Adaptation help'),
+                onTap: () {
+
+                },
+              ),
+              ListTile(
+    title: Text('Community'),
+    onTap: () {
+
+    },
+    ),
+              ListTile(
                   title: Text('Get premium'),
                   onTap: () {
 

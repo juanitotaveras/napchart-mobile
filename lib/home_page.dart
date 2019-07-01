@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'navigation_drawer.dart';
+import 'localizations.dart';
+import 'sleep_schedule_creator_1.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -22,14 +24,15 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _goToSleepScheduleCreator() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SleepScheduleCreatorOne()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -49,30 +52,40 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 16.0),
                     child: Column(
-                        mainAxisSize: MainAxisSize.max,
+                        mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          const ListTile(
-                            leading: Icon(Icons.info),
-                            title: Text('What is polyphasic sleep?'),
-                            subtitle: Text('Polyphasic sleep is the practice of breaking up your '
-                                'sleep into smaller blocks placed throughout the day.'
-                                '\nInspired by the siesta popular in Spain and segmented sleep'
-                                ' which was widely practiced before artificial light '
-                                'became the norm, polyphasic sleep can reduce the'
+                          ListTile(
+                            title: Text(AppLocalizations.of(context).shortPolysleepDescTitle),
+                            subtitle: Text('Polyphasic sleep is the practice of sleeping more than once in a 24 hour period.'
+                                '\nIf you take naps, you\'re sleeping polyphasically.'),
+                          ),
+                          ListTile(
+                            title: Text('Why do people do it?'),
+                            subtitle: Text(
+                                'Inspired by the mid-day nap popular in Spain and segmented sleep'
+                                ' which was the norm before artificial light '
+                                'became widespread, polyphasic sleep can reduce the'
                                 ' total sleep time required, help reduce constant tiredness,'
                                 ' or help shift workers deal with demanding work schedules.'),
+                          ),
+                          ListTile(
+                            title: Text('What is this app for?'),
+                            subtitle: Text(
+                                'PolySleep was created to help people learn about various'
+                                    ' established polyphasic sleep schedules and provides tools to help you'
+                                    ' choose and adapt to the right schedule for you.'),
                           ),
                           ButtonTheme.bar(
                               child: ButtonBar(
                                   children: <Widget>[
                                     FlatButton(
-                                      child: const Text('LEARN MORE'),
+                                      child: Text(AppLocalizations.of(context).dismissCaps),
                                       onPressed: () {
                                         /* */
                                       },
                                     ),
                                     FlatButton(
-                                      child: const Text('DISMISS'),
+                                      child: Text('LEARN MORE'),
                                       onPressed: () {
                                         /* */
                                       },
@@ -90,9 +103,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _incrementCounter,
+        onPressed: _goToSleepScheduleCreator,
         icon: Icon(Icons.create),
-        label: Text('Create sleep schedule'),
+        label: Text(AppLocalizations.of(context).createSleepSchedule),
       ),
     );
   }
