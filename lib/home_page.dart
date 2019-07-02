@@ -97,6 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   )
               ),
+//              CustomPaint(
+//                painter: BaseSchedulePainter()
+//              ),
             ],
           ),
         ),
@@ -109,4 +112,33 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+class BaseSchedulePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // TODO: implement paint
+    var paint = Paint();
+    paint.color = Colors.grey;
+    paint.strokeWidth = 5;
+    var outerRadius = size.width;
+    canvas.drawLine(
+      Offset(0, size.height / 2),
+      Offset(size.width, size.height / 2),
+      paint,
+    );
+    canvas.drawCircle(Offset(size.width / 2, size.height/2  ), outerRadius, paint);
+
+    var paint2 = Paint();
+    paint2.color = Colors.black;
+    paint2.strokeWidth = 5;
+//    canvas.drawCircle(Offset(size.width / 2, size.height/2), 100, paint2);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    // TODO: implement shouldRepaint
+    return false;
+  }
+
 }
