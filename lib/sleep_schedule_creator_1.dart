@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'schedule_number_painter.dart';
+import 'base_schedule.dart';
 
 import 'navigation_drawer.dart';
 import 'home_page.dart';
@@ -6,6 +8,9 @@ import 'home_page.dart';
 class SleepScheduleCreatorOne extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+//    return Container(
+//      child: BaseScheduleGraphic()
+//    );
     return Scaffold(
       appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
@@ -19,19 +24,11 @@ class SleepScheduleCreatorOne extends StatelessWidget {
             onPressed: () => Navigator.pop(context, false),
           )),
       //drawer: NavigationDrawer(),
-      body: /*Container(
-          child: ListView(children: <Widget>[
-        Card(
-          child: ListTile(
-              title: Text('Everyman 3'), subtitle: Text('difficulty: medium')),
-        ),
-      ])),
-    )*/
-      Center(
-        child: CustomPaint(
-          painter: BaseSchedulePainter(),
-          child: Text("test")
-    ),
-      ));
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          BaseScheduleGraphic()],
+      )
+      );
   }
 }
