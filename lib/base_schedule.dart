@@ -11,6 +11,7 @@ class BaseScheduleGraphic extends StatelessWidget {
         children: <Widget>[
           Container(
             width: double.infinity,
+            height: double.infinity,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.grey,
@@ -32,7 +33,7 @@ class BaseScheduleGraphic extends StatelessWidget {
           Container(
             width: double.infinity,
             height: double.infinity,
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(9.0),
             child: CustomPaint(
               painter: ClockDialPainter(clockText: ClockText.arabic),
             ),

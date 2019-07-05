@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'navigation_drawer.dart';
 import 'localizations.dart';
 import 'sleep_schedule_creator_1.dart';
+import 'base_schedule.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -40,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       drawer: NavigationDrawer(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+//      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -97,6 +98,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   )
               ),
+              Expanded(
+                child: BaseScheduleGraphic()
+              )
+//              Container(
+//                child: BaseScheduleGraphic(),
+//                height: 200,
+//              ),
+
 //              CustomPaint(
 //                painter: BaseSchedulePainter()
 //              ),
@@ -105,10 +114,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
 
       ),
-      floatingActionButton: FloatingActionButton.extended(
+//      floatingActionButton: FloatingAction
+      floatingActionButton: FloatingActionButton(
         onPressed: _goToSleepScheduleCreator,
-        icon: Icon(Icons.create),
-        label: Text(AppLocalizations.of(context).createSleepSchedule),
+        child: Icon(Icons.create),
+//        icon: Icon(Icons.create),
+//        label: Text(AppLocalizations.of(context).createSleepSchedule),
       ),
     );
   }

@@ -27,7 +27,11 @@ class SleepScheduleCreatorOne extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          BaseScheduleGraphic()],
+//          Expanded(
+//            child: BaseScheduleGraphic(),
+//          )
+          BaseScheduleGraphic()
+        ],
       )
       );
   }
