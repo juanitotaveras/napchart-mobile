@@ -1,13 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'utils.dart';
 
 class ClockDialPainter extends CustomPainter{
   final PI = 3.14;
   final clockText;
 
   var hourTickMarkLength= 10.0;
-  var minuteTickMarkLength = 5.0;
+  var minuteTickMarkLength = 4.0;
 
   final hourTickMarkWidth= 3.0;
   final minuteTickMarkWidth = 1.5;
@@ -25,7 +26,7 @@ class ClockDialPainter extends CustomPainter{
           textDirection: TextDirection.rtl,
         ),
         textStyle= const TextStyle(
-          color: Colors.black,
+          color: Colors.white,
           fontFamily: 'Times New Roman',
           fontSize: 10.0,
         )
@@ -39,10 +40,48 @@ class ClockDialPainter extends CustomPainter{
     final angle= 2* PI / 24;
     final radius= size.width/2;
     hourTickMarkLength = radius / 18 ;
-    minuteTickMarkLength = radius / 20;
-        canvas.save();
+    minuteTickMarkLength = radius / 25;
+    tickPaint.strokeWidth = 2;
+//        canvas.save();
 
     // drawing
+
+    var centerPoint = Offset(size.width/2, size.height/2);
+    final tickMarkStartRadius = radius - 10;
+    final double startTimeRadians = pi / 2;
+
+    for (var i = 0; i < 24; i++) {
+      print("i: " + i.toString());
+      tickMarkLength = i % 6 == 0 ? hourTickMarkLength: minuteTickMarkLength;
+      tickPaint.strokeWidth= i % 6 == 0 ? hourTickMarkWidth : minuteTickMarkWidth;
+      Offset tickStartPoint = Utils.getCoord(centerPoint, tickMarkStartRadius, i*60, startTimeRadians);
+      Offset tickEndPoint = Utils.getCoord(centerPoint, tickMarkStartRadius+tickMarkLength, i*60, startTimeRadians);
+      print("tick Start point: " + tickStartPoint.toString());
+      canvas.drawLine(tickStartPoint, tickEndPoint, tickPaint);
+
+
+      if (i % 6 == 0) {
+        textPainter.text= TextSpan(
+          text: this.clockText==ClockText.roman?
+          '${romanNumeralList[i~/5]}'
+              :'${i == 0 ? 0 : i}'
+          ,
+          style: textStyle,
+        );
+        textPainter.layout();
+
+        var centerPointForNumPainter = Offset(centerPoint.dx - 3, centerPoint.dy - 5);
+        var numberCoord = Utils.getCoord(centerPointForNumPainter,
+            /*tickMarkStartRadius+tickMarkLength+5*/ radius,
+            i*60, startTimeRadians);
+        print ("num coord: " + numberCoord.toString());
+        textPainter.paint(canvas, numberCoord);
+      }
+
+    }
+    // Given an Offset centerPoint double radius, int minutes,
+    // return an x,y of the point on the canvas.
+    /*
     canvas.translate(radius, radius);
     for (var i = 0; i< 24; i++ ) {
 
@@ -80,8 +119,8 @@ class ClockDialPainter extends CustomPainter{
 
       canvas.rotate(angle);
     }
-
-    canvas.restore();
+*/
+    //canvas.restore();
 
   }
 

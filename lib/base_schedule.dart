@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'schedule_number_painter.dart';
+import 'segment_painter.dart';
+import 'dart:math';
 
 class BaseScheduleGraphic extends StatelessWidget {
   @override
@@ -33,11 +35,30 @@ class BaseScheduleGraphic extends StatelessWidget {
           Container(
             width: double.infinity,
             height: double.infinity,
-            padding: const EdgeInsets.all(9.0),
+            padding: const EdgeInsets.all(8.0),
             child: CustomPaint(
               painter: ClockDialPainter(clockText: ClockText.arabic),
             ),
           ),
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: CustomPaint(
+              painter: SegmentPainter(60, 240, pi/2) // 1 am to 4 am
+            )
+          ),
+          Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: CustomPaint(
+                  painter: SegmentPainter(1260, 30, pi/2) // 9pm to 12:30 am
+              )
+          )
+//          Container(
+//            width: double.infinity,
+//            height: double.infinity,
+//            child: DonutPieChart.withSampleData()
+//          )
         ],
       ),
     );
