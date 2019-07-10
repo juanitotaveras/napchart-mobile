@@ -13,7 +13,7 @@ class SegmentPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // TODO: implement paint
     var paint = Paint();
-    paint.color = Colors.green;
+    paint.color = Colors.blue;
     paint.strokeWidth = 5;
     print("start time: " + startTime.toString());
     // start and end times are in minutes from midnight

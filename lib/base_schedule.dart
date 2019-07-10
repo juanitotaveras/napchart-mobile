@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'schedule_number_painter.dart';
 import 'segment_painter.dart';
 import 'dart:math';
+import 'current_schedule_graphic.dart';
 
 class BaseScheduleGraphic extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return AspectRatio(
       aspectRatio: 1.0,
       child: Stack(
@@ -32,28 +32,37 @@ class BaseScheduleGraphic extends StatelessWidget {
               painter: BaseSchedulePainter(),
             ),
           ),
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            padding: const EdgeInsets.all(8.0),
-            child: CustomPaint(
-              painter: ClockDialPainter(clockText: ClockText.arabic),
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: CustomPaint(
-              painter: SegmentPainter(60, 240, pi/2) // 1 am to 4 am
-            )
-          ),
-          Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: CustomPaint(
-                  painter: SegmentPainter(1260, 30, pi/2) // 9pm to 12:30 am
-              )
-          )
+          // TODO: This component must be stateful
+//          Container(
+//            width: double.infinity,
+//            height: double.infinity,
+//            padding: const EdgeInsets.all(8.0),
+//            child: CustomPaint(
+//              painter: ClockDialPainter(clockText: ClockText.arabic),
+//            ),
+//          ),
+          CurrentScheduleGraphic(),
+//          Container(
+//            width: double.infinity,
+//            height: double.infinity,
+//            child: CustomPaint(
+//              painter: SegmentPainter(1320, 90, pi/2) // 10pm to 1:30am
+//            )
+//          ),
+//          Container(
+//              width: double.infinity,
+//              height: double.infinity,
+//              child: CustomPaint(
+//                  painter: SegmentPainter(270, 360, pi/2) // 4:30am to 6:00 am
+//              )
+//          ),
+//          Container(
+//              width: double.infinity,
+//              height: double.infinity,
+//              child: CustomPaint(
+//                  painter: SegmentPainter(720, 740, pi/2) // 12:00pm to 12:30 pm
+//              )
+//          )
 //          Container(
 //            width: double.infinity,
 //            height: double.infinity,

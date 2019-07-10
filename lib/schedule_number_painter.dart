@@ -42,13 +42,14 @@ class ClockDialPainter extends CustomPainter{
     hourTickMarkLength = radius / 18 ;
     minuteTickMarkLength = radius / 25;
     tickPaint.strokeWidth = 2;
+    tickPaint.color = Colors.black;
 //        canvas.save();
 
     // drawing
 
     var centerPoint = Offset(size.width/2, size.height/2);
     final tickMarkStartRadius = radius - 10;
-    final double startTimeRadians = pi / 2;
+    final double startTimeRadians = pi / 2; // TODO; Set this as class variable
 
     for (var i = 0; i < 24; i++) {
       print("i: " + i.toString());
