@@ -3,6 +3,8 @@ import 'navigation_drawer.dart';
 import 'localizations.dart';
 import 'sleep_schedule_creator_1.dart';
 import 'base_schedule.dart';
+import 'current_schedule_graphic.dart';
+import 'package:polysleep/src/models/time.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -54,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //                width: 350,
 //              ),
               Expanded(
-                child: BaseScheduleGraphic()
+                child: CurrentScheduleGraphic(currentTime: DateTime.now())//BaseScheduleGraphic()
               )
 
 //              Card(
