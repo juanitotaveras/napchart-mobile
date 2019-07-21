@@ -5,6 +5,7 @@ import 'sleep_schedule_creator_1.dart';
 import 'base_schedule.dart';
 import 'current_schedule_graphic.dart';
 import 'package:polysleep/src/models/time.dart';
+import 'package:polysleep/src/blocs/home_bloc.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -15,6 +16,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final _bloc = HomeBloc();
 
   void _incrementCounter() {
     setState(() {
@@ -44,20 +46,24 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: NavigationDrawer(),
 //      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
+      body: StreamBuilder<Object>(
+        stream: bloc.currentTime,
+        initialData: DateTime.now(),
+        builder: (context, snapshot) {
+          return Center(
+            // Center is a layout widget. It takes a single child and positions it
+            // in the middle of the parent.
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: <Widget>[
 //              Container(
 //                child: BaseScheduleGraphic(),
 //                width: 350,
 //              ),
-              Expanded(
-                child: CurrentScheduleGraphic(currentTime: DateTime.now())//BaseScheduleGraphic()
-              )
+                  Expanded(
+                    child: CurrentScheduleGraphic(currentTime: snapshot.data)//BaseScheduleGraphic()
+                  )
 
 //              Card(
 //                  child: Padding(
@@ -119,10 +125,12 @@ class _MyHomePageState extends State<MyHomePage> {
 //              CustomPaint(
 //                painter: BaseSchedulePainter()
 //              ),
-            ],
-          ),
-        ),
+                ],
+              ),
+            ),
 
+          );
+        }
       ),
 //      floatingActionButton: FloatingAction
       floatingActionButton: FloatingActionButton(

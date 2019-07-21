@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'utils.dart';
+import 'package:polysleep/src/models/time.dart';
 
 class ClockDialPainter extends CustomPainter{
   final PI = 3.14;
@@ -19,7 +20,9 @@ class ClockDialPainter extends CustomPainter{
 
   final romanNumeralList= [ 'XII','I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
 
-  ClockDialPainter({this.clockText= ClockText.arabic})
+  final DateTime startTime;
+
+  ClockDialPainter({this.clockText= ClockText.arabic, this.startTime})
       :tickPaint= Paint(),
         textPainter= new TextPainter(
           textAlign: TextAlign.center,
@@ -32,6 +35,8 @@ class ClockDialPainter extends CustomPainter{
         )
   {
     tickPaint.color= Colors.blueGrey;
+    print ('STARTTIME"');
+    print(this.startTime);
   }
 
   @override
@@ -49,7 +54,7 @@ class ClockDialPainter extends CustomPainter{
 
     var centerPoint = Offset(size.width/2, size.height/2);
     final tickMarkStartRadius = radius - 10;
-    final double startTimeRadians = pi / 2; // TODO; Set this as class variable
+    final double startTimeRadians = Time.toRadiansFrom(this.startTime) + pi/2;
 
     for (var i = 0; i < 24; i++) {
       print("i: " + i.toString());

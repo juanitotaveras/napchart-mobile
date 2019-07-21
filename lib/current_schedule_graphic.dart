@@ -3,6 +3,7 @@ import 'package:polysleep/src/models/time.dart';
 import 'schedule_number_painter.dart';
 import 'segment_painter.dart';
 import 'dart:math';
+import 'utils.dart';
 
 class CurrentScheduleGraphic extends StatelessWidget {
   CurrentScheduleGraphic({Key key, this.currentTime}) : super(key: key);
@@ -29,14 +30,7 @@ class CurrentScheduleGraphic extends StatelessWidget {
           ),
         ),
 
-        Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: CustomPaint(
-                painter: SegmentPainter(1320, 90,
-                    Time.toRadiansFrom(this.currentTime) + pi/2) // 10pm to 1:30am
-            )
-        ),
+
         Container(
           width: double.infinity,
           height: double.infinity,
@@ -49,11 +43,47 @@ class CurrentScheduleGraphic extends StatelessWidget {
           height: double.infinity,
           padding: const EdgeInsets.all(8.0),
           child: CustomPaint(
-            painter: ClockDialPainter(clockText: ClockText.arabic),
+            painter: ClockDialPainter(clockText: ClockText.arabic, startTime: this.currentTime),
           ),
         ),
+        Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: CustomPaint(
+                painter: SegmentPainter(1320, 90,
+                    Time.toRadiansFrom(this.currentTime) + pi/2) // 10pm to 1:30am
+            )
+        ),
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: CustomPaint(
+            painter: ClockHandPainter(),
+          )
+        )
       ],
     );
+  }
+
+}
+
+class ClockHandPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // TODO: implement paint
+    double radius = size.width / 2.2 - 0.5;
+    Offset centerPoint = Offset(size.width/2, size.height/2);
+    Offset endPoint = Utils.getCoord(centerPoint, radius, 0, pi/2);
+    Paint paint = Paint()
+      ..color = Colors.yellow
+    ..strokeWidth = 3;
+    canvas.drawLine(centerPoint, endPoint, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    // TODO: implement shouldRepaint
+    return null;
   }
 
 }
