@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:polysleep/src/models/time.dart';
+import 'package:polysleep/src/models/segment.dart';
+
 import 'schedule_number_painter.dart';
 import 'segment_painter.dart';
 import 'dart:math';
@@ -7,12 +9,30 @@ import 'utils.dart';
 
 class CurrentScheduleGraphic extends StatelessWidget {
   CurrentScheduleGraphic({Key key, this.currentTime}) : super(key: key);
-
+  // TODO: Have a list of segments as input
   final DateTime currentTime;
 
+//  final Stack segmentStack = Stack(
+//    children: segments.map((segment) => {
+//      Container(
+//
+//      );
+//    }).toList();
+//  );
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    final DateTime _start = DateTime(2019,0,0,22);
+    final DateTime _end = DateTime(2019,0,1,1,30);
+    final List<Segment> segments = [Segment(startTime:_start, endTime: _end)];
+    final List<Widget> segmentWidgets = segments.map( (seg) => Container(
+        width: double.infinity,
+        height: double.infinity,
+        child: CustomPaint(
+            painter: SegmentPainter(seg.startTime.hour * 60, seg.endTime.hour * 60,
+                Time.toRadiansFrom(currentTime) + pi/2) // 10pm to 1:30am
+        )
+    )).toList();
     return Stack(
       children: <Widget>[
         Container(
@@ -29,8 +49,6 @@ class CurrentScheduleGraphic extends StatelessWidget {
             ],
           ),
         ),
-
-
         Container(
           width: double.infinity,
           height: double.infinity,
@@ -46,14 +64,17 @@ class CurrentScheduleGraphic extends StatelessWidget {
             painter: ClockDialPainter(clockText: ClockText.arabic, startTime: this.currentTime),
           ),
         ),
-        Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: CustomPaint(
-                painter: SegmentPainter(1320, 90,
-                    Time.toRadiansFrom(this.currentTime) + pi/2) // 10pm to 1:30am
-            )
+        Stack(
+          children: segmentWidgets,
         ),
+//        Container(
+//            width: double.infinity,
+//            height: double.infinity,
+//            child: CustomPaint(
+//                painter: SegmentPainter(1320, 90,
+//                    Time.toRadiansFrom(this.currentTime) + pi/2) // 10pm to 1:30am
+//            )
+//        ),
         Container(
           width: double.infinity,
           height: double.infinity,
@@ -71,7 +92,7 @@ class ClockHandPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // TODO: implement paint
-    double radius = size.width / 2.2 - 0.5;
+    double radius = min(size.width, size.height) / 2.2 - 0.5;
     Offset centerPoint = Offset(size.width/2, size.height/2);
     Offset endPoint = Utils.getCoord(centerPoint, radius, 0, pi/2);
     Paint paint = Paint()
@@ -83,7 +104,7 @@ class ClockHandPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     // TODO: implement shouldRepaint
-    return null;
+    return true;
   }
 
 }

@@ -35,15 +35,13 @@ class ClockDialPainter extends CustomPainter{
         )
   {
     tickPaint.color= Colors.blueGrey;
-    print ('STARTTIME"');
-    print(this.startTime);
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     var tickMarkLength;
     final angle= 2* PI / 24;
-    final radius= size.width/2;
+    final radius= min(size.width, size.height)/2;
     hourTickMarkLength = radius / 18 ;
     minuteTickMarkLength = radius / 25;
     tickPaint.strokeWidth = 2;
@@ -57,12 +55,10 @@ class ClockDialPainter extends CustomPainter{
     final double startTimeRadians = Time.toRadiansFrom(this.startTime) + pi/2;
 
     for (var i = 0; i < 24; i++) {
-      print("i: " + i.toString());
       tickMarkLength = i % 6 == 0 ? hourTickMarkLength: minuteTickMarkLength;
       tickPaint.strokeWidth= i % 6 == 0 ? hourTickMarkWidth : minuteTickMarkWidth;
       Offset tickStartPoint = Utils.getCoord(centerPoint, tickMarkStartRadius, i*60, startTimeRadians);
       Offset tickEndPoint = Utils.getCoord(centerPoint, tickMarkStartRadius+tickMarkLength, i*60, startTimeRadians);
-      print("tick Start point: " + tickStartPoint.toString());
       canvas.drawLine(tickStartPoint, tickEndPoint, tickPaint);
 
 
@@ -80,7 +76,7 @@ class ClockDialPainter extends CustomPainter{
         var numberCoord = Utils.getCoord(centerPointForNumPainter,
             /*tickMarkStartRadius+tickMarkLength+5*/ radius,
             i*60, startTimeRadians);
-        print ("num coord: " + numberCoord.toString());
+//        print ("num coord: " + numberCoord.toString());
         textPainter.paint(canvas, numberCoord);
       }
 
