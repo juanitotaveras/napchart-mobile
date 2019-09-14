@@ -41,7 +41,7 @@ class ClockDialPainter extends CustomPainter{
   void paint(Canvas canvas, Size size) {
     var tickMarkLength;
     final angle= 2* PI / 24;
-    final radius= min(size.width, size.height)/2;
+    final radius= min(size.width, size.height)/2 - 0.5;
     hourTickMarkLength = radius / 18 ;
     minuteTickMarkLength = radius / 25;
     tickPaint.strokeWidth = 2;

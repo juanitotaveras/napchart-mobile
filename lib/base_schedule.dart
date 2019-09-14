@@ -87,11 +87,11 @@ class BaseSchedulePainter extends CustomPainter {
     paint.color = Colors.grey;
     paint.strokeWidth = 5;
     var outerRadius = size.width / 2 - 10;
-    canvas.drawLine(
-      Offset(0, size.height / 2),
-      Offset(size.width, size.height / 2),
-      paint,
-    );
+//    canvas.drawLine(
+//      Offset(0, size.height / 2),
+//      Offset(size.width, size.height / 2),
+//      paint,
+//    );
 //    canvas.drawCircle(
 //        Offset(size.width / 2, size.height / 2), outerRadius, paint);
 
@@ -101,7 +101,7 @@ class BaseSchedulePainter extends CustomPainter {
 //    canvas.drawCircle(Offset(size.width / 2, size.height/2), 100, paint2);
 
     createTimeLabels(canvas, size);
-    createArc(canvas, size);
+//    createArc(canvas, size);
   }
 
   void createTimeLabels(Canvas canvas, Size size) {
@@ -137,10 +137,10 @@ class BaseSchedulePainter extends CustomPainter {
     var pi = 3.14;
     print("le width");
     print(size.width);
-    var radius = size.width / 2.2;
+    var radius = min(size.width, size.height) / 2.2;
     double arcAngle = 2 * pi * 100; //(completePercent/100);
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2,
-        arcAngle, false, complete);
+//    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2,
+//        arcAngle, false, complete);
   }
 
   @override

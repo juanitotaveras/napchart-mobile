@@ -52,6 +52,9 @@ class CurrentScheduleGraphic extends StatelessWidget {
         Container(
           width: double.infinity,
           height: double.infinity,
+          decoration: new BoxDecoration(
+              border: new Border.all(color: Colors.blueAccent)
+          ),
           child: CustomPaint(
             painter: BaseSchedulePainter(),
           ),
@@ -92,7 +95,7 @@ class ClockHandPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // TODO: implement paint
-    double radius = min(size.width, size.height) / 2.2 - 0.5;
+    double radius = min(size.width, size.height) / 2;
     Offset centerPoint = Offset(size.width/2, size.height/2);
     Offset endPoint = Utils.getCoord(centerPoint, radius, 0, pi/2);
     Paint paint = Paint()
@@ -113,17 +116,10 @@ class BaseSchedulePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // TODO: implement paint
-    print("width");
-    print(size.width);
     var paint = Paint();
     paint.color = Colors.grey;
     paint.strokeWidth = 5;
-    var outerRadius = size.width / 2 - 10;
-    canvas.drawLine(
-      Offset(0, size.height / 2),
-      Offset(size.width, size.height / 2),
-      paint,
-    );
+
 //    canvas.drawCircle(
 //        Offset(size.width / 2, size.height / 2), outerRadius, paint);
 
@@ -157,19 +153,14 @@ class BaseSchedulePainter extends CustomPainter {
   }
 
   void createArc(Canvas canvas, Size size) {
-    // TODO: Problem is that height is zero now
     Offset center = Offset(size.width / 2, size.height / 2);
-    print("center " + center.toString());
-    print("height: " + size.height.toString());
     Paint complete = Paint()
       ..color = Colors.black
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
     var pi = 3.14;
-    print("le width");
-    print(size.width);
-    var radius = size.width / 2.2;
+    var radius = min(size.width, size.height) / 2.2 - 0.5;
     double arcAngle = 2 * pi * 100; //(completePercent/100);
     canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2,
         arcAngle, false, complete);

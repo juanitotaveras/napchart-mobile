@@ -35,7 +35,7 @@ class SegmentPainter extends CustomPainter {
     var centerPoint = Offset(size.width/2, size.height / 2);
 //    print("CENTER PT ");
 //    print(centerPoint);
-    var radius = min(size.width, size.height) / 2.2 - 0.5;
+    var radius = min(size.width, size.height) / 2.2 - 4;
 
     // cornerOne = Offset(centerPoint.)
     var startPoint = Offset(centerPoint.dx + cos(startTimeRadians) * radius,
