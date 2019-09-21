@@ -13,7 +13,7 @@ class HomeBloc {
        produceCurrentTime());
  }
 
- DateTime produceCurrentTime() {
+ void produceCurrentTime() {
    _inTime.add(DateTime.now());
  }
 
