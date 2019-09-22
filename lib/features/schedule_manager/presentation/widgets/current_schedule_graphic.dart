@@ -6,21 +6,12 @@ import 'schedule_number_painter.dart';
 import 'segment_painter.dart';
 import 'dart:math';
 import '../../../../core/utils.dart';
+import './current_schedule_graphic_styles.dart';
 
 class CurrentScheduleGraphic extends StatelessWidget {
   CurrentScheduleGraphic({Key key, this.currentTime}) : super(key: key);
   // TODO: Have a list of segments as input
   final DateTime currentTime;
-
-//  final Stack segmentStack = Stack(
-//    children: segments.map((segment) => {
-//      Container(
-//
-//      );
-//    }).toList();
-//  );
-
-  final styles = {'small': 2};
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +26,7 @@ class CurrentScheduleGraphic extends StatelessWidget {
                 painter: SegmentPainter(
                     seg.startTime.hour * 60,
                     seg.endTime.hour * 60,
-                    Time.toRadiansFrom(currentTime) + pi / 2) // 10pm to 1:30am
-                )))
+                    Time.toRadiansFrom(currentTime) + pi / 2))))
         .toList();
     return Stack(
       children: <Widget>[
@@ -45,7 +35,7 @@ class CurrentScheduleGraphic extends StatelessWidget {
           height: double.infinity,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.grey,
+            color: Styles.outerBandColor,
             boxShadow: [
               BoxShadow(
                 offset: Offset(0.0, 5.0),
@@ -60,13 +50,13 @@ class CurrentScheduleGraphic extends StatelessWidget {
           decoration: new BoxDecoration(
               border: new Border.all(color: Colors.blueAccent)),
           child: CustomPaint(
-            painter: BaseSchedulePainter(),
+            painter: InnerCirclePainter(context),
           ),
         ),
         Container(
           width: double.infinity,
           height: double.infinity,
-          padding: const EdgeInsets.all(8.0),
+          // padding: const EdgeInsets.all(8.0),
           child: CustomPaint(
             painter: ClockDialPainter(
                 clockText: ClockText.arabic, startTime: this.currentTime),
@@ -75,14 +65,6 @@ class CurrentScheduleGraphic extends StatelessWidget {
         Stack(
           children: segmentWidgets,
         ),
-//        Container(
-//            width: double.infinity,
-//            height: double.infinity,
-//            child: CustomPaint(
-//                painter: SegmentPainter(1320, 90,
-//                    Time.toRadiansFrom(this.currentTime) + pi/2) // 10pm to 1:30am
-//            )
-//        ),
         Container(
             width: double.infinity,
             height: double.infinity,
@@ -97,14 +79,17 @@ class CurrentScheduleGraphic extends StatelessWidget {
 class ClockHandPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
     double radius = min(size.width, size.height) / 2;
     Offset centerPoint = Offset(size.width / 2, size.height / 2);
-    Offset endPoint = Utils.getCoord(centerPoint, radius, 0, pi / 2);
+    var startDist = min(size.width, size.height) / 2.2;
+    Offset startPoint =
+        Utils.getCoordFromPolar(centerPoint, startDist, pi / 2, 0);
+    Offset endPoint =
+        Utils.getCoord(centerPoint, startDist + (radius / 6), 0, pi / 2);
     Paint paint = Paint()
-      ..color = Colors.yellow
+      ..color = Colors.orange
       ..strokeWidth = 3;
-    canvas.drawLine(centerPoint, endPoint, paint);
+    canvas.drawLine(startPoint, endPoint, paint);
   }
 
   @override
@@ -114,58 +99,24 @@ class ClockHandPainter extends CustomPainter {
   }
 }
 
-class BaseSchedulePainter extends CustomPainter {
+class InnerCirclePainter extends CustomPainter {
+  BuildContext context;
+  InnerCirclePainter(this.context);
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
-    var paint = Paint();
-    paint.color = Colors.grey;
-    paint.strokeWidth = 5;
-
-//    canvas.drawCircle(
-//        Offset(size.width / 2, size.height / 2), outerRadius, paint);
-
-    var paint2 = Paint();
-    paint2.color = Colors.black;
-    paint2.strokeWidth = 5;
-//    canvas.drawCircle(Offset(size.width / 2, size.height/2), 100, paint2);
-
-    createTimeLabels(canvas, size);
-    createArc(canvas, size);
-  }
-
-  void createTimeLabels(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-
-//    var startPoint = Offset(0, size.height / 2);
-//    var controlPoint1 = Offset(size.width / 4, size.height / 3);
-//    var controlPoint2 = Offset(3 * size.width / 4, size.height / 3);
-//    var endPoint = Offset(size.width, size.height / 2);
-//
-//    var path = Path();
-//    path.moveTo(startPoint.dx, startPoint.dy);
-//    path.cubicTo(controlPoint1.dx, controlPoint1.dy,
-//        controlPoint2.dx, controlPoint2.dy,
-//        endPoint.dx, endPoint.dy);
-//
-//    canvas.drawPath(path, paint);
-  }
-
-  void createArc(Canvas canvas, Size size) {
     Offset center = Offset(size.width / 2, size.height / 2);
-    Paint complete = Paint()
-      ..color = Colors.black
+    Paint inner = Paint()
+      ..color = Theme.of(context).scaffoldBackgroundColor
       ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 2;
+    Paint outer = Paint()
+      ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    var pi = 3.14;
-    var radius = min(size.width, size.height) / 2.2 - 0.5;
-    double arcAngle = 2 * pi * 100; //(completePercent/100);
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2,
-        arcAngle, false, complete);
+    var radius = min(size.width, size.height) / 2.2;
+    canvas.drawCircle(center, radius, inner);
+    canvas.drawCircle(center, radius, outer);
   }
 
   @override

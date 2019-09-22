@@ -2,59 +2,85 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:polysleep/core/utils.dart';
+
 class SegmentPainter extends CustomPainter {
-  final int startTime;
-  final int endTime;
+  final int startTimeMinutes;
+  final int endTimeMinutes;
   final double startPointRadians;
-  SegmentPainter(this.startTime, this.endTime, this.startPointRadians);
+  SegmentPainter(
+      this.startTimeMinutes, this.endTimeMinutes, this.startPointRadians);
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
     var paint = Paint();
-    paint.color = Colors.blue;
-    paint.strokeWidth = 5;
-    print("start time: " + startTime.toString());
+    paint.color = Colors.red;
     // start and end times are in minutes from midnight
     const MINUTES_PER_DAY = 1440;
     // now we must calculate start point, which is from 0 radians
     // (300/1440) = (x/2pi)
     // ( (300*2)/1440 ) = x/pi
-    var segmentLengthRadians =
-        ((endTime - startTime) / MINUTES_PER_DAY) * 2 * pi;
-    // 0.47 radians
     var startTimeRadians =
-        startPointRadians - ((startTime / MINUTES_PER_DAY) * 2 * pi);
+        startPointRadians - ((startTimeMinutes / MINUTES_PER_DAY) * 2 * pi);
     var endTimeRadians =
-        startPointRadians - ((endTime / MINUTES_PER_DAY) * 2 * pi);
-    // tan(segmentLengthRadians) = opposite/adjacent
-
-    // start time:
-    // move up an increment
-    //const distFromCenter = 0;
-    //centerPoint = Offset(centerPoint.dx, centerPoint.dy + distFromCenter);
+        startPointRadians - ((endTimeMinutes / MINUTES_PER_DAY) * 2 * pi);
     var centerPoint = Offset(size.width / 2, size.height / 2);
-//    print("CENTER PT ");
-//    print(centerPoint);
     var radius = min(size.width, size.height) / 2.2 - 2;
 
-    // cornerOne = Offset(centerPoint.)
-    var startPoint = Offset(centerPoint.dx + cos(startTimeRadians) * radius,
-        centerPoint.dy - sin(startTimeRadians) * radius);
-    var endPoint = Offset(centerPoint.dx + cos(endTimeRadians) * radius,
-        centerPoint.dy - sin(endTimeRadians) * radius);
-    //var endOfLine = Offset(centerPoint.dx + 150, centerPoint.dy);
-    //canvas.drawLine(centerPoint, endOfLine, paint);
-    var path = Path();
-    path.moveTo(centerPoint.dx, centerPoint.dy); // start at center
-    path.lineTo(startPoint.dx, startPoint.dy); // line across
-    path.arcToPoint(Offset(endPoint.dx, endPoint.dy),
-        radius: Radius.circular(radius), clockwise: true);
-    //path.lineTo(endOfLine.dx, endOfLine.dy - 200); // top of slice
-    path.lineTo(centerPoint.dx, centerPoint.dy);
+    var segmentWidth = radius / 2;
 
+    var innerStartPoint = Utils.getCoordFromPolar(
+        centerPoint, radius - segmentWidth, startTimeRadians, 0);
+    var innerEndPoint = Utils.getCoordFromPolar(
+        centerPoint, radius - segmentWidth, endTimeRadians, 0);
+    var outerStartPoint =
+        Utils.getCoordFromPolar(centerPoint, radius, startTimeRadians, 0);
+    var outerEndPoint =
+        Utils.getCoordFromPolar(centerPoint, radius, endTimeRadians, 0);
+
+    var path = Path();
+    path.moveTo(innerStartPoint.dx, innerStartPoint.dy); // start at center
+    path.lineTo(outerStartPoint.dx, outerStartPoint.dy); // line across
+    path.arcToPoint(outerEndPoint, // outer circle
+        radius: Radius.circular(radius),
+        clockwise: true);
+    path.lineTo(innerEndPoint.dx, innerEndPoint.dy); // back to center
+
+    path.arcToPoint(innerStartPoint,
+        radius: Radius.circular(radius), clockwise: false);
     canvas.drawPath(path, paint);
 
-//    canvas.drawLine(centerPoint, cornerOne, paint);
+    // draw inner line
+    drawInnerLine(centerPoint, innerStartPoint, innerEndPoint, startTimeRadians,
+        endTimeRadians, segmentWidth, radius, canvas);
+  }
+
+  void drawInnerLine(
+      Offset centerPoint,
+      Offset innerStartPoint,
+      Offset innerEndPoint,
+      double startTimeRadians,
+      double endTimeRadians,
+      double segmentWidth,
+      double radius,
+      Canvas canvas) {
+    var borderWidth = 2;
+    var borderStartPoint = Utils.getCoordFromPolar(
+        centerPoint, radius - segmentWidth + borderWidth, startTimeRadians, 0);
+    var borderEndPoint = Utils.getCoordFromPolar(
+        centerPoint, radius - segmentWidth + borderWidth, endTimeRadians, 0);
+    var path = Path();
+    var paint = Paint();
+    paint.color = Colors.white;
+    path.moveTo(innerStartPoint.dx, innerStartPoint.dy); // start at center
+    path.lineTo(borderStartPoint.dx, borderStartPoint.dy); // line across
+    path.arcToPoint(borderEndPoint, // outer circle
+        radius: Radius.circular(radius),
+        clockwise: true);
+    path.lineTo(innerEndPoint.dx, innerEndPoint.dy); // back to center
+
+    path.arcToPoint(innerStartPoint,
+        radius: Radius.circular(radius), clockwise: false);
+    canvas.drawPath(path, paint);
   }
 
   @override

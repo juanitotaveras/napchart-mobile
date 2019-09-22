@@ -7,9 +7,15 @@ class Utils {
   static Offset getCoord(Offset centerPoint, double radius, int minutes,
       double startPointRadians) {
     const MINUTES_PER_DAY = 1440;
-    var startTimeRadians = startPointRadians -
-        ((minutes / MINUTES_PER_DAY) * 2 * pi);
+    var startTimeRadians =
+        startPointRadians - ((minutes / MINUTES_PER_DAY) * 2 * pi);
     return Offset(centerPoint.dx + cos(startTimeRadians) * radius,
         centerPoint.dy - sin(startTimeRadians) * radius);
+  }
+
+  static Offset getCoordFromPolar(
+      Offset centerPoint, double radius, double angle, double startRadians) {
+    return Offset(centerPoint.dx + (cos(angle + startRadians) * radius),
+        centerPoint.dy - (sin(angle + startRadians) * radius));
   }
 }

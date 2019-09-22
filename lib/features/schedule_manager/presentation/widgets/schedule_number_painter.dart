@@ -53,9 +53,9 @@ class ClockDialPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     var tickMarkLength;
     final angle = 2 * PI / 24;
-    final radius = min(size.width, size.height) / 2 - 0.5;
-    hourTickMarkLength = radius / 18;
-    minuteTickMarkLength = radius / 25;
+    final radius = min(size.width, size.height) / 2;
+    hourTickMarkLength = radius / 15;
+    minuteTickMarkLength = radius / 30;
     tickPaint.strokeWidth = 2;
     tickPaint.color = Colors.black;
 //        canvas.save();
@@ -63,7 +63,7 @@ class ClockDialPainter extends CustomPainter {
     // drawing
 
     var centerPoint = Offset(size.width / 2, size.height / 2);
-    final tickMarkStartRadius = radius - 10;
+    final tickMarkStartRadius = radius / 1.1;
     final double startTimeRadians = Time.toRadiansFrom(this.startTime) + pi / 2;
 
     for (var i = 0; i < 24; i++) {

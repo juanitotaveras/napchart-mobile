@@ -16,7 +16,7 @@ class BaseScheduleGraphic extends StatelessWidget {
             height: double.infinity,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.grey,
+              color: Colors.purple,
               boxShadow: [
                 BoxShadow(
                   offset: Offset(0.0, 5.0),
@@ -84,7 +84,7 @@ class BaseSchedulePainter extends CustomPainter {
     print("width");
     print(size.width);
     var paint = Paint();
-    paint.color = Colors.grey;
+    paint.color = Colors.purple;
     paint.strokeWidth = 5;
     var outerRadius = size.width / 2 - 10;
 //    canvas.drawLine(
