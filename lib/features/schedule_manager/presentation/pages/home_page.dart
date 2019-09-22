@@ -4,7 +4,7 @@ import '../localizations.dart';
 import 'sleep_schedule_creator_1.dart';
 import '../widgets/base_schedule.dart';
 import '../widgets/current_schedule_graphic.dart';
-import 'package:polysleep/src/models/time.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/time.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/home_bloc.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -33,15 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-//              Container(
-//                child: BaseScheduleGraphic(),
-//                width: 350,
-//              ),
-            Expanded(
-                child: CurrentScheduleGraphic(
-                    currentTime: snapshot.data) //BaseScheduleGraphic()
-                ),
-
+            Expanded(child: CurrentScheduleGraphic(currentTime: snapshot.data)),
             Card(
                 child: Padding(
               padding: const EdgeInsets.only(top: 16.0),

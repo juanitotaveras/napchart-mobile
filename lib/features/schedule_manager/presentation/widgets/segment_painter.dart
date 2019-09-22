@@ -1,60 +1,118 @@
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 import 'package:polysleep/core/utils.dart';
+import 'package:polysleep/core/constants.dart' as Constants;
+import 'package:polysleep/features/schedule_manager/domain/entities/angle_calculator.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/time.dart';
 
 class SegmentPainter extends CustomPainter {
-  final int startTimeMinutes;
-  final int endTimeMinutes;
-  final double startPointRadians;
-  SegmentPainter(
-      this.startTimeMinutes, this.endTimeMinutes, this.startPointRadians);
+  final SleepSegment segment;
+  final DateTime currentTime;
+  SegmentPainter(this.segment, this.currentTime);
   @override
   void paint(Canvas canvas, Size size) {
-    var paint = Paint();
-    paint.color = Colors.red;
-    // start and end times are in minutes from midnight
-    const MINUTES_PER_DAY = 1440;
-    // now we must calculate start point, which is from 0 radians
-    // (300/1440) = (x/2pi)
-    // ( (300*2)/1440 ) = x/pi
-    var startTimeRadians =
-        startPointRadians - ((startTimeMinutes / MINUTES_PER_DAY) * 2 * pi);
-    var endTimeRadians =
-        startPointRadians - ((endTimeMinutes / MINUTES_PER_DAY) * 2 * pi);
+    var angleCalculator = AngleCalculator(currentTime, segment);
+
     var centerPoint = Offset(size.width / 2, size.height / 2);
     var radius = min(size.width, size.height) / 2.2 - 2;
-
     var segmentWidth = radius / 2;
 
-    var innerStartPoint = Utils.getCoordFromPolar(
-        centerPoint, radius - segmentWidth, startTimeRadians, 0);
-    var innerEndPoint = Utils.getCoordFromPolar(
-        centerPoint, radius - segmentWidth, endTimeRadians, 0);
-    var outerStartPoint =
-        Utils.getCoordFromPolar(centerPoint, radius, startTimeRadians, 0);
-    var outerEndPoint =
-        Utils.getCoordFromPolar(centerPoint, radius, endTimeRadians, 0);
+    // var innerStartPoint = Utils.getCoordFromPolar(centerPoint,
+    //     radius - segmentWidth, angleCalculator.getStartTimeRadians(), 0);
+    // var innerEndPoint = Utils.getCoordFromPolar(centerPoint,
+    //     radius - segmentWidth, angleCalculator.getEndTimeRadians(), 0);
+    // var outerStartPoint = Utils.getCoordFromPolar(
+    //     centerPoint, radius, angleCalculator.getStartTimeRadians(), 0);
+    // var outerEndPoint = Utils.getCoordFromPolar(
+    //     centerPoint, radius, angleCalculator.getEndTimeRadians(), 0);
 
-    var path = Path();
-    path.moveTo(innerStartPoint.dx, innerStartPoint.dy); // start at center
-    path.lineTo(outerStartPoint.dx, outerStartPoint.dy); // line across
-    path.arcToPoint(outerEndPoint, // outer circle
-        radius: Radius.circular(radius),
-        clockwise: true);
-    path.lineTo(innerEndPoint.dx, innerEndPoint.dy); // back to center
+    // draw main arc
+    var paint = Paint()..color = Colors.red;
+    // TODO: add 2pi to sweep angle if start time is day before
+    canvas.drawArc(
+        Rect.fromCircle(center: centerPoint, radius: radius),
+        angleCalculator.getStartAngle(),
+        angleCalculator.getSweepAngle(),
+        true,
+        paint);
 
-    path.arcToPoint(innerStartPoint,
-        radius: Radius.circular(radius), clockwise: false);
-    canvas.drawPath(path, paint);
-
-    // draw inner line
-    drawInnerLine(centerPoint, innerStartPoint, innerEndPoint, startTimeRadians,
-        endTimeRadians, segmentWidth, radius, canvas);
+    var p = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+    canvas.drawArc(
+        Rect.fromCircle(center: centerPoint, radius: radius - segmentWidth),
+        angleCalculator.getStartAngle(),
+        angleCalculator.getSweepAngle(),
+        true,
+        p);
+    drawStartTime(centerPoint, angleCalculator.getStartTimeRadians(), radius,
+        segmentWidth, canvas, size);
+    drawEndTime(centerPoint, angleCalculator.getEndTimeRadians(), radius,
+        segmentWidth, canvas, size);
   }
 
-  void drawInnerLine(
+  void drawStartTime(Offset centerPoint, double startTimeRadians, double radius,
+      double segmentWidth, Canvas canvas, Size size) {
+    canvas.save();
+
+    // perform rotation of canvas around center
+    rotateCanvasAroundCenter(canvas, size, -startTimeRadians);
+
+    TextSpan span = new TextSpan(
+        style: new TextStyle(color: Colors.white),
+        text: '${this.segment.startTime.hour}');
+    TextPainter tp = new TextPainter(
+        text: span,
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr);
+    tp.layout();
+    tp.paint(
+        canvas,
+        new Offset(
+            centerPoint.dx + (radius / 1.5), centerPoint.dy - (radius / 10)));
+
+    canvas.restore();
+  }
+
+  void drawEndTime(Offset centerPoint, double endTimeRadians, double radius,
+      double segmentWidth, Canvas canvas, Size size) {
+    canvas.save();
+
+    // perform rotation of canvas around center
+    rotateCanvasAroundCenter(canvas, size, -endTimeRadians);
+
+    TextSpan span = new TextSpan(
+        style: new TextStyle(color: Colors.white),
+        text: '${this.segment.endTime.hour}');
+    TextPainter tp = new TextPainter(
+        text: span,
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr);
+    tp.layout();
+    tp.paint(
+        canvas, new Offset(centerPoint.dx + (radius / 1.5), centerPoint.dy));
+
+    canvas.restore();
+  }
+
+  void rotateCanvasAroundCenter(Canvas canvas, Size size, double angle) {
+    var image = size;
+    final double r =
+        sqrt(image.width * image.width + image.height * image.height) / 2;
+    final alpha = atan(image.height / image.width);
+    final beta = alpha + angle;
+    final shiftY = r * sin(beta);
+    final shiftX = r * cos(beta);
+    final translateX = image.width / 2 - shiftX;
+    final translateY = image.height / 2 - shiftY;
+    canvas.translate(translateX, translateY);
+    canvas.rotate(angle);
+  }
+
+  void drawInnerBorder(
       Offset centerPoint,
       Offset innerStartPoint,
       Offset innerEndPoint,

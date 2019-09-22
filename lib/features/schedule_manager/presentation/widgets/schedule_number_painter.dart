@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import '../../../../core/utils.dart';
-import 'package:polysleep/src/models/time.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/time.dart';
 
 class ClockDialPainter extends CustomPainter {
   final PI = 3.14;
