@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
 
 class AngleCalculator {
   DateTime currentTime;
@@ -60,5 +61,44 @@ class AngleCalculator {
 
   double getEndTimeRadians() {
     return getCurrentTimeRadians() - _getEndDistFromMidnight() + _getOffset();
+  }
+
+  Offset getStartTextOffset(Offset centerPoint, double radius) {
+    // this is for translating the canvas when placing text
+    if (_isInRightSideOfCircle(getStartTimeRadians())) {
+      return Offset(centerPoint.dx + (radius / 1.5), centerPoint.dy);
+    }
+    return Offset(
+        centerPoint.dx - (radius / 1.1), centerPoint.dy - (radius / 10));
+  }
+
+  Offset getEndTextOffset(Offset centerPoint, double radius) {
+    if (_isInRightSideOfCircle(getEndTimeRadians())) {
+      return Offset(
+          centerPoint.dx + (radius / 1.5), centerPoint.dy - (radius / 10));
+    }
+    return Offset(centerPoint.dx - (radius / 1.1), centerPoint.dy);
+  }
+
+  double getStartTextAngle() {
+    if (_isInRightSideOfCircle(getStartTimeRadians())) {
+      return -getStartTimeRadians();
+    }
+    return -getStartTimeRadians() + pi;
+  }
+
+  double getEndTextAngle() {
+    if (_isInRightSideOfCircle(getEndTimeRadians())) {
+      return -getEndTimeRadians();
+    }
+    return -getEndTimeRadians() + pi;
+  }
+
+  bool _isInRightSideOfCircle(double angle) {
+    // determines if angle is in quadrant 1 or 4
+    if (angle < 0) {
+      angle += 2 * pi;
+    }
+    return angle < (pi / 2) || angle > ((3 * pi) / 2);
   }
 }
