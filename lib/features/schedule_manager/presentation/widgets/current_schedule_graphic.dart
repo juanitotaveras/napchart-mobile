@@ -14,7 +14,7 @@ class CurrentScheduleGraphic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateTime _start = DateTime(2019, 1, 2, 0); // y, m d, h, m
+    final DateTime _start = DateTime(2019, 1, 1, 22); // y, m d, h, m
     final DateTime _end = DateTime(2019, 1, 2, 6);
     final List<SleepSegment> segments = [
       SleepSegment(startTime: _start, endTime: _end)

@@ -5,6 +5,7 @@ import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/angle_calculator.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import './segment_painter_styles.dart';
+import '../time_formatter.dart';
 
 class SegmentPainter extends CustomPainter {
   final SleepSegment segment;
@@ -46,9 +47,10 @@ class SegmentPainter extends CustomPainter {
 
     rotateCanvasAroundCenter(canvas, size, angleCalculator.getStartTextAngle());
 
+    TimeFormatter tf = TimeFormatter(this.segment.startTime);
     TextSpan span = new TextSpan(
         style: new TextStyle(color: Colors.white),
-        text: '${this.segment.startTime.hour}');
+        text: '${tf.getMilitaryTime()}');
     TextPainter tp = new TextPainter(
         text: span,
         textAlign: TextAlign.left,
@@ -65,9 +67,10 @@ class SegmentPainter extends CustomPainter {
     // perform rotation of canvas around center
     rotateCanvasAroundCenter(canvas, size, angleCalculator.getEndTextAngle());
 
+    TimeFormatter tf = TimeFormatter(this.segment.endTime);
     TextSpan span = new TextSpan(
         style: new TextStyle(color: Colors.white),
-        text: '${this.segment.endTime.hour}');
+        text: '${tf.getMilitaryTime()}');
     TextPainter tp = new TextPainter(
         text: span,
         textAlign: TextAlign.left,
