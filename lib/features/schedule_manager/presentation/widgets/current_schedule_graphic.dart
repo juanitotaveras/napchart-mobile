@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/time.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+import 'package:polysleep/features/schedule_manager/presentation/widgets/sun_times_painter.dart';
 import 'schedule_number_painter.dart';
 import 'segment_painter.dart';
 import 'dart:math';
@@ -25,6 +26,9 @@ class CurrentScheduleGraphic extends StatelessWidget {
             height: double.infinity,
             child: CustomPaint(painter: SegmentPainter(seg, currentTime))))
         .toList();
+    final DateTime _startSun = DateTime(2019, 1, 1, 6);
+    final DateTime _endSun = DateTime(2019, 1, 1, 18);
+    final sunSegment = SleepSegment(startTime: _startSun, endTime: _endSun);
     return Padding(
         padding: const EdgeInsets.all(10.0),
         child: Stack(
@@ -43,6 +47,11 @@ class CurrentScheduleGraphic extends StatelessWidget {
                 ],
               ),
             ),
+            Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: CustomPaint(
+                    painter: SunTimesPainter(sunSegment, currentTime))),
             Container(
               width: double.infinity,
               height: double.infinity,
