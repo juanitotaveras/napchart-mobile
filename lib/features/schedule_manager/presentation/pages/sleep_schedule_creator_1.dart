@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 
 class SleepScheduleCreatorOne extends StatelessWidget {
+  renderWidget() {
+    return Column(
+      // mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Expanded(
+            child: ListView(children: <Widget>[
+          CalendarGrid(hourSpacing: 60.0, leftLineOffset: Offset(40.0, 0.0)),
+        ]))
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-//    return Container(
-//      child: BaseScheduleGraphic()
-//    );
     return Scaffold(
         appBar: AppBar(
             // Here we take the value from the MyHomePage object that was created by
@@ -20,21 +33,28 @@ class SleepScheduleCreatorOne extends StatelessWidget {
               onPressed: () => Navigator.pop(context, false),
             )),
         //drawer: NavigationDrawer(),
-        body: Center(
-            child: Padding(
-                padding: const EdgeInsets.only(top: 0.0),
-                child: Column(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                        child: ListView(children: <Widget>[
-                      CalendarGrid(
-                        hourSpacing: 60.0,
-                        leftLineOffset: Offset(40.0, 0.0),
+        body: BlocProvider(
+            builder: (context) => ScheduleEditorBloc(),
+            child: Center(
+                child: Padding(
+                    padding: const EdgeInsets.only(top: 0.0),
+                    child:
+                        BlocListener<ScheduleEditorBloc, ScheduleEditorState>(
+                      listener:
+                          (BuildContext context, ScheduleEditorState state) {
+                        if (state is TemporarySegmentExists) {
+                          // do nothing
+                          print('hi state');
+                        }
+                      },
+                      child:
+                          BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
+                        builder:
+                            (BuildContext context, ScheduleEditorState state) {
+                          return renderWidget();
+                        },
                       ),
-                    ]))
-                  ],
-                ))));
+                    )))));
   }
 }
 
@@ -49,6 +69,8 @@ class CalendarGrid extends StatelessWidget {
     final List<SleepSegment> segments = [
       SleepSegment(startTime: _start, endTime: _end)
     ];
+    final ScheduleEditorBloc bloc =
+        BlocProvider.of<ScheduleEditorBloc>(context);
     final List<Widget> segmentWidgets = segments
         .map((seg) => Container(
             width: double.infinity,
@@ -72,9 +94,10 @@ class CalendarGrid extends StatelessWidget {
           print('Tap');
           RenderBox box = context.findRenderObject();
           var relativeTapPos = box.globalToLocal(details.globalPosition);
-          print('${relativeTapPos}');
-          print('${details.globalPosition}');
-          print('start time tapped: ${getStartTimeTapped(relativeTapPos)}');
+          if (relativeTapPos.dx >= this.leftLineOffset.dx) {
+            bloc.dispatch(
+                TemporarySleepSegmentCreated(relativeTapPos, hourSpacing));
+          }
         },
         child: Stack(children: <Widget>[
           Container(
@@ -85,18 +108,6 @@ class CalendarGrid extends StatelessWidget {
               )),
           ...segmentWidgets,
         ]));
-  }
-
-  DateTime getStartTimeTapped(Offset tapPosition) {
-    if (tapPosition.dx < this.leftLineOffset.dx) {
-      return null;
-    }
-    // Get new segment
-    var hr = tapPosition.dy / this.hourSpacing;
-    // now check if we're in the first or second half of that hour
-    var part = (hr - (hr.toInt()));
-    var min = (part < 0.5) ? 0 : 30;
-    return DateTime(2020, 1, 1, hr.toInt(), min);
   }
 }
 
