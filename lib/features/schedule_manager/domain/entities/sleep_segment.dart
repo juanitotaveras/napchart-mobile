@@ -22,4 +22,12 @@ class SleepSegment extends Equatable {
   bool startAndEndsOnSameDay() {
     return startTime.day == endTime.day;
   }
+
+  int getDurationMinutes() {
+    // TODO: Fix this logic!
+    // we can convert both into minutes from midnight?
+    // must handle case where end time is day after
+    // final hrMin = (endTime.hour - startTime.hour) * 60;
+    return 60;
+  }
 }

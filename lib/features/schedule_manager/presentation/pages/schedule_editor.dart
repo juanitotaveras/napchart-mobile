@@ -64,7 +64,6 @@ class ScheduleEditor extends StatelessWidget {
   }
 }
 
-// TODO: Grid must accept a temporary segment
 class CalendarGrid extends StatelessWidget {
   final double hourSpacing;
   final Offset leftLineOffset;
@@ -74,32 +73,13 @@ class CalendarGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final ScheduleEditorBloc bloc =
         BlocProvider.of<ScheduleEditorBloc>(context);
-    // final List<Widget> segmentWidgets = segments.map((seg) {
-    //   if (seg == null) return null;
-    //   return Container(
-    //       width: double.infinity,
-    //       height: 60,
-    //       // color: Colors.red,
-    //       margin: EdgeInsets.fromLTRB(41.0, 0.0, 20.0, 0.0),
-    //       child: GestureDetector(
-    //           onTapUp: (TapUpDetails details) {
-    //             print('Tap on seg: ${details.globalPosition}');
-    //           },
-    //           child: Container(
-    //             decoration: BoxDecoration(
-    //                 color: Colors.red,
-    //                 borderRadius: BorderRadius.only(
-    //                     bottomLeft: const Radius.circular(10.0),
-    //                     bottomRight: const Radius.circular(10.0))),
-    //           )));
-    // }).toList();
-    // final List<Widget> segWidgets =
-    //     segmentWidgets.where((elem) => elem != null).toList();
+    RenderBox box = context.findRenderObject();
     return GestureDetector(
         onTapUp: (TapUpDetails details) {
           print('Tap');
-          RenderBox box = context.findRenderObject();
-          var relativeTapPos = box.globalToLocal(details.globalPosition);
+          RenderBox b = context.findRenderObject();
+
+          var relativeTapPos = b.globalToLocal(details.globalPosition);
           if (relativeTapPos.dx >= this.leftLineOffset.dx) {
             bloc.dispatch(
                 TemporarySleepSegmentCreated(relativeTapPos, hourSpacing));
@@ -114,7 +94,10 @@ class CalendarGrid extends StatelessWidget {
               )),
           // ...segWidgets,
           TemporarySegmentWidget(
-              marginLeft: 41.0, marginRight: 10.0, hourSpacing: 60)
+              marginLeft: 41.0,
+              marginRight: 10.0,
+              hourSpacing: 60,
+              calendarGrid: box)
         ]));
   }
 }
