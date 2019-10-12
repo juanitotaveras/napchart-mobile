@@ -10,6 +10,7 @@ class TemporarySegmentWidget extends StatelessWidget {
   final double marginRight;
   final double hourSpacing;
   final RenderBox calendarGrid;
+  static const verticalPadding = 10.0;
   static const cornerRadius = 10.0;
   static const corner = Radius.circular(cornerRadius);
 
@@ -20,56 +21,75 @@ class TemporarySegmentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bloc = BlocProvider.of<ScheduleEditorBloc>(context);
-    print('le build temp seg');
+    // TODO: Create an enclosing container that will have a
+    // stack of the elements
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
         builder: (BuildContext context, ScheduleEditorState state) {
       if (state is TemporarySegmentExists) {
         final segment = state.segment;
+        // final double padding = 10;
         final topMargin =
             (hourSpacing * segment.startTime.hour + segment.startTime.minute)
                 .toDouble();
-        return Container(
-            width: double.infinity,
-            height: segment.getDurationMinutes().toDouble(),
-            // color: Colors.red,
-            margin:
-                EdgeInsets.fromLTRB(marginLeft, topMargin, marginRight, 0.0),
-            child: GestureDetector(
-                onVerticalDragUpdate: (DragUpdateDetails details) {
-                  // SleepSegment newSegment = SleepSegment(
-                  //     startTime:
-                  //         segment.startTime.subtract(Duration(minutes: 15)));
-                  // print('le drag: $details');
-                  bloc.dispatch(TemporarySleepSegmentDragged(
-                      details, calendarGrid, hourSpacing));
-                },
-                child: renderContainerWithRoundedBorders()));
+        return renderContainerWithRoundedBorders(topMargin, state.segment);
+        // return Container(
+        // width: double.infinity,
+        // height:
+        //     segment.getDurationMinutes().toDouble() + (verticalPadding * 2),
+        // margin: EdgeInsets.only(
+        //     top: topMargin - verticalPadding,
+        //     left: marginLeft,
+        //     right: marginRight),
+        // padding:
+        //     EdgeInsets.only(top: verticalPadding, bottom: verticalPadding),
+        // // color: Colors.red,
+        // // padding: EdgeInsets.fromLTRB(0.0, padding, 0.0, padding),
+
+        // child: renderContainerWithRoundedBorders(topMargin, state.segment));
       } else {
         return Container();
       }
     });
   }
 
-  Widget renderContainerWithRoundedBorders() {
+  Widget renderContainerWithRoundedBorders(
+      double topMargin, SleepSegment segment) {
     return Stack(children: [
-      Container(
-        decoration: BoxDecoration(
-            color: Colors.blue[900],
-            border: Border.all(width: 3, color: Colors.yellow[100]),
-            borderRadius: BorderRadius.only(
-                topLeft: corner,
-                topRight: corner,
-                bottomLeft: corner,
-                bottomRight: corner)),
-      ),
-      renderDragCircleTop(),
-      renderDragCircleBottom()
+      GestureDetector(
+          onVerticalDragUpdate: (DragUpdateDetails details) {
+            // SleepSegment newSegment = SleepSegment(
+            //     startTime:
+            //         segment.startTime.subtract(Duration(minutes: 15)));
+            // print('le drag: $details');
+            bloc.dispatch(TemporarySleepSegmentDragged(
+                details, calendarGrid, hourSpacing));
+          },
+          child: Container(
+              width: double.infinity,
+              height: segment.getDurationMinutes().toDouble(),
+              // padding: EdgeInsets.only(
+              //     top: verticalPadding, bottom: verticalPadding),
+              margin: EdgeInsets.only(
+                  top: topMargin, left: marginLeft, right: marginRight),
+              // margin:
+              //     EdgeInsets.fromLTRB(marginLeft, topMargin, marginRight, 0.0),
+              decoration: BoxDecoration(
+                  color: Colors.blue[900],
+                  border: Border.all(width: 3, color: Colors.yellow[100]),
+                  borderRadius: BorderRadius.only(
+                      topLeft: corner,
+                      topRight: corner,
+                      bottomLeft: corner,
+                      bottomRight: corner)))),
+      renderDragCircleTop(topMargin),
+      renderDragCircleBottom(topMargin, segment.getDurationMinutes().toDouble())
     ]);
   }
 
-  Widget renderDragCircleTop() {
-    return Align(
-        alignment: Alignment(0.85, -2.1),
+  Widget renderDragCircleTop(double topMargin) {
+    return Positioned(
+        top: topMargin - 15,
+        right: marginRight + 15,
         child: GestureDetector(
             onTapUp: (TapUpDetails details) {
               print('Tap on drag circle!: ${details.globalPosition}');
@@ -83,9 +103,10 @@ class TemporarySegmentWidget extends StatelessWidget {
             child: renderDragCircleGraphic()));
   }
 
-  Widget renderDragCircleBottom() {
-    return Align(
-        alignment: Alignment(-0.85, 2.1),
+  Widget renderDragCircleBottom(double topMargin, double height) {
+    return Positioned(
+        bottom: 0,
+        left: marginLeft + 15,
         child: GestureDetector(
             onTapUp: (TapUpDetails details) {
               print('Tap on drag circle!: ${details.globalPosition}');
