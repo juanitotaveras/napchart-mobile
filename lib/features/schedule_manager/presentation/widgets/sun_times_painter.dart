@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:polysleep/features/schedule_manager/domain/entities/angle_calculator.dart';
+import 'package:polysleep/core/presentation/angle_calculator.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sun_segment.dart';
 import 'dart:math';

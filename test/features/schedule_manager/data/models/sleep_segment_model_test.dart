@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final tSegmentModel = SleepSegmentModel(
-      startTime: SegmentDateTime(h: 1, m: 0),
-      endTime: SegmentDateTime(h: 1, m: 5));
+      startTime: SegmentDateTime(hr: 1, min: 0),
+      endTime: SegmentDateTime(hr: 1, min: 5));
 
   test('should be a subclass of SleepSegment entity', () async {
     //assert
