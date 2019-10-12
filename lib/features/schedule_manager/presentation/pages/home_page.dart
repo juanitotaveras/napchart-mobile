@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/navigation_drawer.dart';
 import '../localizations.dart';
-import 'sleep_schedule_creator_1.dart';
+import 'schedule_editor.dart';
 import '../widgets/base_schedule.dart';
 import '../widgets/current_schedule_graphic.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/time.dart';
@@ -21,7 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _goToSleepScheduleCreator() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SleepScheduleCreatorOne()),
+      MaterialPageRoute(builder: (context) => ScheduleEditor()),
     );
   }
 

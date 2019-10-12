@@ -14,5 +14,6 @@ class InitialScheduleEditorState extends ScheduleEditorState {
 class TemporarySegmentExists extends ScheduleEditorState {
   final SleepSegment segment;
 
-  TemporarySegmentExists({@required this.segment}) : super([segment]);
+  TemporarySegmentExists({@required this.segment})
+      : super([segment.startTime, segment.endTime]);
 }

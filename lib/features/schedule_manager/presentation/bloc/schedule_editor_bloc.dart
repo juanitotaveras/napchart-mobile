@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:bloc/bloc.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import './bloc.dart';
 
 class ScheduleEditorBloc
@@ -12,13 +13,13 @@ class ScheduleEditorBloc
   Stream<ScheduleEditorState> mapEventToState(
     ScheduleEditorEvent event,
   ) async* {
-    // TODO: Add Logic
     print(event);
     if (event is TemporarySleepSegmentCreated) {
-      var t = InputToTimeConverter.touchInputToTime(
+      DateTime t = InputToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourPixels);
-      print('tap here! : ${t}');
-      // should yield TempraryScheduleCreatedState
+      DateTime endTime = t.add(Duration(minutes: 30));
+      SleepSegment segment = SleepSegment(startTime: t, endTime: endTime);
+      yield TemporarySegmentExists(segment: segment);
     }
   }
 }

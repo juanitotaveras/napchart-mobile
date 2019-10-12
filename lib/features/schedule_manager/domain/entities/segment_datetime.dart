@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
 class SegmentDateTime extends DateTime {
-  SegmentDateTime({@required int h, @required int m}) : super(2020, 1, 1, h, m);
+  SegmentDateTime({@required int hr, @required int min, int day})
+      : super(2020, 0, (day == null) ? 0 : day, hr, min);
 }
