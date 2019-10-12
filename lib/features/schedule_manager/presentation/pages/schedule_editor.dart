@@ -8,7 +8,7 @@ import 'package:polysleep/features/schedule_manager/presentation/widgets/schedul
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
 
 class ScheduleEditor extends StatelessWidget {
-  renderWidget(SleepSegment segment) {
+  renderWidget() {
     return Column(
       // mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -53,11 +53,12 @@ class ScheduleEditor extends StatelessWidget {
                           BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
                         builder:
                             (BuildContext context, ScheduleEditorState state) {
-                          if (state is TemporarySegmentExists) {
-                            return renderWidget(state.segment);
-                          } else {
-                            return renderWidget(null);
-                          }
+                          // if (state is TemporarySegmentExists) {
+                          //   return renderWidget(state.segment);
+                          // } else {
+                          //   return renderWidget(null);
+                          // }
+                          return renderWidget();
                         },
                       ),
                     )))));
@@ -74,9 +75,9 @@ class CalendarGrid extends StatelessWidget {
     final ScheduleEditorBloc bloc =
         BlocProvider.of<ScheduleEditorBloc>(context);
     RenderBox box = context.findRenderObject();
+    final calendarHeight = 1440.0;
     return GestureDetector(
         onTapUp: (TapUpDetails details) {
-          print('Tap');
           RenderBox b = context.findRenderObject();
 
           var relativeTapPos = b.globalToLocal(details.globalPosition);
@@ -87,17 +88,18 @@ class CalendarGrid extends StatelessWidget {
         },
         child: Stack(children: <Widget>[
           Container(
-              height: 1440,
+              height: calendarHeight,
               width: double.infinity,
               child: CustomPaint(
                 painter: CalendarGridPainter(hourSpacing: this.hourSpacing),
               )),
           // ...segWidgets,
-          TemporarySegmentWidget(
-              marginLeft: 41.0,
-              marginRight: 10.0,
-              hourSpacing: 60,
-              calendarGrid: box)
+          Container(
+              height: calendarHeight,
+              width: double.infinity,
+              margin: EdgeInsets.only(left: 41.0),
+              child: TemporarySegmentWidget(
+                  marginRight: 10.0, hourSpacing: 60, calendarGrid: box))
         ]));
   }
 }
