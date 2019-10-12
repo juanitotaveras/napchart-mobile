@@ -24,10 +24,10 @@ class SleepSegment extends Equatable {
   }
 
   int getDurationMinutes() {
-    // TODO: Fix this logic!
-    // we can convert both into minutes from midnight?
-    // must handle case where end time is day after
-    // final hrMin = (endTime.hour - startTime.hour) * 60;
-    return 60;
+    // one minutes is 60,000 ms
+    final ms =
+        endTime.millisecondsSinceEpoch - startTime.millisecondsSinceEpoch;
+
+    return ms ~/ 60000;
   }
 }

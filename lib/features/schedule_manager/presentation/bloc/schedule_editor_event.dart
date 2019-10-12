@@ -23,3 +23,21 @@ class TemporarySleepSegmentDragged extends ScheduleEditorEvent {
       this.details, this.calendarGrid, this.hourSpacing)
       : super([details]);
 }
+
+class TemporarySleepSegmentStartTimeDragged extends ScheduleEditorEvent {
+  final DragUpdateDetails details;
+  final RenderBox calendarGrid;
+  final double hourSpacing;
+  TemporarySleepSegmentStartTimeDragged(
+      this.details, this.calendarGrid, this.hourSpacing)
+      : super([details]);
+}
+
+class TemporarySleepSegmentEndTimeDragged extends ScheduleEditorEvent {
+  final DragUpdateDetails details;
+  final RenderBox calendarGrid;
+  final double hourSpacing;
+  TemporarySleepSegmentEndTimeDragged(
+      this.details, this.calendarGrid, this.hourSpacing)
+      : super([details]);
+}

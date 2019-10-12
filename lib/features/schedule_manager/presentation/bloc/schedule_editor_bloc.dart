@@ -15,16 +15,16 @@ class ScheduleEditorBloc
   Stream<ScheduleEditorState> mapEventToState(
     ScheduleEditorEvent event,
   ) async* {
-    print(event);
+    print('LE EVENT: $event');
     if (event is TemporarySleepSegmentCreated) {
       DateTime t = GridTapToTimeConverter.touchInputToTime(
-          event.touchCoord, event.hourPixels);
-      DateTime endTime = t.add(Duration(minutes: 30));
+          event.touchCoord, event.hourPixels, 30);
+      DateTime endTime = t.add(Duration(minutes: 60));
       SleepSegment segment = SleepSegment(startTime: t, endTime: endTime);
       yield TemporarySegmentExists(segment: segment);
     } else if (event is TemporarySleepSegmentDragged) {
       final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
-          event.details, event.calendarGrid, event.hourSpacing);
+          event.details, event.calendarGrid, event.hourSpacing, 15);
       var currentSegment = (currentState as TemporarySegmentExists).segment;
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg = SleepSegment(
@@ -33,32 +33,44 @@ class ScheduleEditorBloc
                 t.add(Duration(minutes: currentSegment.getDurationMinutes())));
         yield TemporarySegmentExists(segment: newSeg);
       }
-      print(t);
+    } else if (event is TemporarySleepSegmentStartTimeDragged) {
+      final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
+          event.details, event.calendarGrid, event.hourSpacing, 5);
+      SleepSegment currentSegment = (currentState as dynamic).segment;
+      if (t.compareTo(currentSegment.startTime) != 0) {
+        print('start time: ${t} end time: ${currentSegment.endTime}');
+        final newSeg =
+            SleepSegment(startTime: t, endTime: currentSegment.endTime);
+        yield TemporarySegmentExists(segment: newSeg);
+      }
+    } else if (event is TemporarySleepSegmentEndTimeDragged) {
+      print('le end time dragged: ${event.details}');
+      final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
+          event.details, event.calendarGrid, event.hourSpacing, 5);
+      SleepSegment currentSegment = (currentState as dynamic).segment;
+      if (t.compareTo(currentSegment.startTime) != 0) {
+        final newSeg =
+            SleepSegment(startTime: currentSegment.startTime, endTime: t);
+        yield TemporarySegmentExists(segment: newSeg);
+      }
     }
   }
 }
 
 class GridTapToTimeConverter {
-  static DateTime touchInputToTime(Offset tapPosition, double hourSpacing) {
-    // Get new segment
-    var hr = tapPosition.dy / hourSpacing;
-    // now check if we're in the first or second half of that hour
-    int granularity = 30;
-    var min = ((tapPosition.dy % hourSpacing) ~/ granularity) * 15;
-    return SegmentDateTime(hr: hr.toInt(), min: min);
+  static DateTime touchInputToTime(
+      Offset tapPosition, double hourSpacing, int granularity) {
+    var hr = tapPosition.dy ~/ hourSpacing;
+    var min = ((tapPosition.dy % hourSpacing) ~/ granularity) * granularity;
+    return SegmentDateTime(hr: hr, min: min);
   }
 }
 
 class SegmentDragToTimeChangeConverter {
-  // should return our new time
-  static DateTime dragInputToNewTime(
-      DragUpdateDetails details, RenderBox calendarGrid, double hourSpacing) {
+  static DateTime dragInputToNewTime(DragUpdateDetails details,
+      RenderBox calendarGrid, double hourSpacing, int granularity) {
     var relativeTapPos = calendarGrid.globalToLocal(details.globalPosition);
-    var hr = relativeTapPos.dy ~/ hourSpacing;
-
-    // now compute what 15 min block we are in
-    int granularity = 15;
-    var min = ((relativeTapPos.dy % hourSpacing) ~/ granularity) * 15;
-    return SegmentDateTime(hr: hr, min: min);
+    return GridTapToTimeConverter.touchInputToTime(
+        relativeTapPos, hourSpacing, granularity);
   }
 }

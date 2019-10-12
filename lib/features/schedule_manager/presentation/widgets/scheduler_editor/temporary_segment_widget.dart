@@ -8,7 +8,7 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_e
 class TemporarySegmentWidget extends StatelessWidget {
   final double marginLeft;
   final double marginRight;
-  final int hourSpacing;
+  final double hourSpacing;
   final RenderBox calendarGrid;
   static const cornerRadius = 10.0;
   static const corner = Radius.circular(cornerRadius);
@@ -30,7 +30,7 @@ class TemporarySegmentWidget extends StatelessWidget {
                 .toDouble();
         return Container(
             width: double.infinity,
-            height: 60,
+            height: segment.getDurationMinutes().toDouble(),
             // color: Colors.red,
             margin:
                 EdgeInsets.fromLTRB(marginLeft, topMargin, marginRight, 0.0),
@@ -41,7 +41,7 @@ class TemporarySegmentWidget extends StatelessWidget {
                   //         segment.startTime.subtract(Duration(minutes: 15)));
                   // print('le drag: $details');
                   bloc.dispatch(TemporarySleepSegmentDragged(
-                      details, calendarGrid, hourSpacing.toDouble()));
+                      details, calendarGrid, hourSpacing));
                 },
                 child: renderContainerWithRoundedBorders()));
       } else {
@@ -62,37 +62,61 @@ class TemporarySegmentWidget extends StatelessWidget {
                 bottomLeft: corner,
                 bottomRight: corner)),
       ),
-      Align(alignment: Alignment(0.85, -1.8), child: renderDragCircle()),
-      Align(alignment: Alignment(-0.85, 1.8), child: renderDragCircle())
+      renderDragCircleTop(),
+      renderDragCircleBottom()
     ]);
   }
 
-  Widget renderDragCircle() {
-    return GestureDetector(
-        onTapUp: (TapUpDetails details) {
-          print('Tap on drag circle!: ${details.globalPosition}');
-        },
-        onVerticalDragUpdate: (details) {
-          print('DRAG UPDATE: ${details}');
-          print(bloc);
-        },
-        child: Stack(alignment: Alignment.center, children: [
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.yellow[100],
-            ),
-          ),
-          Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.blue[400],
-            ),
-          )
-        ]));
+  Widget renderDragCircleTop() {
+    return Align(
+        alignment: Alignment(0.85, -2.1),
+        child: GestureDetector(
+            onTapUp: (TapUpDetails details) {
+              print('Tap on drag circle!: ${details.globalPosition}');
+            },
+            onVerticalDragUpdate: (DragUpdateDetails details) {
+              print('DRAG UPDATE FOR TOP: ${details}');
+              // print(bloc);
+              bloc.dispatch(TemporarySleepSegmentStartTimeDragged(
+                  details, calendarGrid, hourSpacing));
+            },
+            child: renderDragCircleGraphic()));
+  }
+
+  Widget renderDragCircleBottom() {
+    return Align(
+        alignment: Alignment(-0.85, 2.1),
+        child: GestureDetector(
+            onTapUp: (TapUpDetails details) {
+              print('Tap on drag circle!: ${details.globalPosition}');
+            },
+            onVerticalDragUpdate: (DragUpdateDetails details) {
+              // print('DRAG UPDATE FOR BOTTOM: ${details}');
+              // print(bloc);
+              bloc.dispatch(TemporarySleepSegmentEndTimeDragged(
+                  details, calendarGrid, hourSpacing));
+            },
+            child: renderDragCircleGraphic()));
+  }
+
+  Widget renderDragCircleGraphic() {
+    return Stack(alignment: Alignment.center, children: [
+      Container(
+        width: 35,
+        height: 35,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.yellow[100],
+        ),
+      ),
+      Container(
+        width: 25,
+        height: 25,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.blue[400],
+        ),
+      )
+    ]);
   }
 }
