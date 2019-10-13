@@ -5,18 +5,56 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_e
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/calendar_grid_painter.dart';
+import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/edit_segment_bottom_sheet_widget.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
 
 class ScheduleEditor extends StatelessWidget {
-  renderWidget() {
+  renderWidget(BuildContext context) {
     return Column(
       // mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
+        renderHeader(),
         Expanded(
             child: ListView(children: <Widget>[
           CalendarGrid(hourSpacing: 60.0, leftLineOffset: Offset(40.0, 0.0)),
-        ]))
+        ])),
+        EditSegmentBottomSheetWidget(),
       ],
+    );
+  }
+
+  Widget renderHeader() {
+    return Container(
+      height: 60,
+      width: double.infinity,
+      padding: EdgeInsets.only(left: 30, right: 30),
+      color: Colors.blueGrey,
+      child: Stack(
+        children: <Widget>[
+          Align(
+            alignment: Alignment(-1.0, 0.0),
+            child: Text(
+              'Choose schedule',
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Align(
+              alignment: Alignment(1.0, -0.5),
+              child: Text(
+                'Sleep: x hrs',
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )),
+          Align(
+              alignment: Alignment(1.0, 0.5),
+              child: Text('Awake: x hrs',
+                  textAlign: TextAlign.end,
+                  style: TextStyle(fontWeight: FontWeight.bold)))
+        ],
+      ),
     );
   }
 
@@ -44,9 +82,20 @@ class ScheduleEditor extends StatelessWidget {
                         BlocListener<ScheduleEditorBloc, ScheduleEditorState>(
                       listener:
                           (BuildContext context, ScheduleEditorState state) {
-                        if (state is TemporarySegmentExists) {
+                        if (state is TemporarySegmentCreated) {
                           // do nothing
                           print('hi state');
+                          // showModalBottomSheet(
+                          //     context: context,
+                          //     builder: (context) {
+                          //       return Container(
+                          //           height: 100,
+                          //           child: Column(
+                          //             children: <Widget>[
+                          //               ListTile(title: Text('SOME STUFF'))
+                          //             ],
+                          //           ));
+                          //     });
                         }
                       },
                       child:
@@ -58,7 +107,7 @@ class ScheduleEditor extends StatelessWidget {
                           // } else {
                           //   return renderWidget(null);
                           // }
-                          return renderWidget();
+                          return renderWidget(context);
                         },
                       ),
                     )))));
@@ -76,6 +125,7 @@ class CalendarGrid extends StatelessWidget {
         BlocProvider.of<ScheduleEditorBloc>(context);
     RenderBox box = context.findRenderObject();
     final calendarHeight = 1440.0;
+    // TODO: Add more segments to the stack
     return GestureDetector(
         onTapUp: (TapUpDetails details) {
           RenderBox b = context.findRenderObject();

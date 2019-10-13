@@ -21,7 +21,7 @@ class TemporarySegmentWidget extends StatelessWidget {
     final bloc = BlocProvider.of<ScheduleEditorBloc>(context);
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
         builder: (BuildContext context, ScheduleEditorState state) {
-      if (state is TemporarySegmentExists) {
+      if (state is TemporarySegmentCreated) {
         final segment = state.segment;
         final topMargin =
             (hourSpacing * segment.startTime.hour + segment.startTime.minute)
@@ -36,8 +36,8 @@ class TemporarySegmentWidget extends StatelessWidget {
                   height: segment.getDurationMinutes().toDouble(),
                   margin: EdgeInsets.only(right: marginRight, top: topMargin),
                   decoration: BoxDecoration(
-                      color: Colors.blue[900],
-                      border: Border.all(width: 3, color: Colors.yellow[100]),
+                      color: Colors.blue[900].withOpacity(0.5),
+                      border: Border.all(width: 3, color: Colors.white),
                       borderRadius: BorderRadius.only(
                           topLeft: corner,
                           topRight: corner,
@@ -87,7 +87,7 @@ class TemporarySegmentWidget extends StatelessWidget {
         height: 35,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.yellow[100],
+          color: Colors.white,
         ),
       ),
       Container(
@@ -95,7 +95,7 @@ class TemporarySegmentWidget extends StatelessWidget {
         height: 25,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.blue[400],
+          color: Colors.blue,
         ),
       )
     ]);

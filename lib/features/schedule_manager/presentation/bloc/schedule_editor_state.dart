@@ -11,9 +11,9 @@ class InitialScheduleEditorState extends ScheduleEditorState {
   List<Object> get props => [];
 }
 
-class TemporarySegmentExists extends ScheduleEditorState {
+class TemporarySegmentCreated extends ScheduleEditorState {
   final SleepSegment segment;
 
-  TemporarySegmentExists({@required this.segment})
+  TemporarySegmentCreated({@required this.segment})
       : super([segment.startTime, segment.endTime]);
 }

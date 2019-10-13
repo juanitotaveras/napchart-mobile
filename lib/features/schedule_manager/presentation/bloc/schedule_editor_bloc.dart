@@ -21,17 +21,17 @@ class ScheduleEditorBloc
           event.touchCoord, event.hourPixels, 30);
       DateTime endTime = t.add(Duration(minutes: 60));
       SleepSegment segment = SleepSegment(startTime: t, endTime: endTime);
-      yield TemporarySegmentExists(segment: segment);
+      yield TemporarySegmentCreated(segment: segment);
     } else if (event is TemporarySleepSegmentDragged) {
       final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
           event.details, event.calendarGrid, event.hourSpacing, 15);
-      var currentSegment = (currentState as TemporarySegmentExists).segment;
+      var currentSegment = (currentState as TemporarySegmentCreated).segment;
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg = SleepSegment(
             startTime: t,
             endTime:
                 t.add(Duration(minutes: currentSegment.getDurationMinutes())));
-        yield TemporarySegmentExists(segment: newSeg);
+        yield TemporarySegmentCreated(segment: newSeg);
       }
     } else if (event is TemporarySleepSegmentStartTimeDragged) {
       final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
@@ -41,7 +41,7 @@ class ScheduleEditorBloc
         print('start time: ${t} end time: ${currentSegment.endTime}');
         final newSeg =
             SleepSegment(startTime: t, endTime: currentSegment.endTime);
-        yield TemporarySegmentExists(segment: newSeg);
+        yield TemporarySegmentCreated(segment: newSeg);
       }
     } else if (event is TemporarySleepSegmentEndTimeDragged) {
       print('le end time dragged: ${event.details}');
@@ -51,8 +51,11 @@ class ScheduleEditorBloc
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg =
             SleepSegment(startTime: currentSegment.startTime, endTime: t);
-        yield TemporarySegmentExists(segment: newSeg);
+        yield TemporarySegmentCreated(segment: newSeg);
       }
+    } else if (event is SelectedSegmentCancelled) {
+      print('SELECTED SEGMENT CANCELLED BABIES');
+      yield InitialScheduleEditorState();
     }
   }
 }

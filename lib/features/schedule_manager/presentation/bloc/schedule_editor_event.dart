@@ -15,6 +15,16 @@ class TemporarySleepSegmentCreated extends ScheduleEditorEvent {
       : super([touchCoord, hourPixels]);
 }
 
+class SelectedSegmentChanged extends ScheduleEditorEvent {
+  final Offset touchCoord;
+  final double hourPixels;
+
+  SelectedSegmentChanged(this.touchCoord, this.hourPixels)
+      : super([touchCoord, hourPixels]);
+}
+
+class SelectedSegmentCancelled extends ScheduleEditorEvent {}
+
 class TemporarySleepSegmentDragged extends ScheduleEditorEvent {
   final DragUpdateDetails details;
   final RenderBox calendarGrid;
