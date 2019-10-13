@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
+import 'package:intl/intl.dart';
 
 class EditSegmentBottomSheetWidget extends StatelessWidget {
   @override
@@ -14,8 +16,10 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
     const corner = Radius.circular(cornerRadius);
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
         builder: (BuildContext context, ScheduleEditorState state) {
-      if (state is TemporarySegmentCreated) {
+      if (state is TemporarySegmentCreated || state is SelectedSegmentChanged) {
         print('XYZ');
+        final SleepSegment segment = (state as dynamic).segment;
+        final DateFormat formatter = DateFormat('Hm');
         return Container(
             height: 130,
             // color: Colors.blue,
@@ -39,7 +43,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                         }),
                     Expanded(
                         flex: 1,
-                        child: Text('Title',
+                        child: Text('',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 16.0, fontFamily: 'Roboto'))),
@@ -56,7 +60,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                         Text('Start time',
                             style: TextStyle(
                                 fontSize: 14.0, fontFamily: 'Roboto')),
-                        Text('64:00am'),
+                        Text('${formatter.format(segment.startTime)}'),
                       ],
                     ),
                     Expanded(child: Container()),
@@ -64,7 +68,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text('End time', style: TextStyle(fontSize: 14.0)),
-                        Text('12:00pm')
+                        Text('${formatter.format(segment.endTime)}')
                       ],
                     ),
                     Expanded(child: Container()),
@@ -73,7 +77,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                       children: <Widget>[
                         Text('Duration'),
                         Text(
-                          'x hours',
+                          '${segment.getDurationMinutes()}',
                           // textAlign: TextAlign.left,
                         )
                       ],
@@ -95,6 +99,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                     FlatButton(
                       onPressed: () {
                         print('saved pressed');
+                        bloc.dispatch(SelectedSegmentSaved());
                       },
                       child: Text('SAVE',
                           style: TextStyle(fontSize: 20, color: Colors.red)),

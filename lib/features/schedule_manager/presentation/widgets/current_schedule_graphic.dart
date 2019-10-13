@@ -55,8 +55,8 @@ class CurrentScheduleGraphic extends StatelessWidget {
             Container(
               width: double.infinity,
               height: double.infinity,
-              decoration: new BoxDecoration(
-                  border: new Border.all(color: Colors.blueAccent)),
+              // decoration: new BoxDecoration(
+              //     border: new Border.all(color: Colors.blueAccent)),
               child: CustomPaint(
                 painter: InnerCirclePainter(context),
               ),

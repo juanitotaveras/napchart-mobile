@@ -4,12 +4,10 @@ import 'package:meta/meta.dart';
 class SleepSegment extends Equatable {
   final DateTime startTime;
   final DateTime endTime;
-  // TODO: Assert that startTime < endTime
-  //      : super([startTime, endTime]);
-  SleepSegment({@required this.startTime, @required this.endTime}) {
-    // super([this.startTime, this.endTime]);
-    assert(this.endTime.isAfter(this.startTime));
-  }
+
+  SleepSegment({@required this.startTime, @required this.endTime})
+      : assert(endTime.isAfter(startTime)),
+        super([startTime, endTime]);
 
   int getStartMinutesFromMidnight() {
     return startTime.hour * 60 + startTime.minute;

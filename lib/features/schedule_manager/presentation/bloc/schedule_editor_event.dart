@@ -15,14 +15,6 @@ class TemporarySleepSegmentCreated extends ScheduleEditorEvent {
       : super([touchCoord, hourPixels]);
 }
 
-class SelectedSegmentChanged extends ScheduleEditorEvent {
-  final Offset touchCoord;
-  final double hourPixels;
-
-  SelectedSegmentChanged(this.touchCoord, this.hourPixels)
-      : super([touchCoord, hourPixels]);
-}
-
 class SelectedSegmentCancelled extends ScheduleEditorEvent {}
 
 class TemporarySleepSegmentDragged extends ScheduleEditorEvent {
@@ -51,3 +43,5 @@ class TemporarySleepSegmentEndTimeDragged extends ScheduleEditorEvent {
       this.details, this.calendarGrid, this.hourSpacing)
       : super([details]);
 }
+
+class SelectedSegmentSaved extends ScheduleEditorEvent {}

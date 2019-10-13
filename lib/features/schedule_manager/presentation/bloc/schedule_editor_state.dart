@@ -14,6 +14,15 @@ class InitialScheduleEditorState extends ScheduleEditorState {
 class TemporarySegmentCreated extends ScheduleEditorState {
   final SleepSegment segment;
 
-  TemporarySegmentCreated({@required this.segment})
-      : super([segment.startTime, segment.endTime]);
+  TemporarySegmentCreated({@required this.segment}) : super([segment]);
+}
+
+class SelectedSegmentChanged extends ScheduleEditorState {
+  final SleepSegment segment;
+  SelectedSegmentChanged({@required this.segment}) : super([segment]);
+}
+
+class SegmentsLoaded extends ScheduleEditorState {
+  final List<SleepSegment> segments;
+  SegmentsLoaded({@required this.segments}) : super([segments]);
 }

@@ -25,13 +25,13 @@ class ScheduleEditorBloc
     } else if (event is TemporarySleepSegmentDragged) {
       final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
           event.details, event.calendarGrid, event.hourSpacing, 15);
-      var currentSegment = (currentState as TemporarySegmentCreated).segment;
+      SleepSegment currentSegment = (currentState as dynamic).segment;
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg = SleepSegment(
             startTime: t,
             endTime:
                 t.add(Duration(minutes: currentSegment.getDurationMinutes())));
-        yield TemporarySegmentCreated(segment: newSeg);
+        yield SelectedSegmentChanged(segment: newSeg);
       }
     } else if (event is TemporarySleepSegmentStartTimeDragged) {
       final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
@@ -41,7 +41,7 @@ class ScheduleEditorBloc
         print('start time: ${t} end time: ${currentSegment.endTime}');
         final newSeg =
             SleepSegment(startTime: t, endTime: currentSegment.endTime);
-        yield TemporarySegmentCreated(segment: newSeg);
+        yield SelectedSegmentChanged(segment: newSeg);
       }
     } else if (event is TemporarySleepSegmentEndTimeDragged) {
       print('le end time dragged: ${event.details}');
@@ -51,11 +51,15 @@ class ScheduleEditorBloc
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg =
             SleepSegment(startTime: currentSegment.startTime, endTime: t);
-        yield TemporarySegmentCreated(segment: newSeg);
+        yield SelectedSegmentChanged(segment: newSeg);
       }
     } else if (event is SelectedSegmentCancelled) {
       print('SELECTED SEGMENT CANCELLED BABIES');
       yield InitialScheduleEditorState();
+    } else if (event is SelectedSegmentSaved) {
+      print('omg we save up');
+      final SleepSegment savedSegment = (currentState as dynamic).segment;
+      yield SegmentsLoaded(segments: [savedSegment]);
     }
   }
 }
