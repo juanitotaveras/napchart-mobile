@@ -17,7 +17,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
       if (state is TemporarySegmentCreated) {
         print('XYZ');
         return Container(
-            height: 140,
+            height: 130,
             // color: Colors.blue,
             decoration: BoxDecoration(
                 color: Colors.blueGrey,
@@ -39,28 +39,29 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                         }),
                     Expanded(
                         flex: 1,
-                        child: Text('Title: (le title)',
+                        child: Text('Title',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16.0))),
+                            style: TextStyle(
+                                fontSize: 16.0, fontFamily: 'Roboto'))),
                     Container(alignment: Alignment.centerRight, width: 30.0)
                   ],
                 ),
 
                 Row(
                   children: <Widget>[
-                    SizedBox(
-                      width: 10,
-                    ),
+                    Expanded(child: Container()),
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('Start time', style: TextStyle(fontSize: 14.0)),
+                        Text('Start time',
+                            style: TextStyle(
+                                fontSize: 14.0, fontFamily: 'Roboto')),
                         Text('64:00am'),
                       ],
                     ),
-                    SizedBox(
-                      width: 30,
-                    ),
+                    Expanded(child: Container()),
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text('End time', style: TextStyle(fontSize: 14.0)),
                         Text('12:00pm')
@@ -68,35 +69,37 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                     ),
                     Expanded(child: Container()),
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('duration'),
+                        Text('Duration'),
                         Text(
                           'x hours',
-                          textAlign: TextAlign.left,
+                          // textAlign: TextAlign.left,
                         )
                       ],
                     ),
-                    SizedBox(width: 10),
+                    Expanded(child: Container())
                   ],
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 0),
                 Row(
                   children: <Widget>[
-                    SizedBox(width: 10),
-                    RaisedButton(
-                      onPressed: () {
-                        print('delete pressed');
-                      },
-                      child: Text('Delete', style: TextStyle(fontSize: 20)),
-                    ),
-                    Expanded(child: Container()),
+                    // SizedBox(width: 10),
+                    // RaisedButton(
+                    //   onPressed: () {
+                    //     print('delete pressed');
+                    //   },
+                    //   child: Text('Delete', style: TextStyle(fontSize: 20)),
+                    // ),
+                    Expanded(flex: 100, child: Container()),
                     FlatButton(
                       onPressed: () {
                         print('saved pressed');
                       },
-                      child: Text('Save', style: TextStyle(fontSize: 20)),
+                      child: Text('SAVE',
+                          style: TextStyle(fontSize: 20, color: Colors.red)),
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 5),
                   ],
                 )
               ],
