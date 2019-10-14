@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
@@ -15,10 +16,16 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
     const cornerRadius = 5.0;
     const corner = Radius.circular(cornerRadius);
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
-        builder: (BuildContext context, ScheduleEditorState state) {
-      if (state is TemporarySegmentCreated || state is SelectedSegmentChanged) {
-        print('XYZ');
-        final SleepSegment segment = (state as dynamic).selectedSegment;
+        condition: (prevState, curState) {
+      final pState = Utils.tryCast<SegmentsLoaded>(prevState);
+      final cState = Utils.tryCast<SegmentsLoaded>(curState);
+      if (pState == null || cState == null) return true;
+
+      return pState.selectedSegment != cState.selectedSegment;
+    }, builder: (BuildContext context, ScheduleEditorState currentState) {
+      final state = Utils.tryCast<SegmentsLoaded>(currentState);
+      if (state != null && state.selectedSegment != null) {
+        final SleepSegment segment = state.selectedSegment;
         final DateFormat formatter = DateFormat('Hm');
         return Container(
             height: 130,
@@ -29,7 +36,6 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                     BorderRadius.only(topLeft: corner, topRight: corner)),
             child: Column(
               children: <Widget>[
-                // ListTile(title: Text('SOME STUFF'))
                 Row(
                   children: <Widget>[
                     IconButton(
@@ -50,7 +56,6 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                     Container(alignment: Alignment.centerRight, width: 30.0)
                   ],
                 ),
-
                 Row(
                   children: <Widget>[
                     Expanded(child: Container()),

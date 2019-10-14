@@ -18,4 +18,8 @@ class Utils {
     return Offset(centerPoint.dx + (cos(angle + startRadians) * radius),
         centerPoint.dy - (sin(angle + startRadians) * radius));
   }
+
+  static T tryCast<T>(x) {
+    return x is T ? x : null;
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
@@ -83,21 +84,21 @@ class ScheduleEditor extends StatelessWidget {
                         BlocListener<ScheduleEditorBloc, ScheduleEditorState>(
                       listener:
                           (BuildContext context, ScheduleEditorState state) {
-                        if (state is TemporarySegmentCreated) {
-                          // do nothing
-                          print('hi state');
-                          // showModalBottomSheet(
-                          //     context: context,
-                          //     builder: (context) {
-                          //       return Container(
-                          //           height: 100,
-                          //           child: Column(
-                          //             children: <Widget>[
-                          //               ListTile(title: Text('SOME STUFF'))
-                          //             ],
-                          //           ));
-                          //     });
-                        }
+                        // if (state is TemporarySegmentCreated) {
+                        //   // do nothing
+                        //   print('hi state');
+                        //   // showModalBottomSheet(
+                        //   //     context: context,
+                        //   //     builder: (context) {
+                        //   //       return Container(
+                        //   //           height: 100,
+                        //   //           child: Column(
+                        //   //             children: <Widget>[
+                        //   //               ListTile(title: Text('SOME STUFF'))
+                        //   //             ],
+                        //   //           ));
+                        //   //     });
+                        // }
                       },
                       child:
                           BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
@@ -129,15 +130,10 @@ class CalendarGrid extends StatelessWidget {
     print('look at le bloc: ${bloc}');
     // TODO: Add more segments to the stack
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
-      builder: (BuildContext context, ScheduleEditorState state) {
-        List<SleepSegment> loadedSegments = null;
-        if (state is TemporarySegmentCreated) {
-          loadedSegments = state.loadedSegments;
-        } else if (state is SelectedSegmentChanged) {
-          loadedSegments = state.loadedSegments;
-        } else if (state is SegmentsLoaded) {
-          loadedSegments = state.loadedSegments;
-        }
+      builder: (BuildContext context, ScheduleEditorState currentState) {
+        final state = Utils.tryCast<SegmentsLoaded>(currentState);
+        List<SleepSegment> loadedSegments =
+            (state == null) ? null : state.loadedSegments;
 
         List<Widget> loadedSegmentWidgets = [];
         if (loadedSegments != null) {

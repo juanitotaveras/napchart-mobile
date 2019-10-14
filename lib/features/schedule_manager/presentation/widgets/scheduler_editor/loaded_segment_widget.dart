@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
@@ -20,10 +21,9 @@ class LoadedSegmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<ScheduleEditorBloc>(context);
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
-        builder: (BuildContext context, ScheduleEditorState state) {
-      if (state is TemporarySegmentCreated ||
-          state is SelectedSegmentChanged ||
-          state is SegmentsLoaded) {
+        builder: (BuildContext context, ScheduleEditorState currentState) {
+      final state = Utils.tryCast<SegmentsLoaded>(currentState);
+      if (state != null) {
         final topMargin =
             (hourSpacing * segment.startTime.hour + segment.startTime.minute)
                 .toDouble();

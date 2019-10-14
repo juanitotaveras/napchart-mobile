@@ -28,6 +28,8 @@ class SelectedSegmentChanged extends ScheduleEditorState {
 }
 
 class SegmentsLoaded extends ScheduleEditorState {
+  final SleepSegment selectedSegment;
   final List<SleepSegment> loadedSegments;
-  SegmentsLoaded({@required this.loadedSegments}) : super([loadedSegments]);
+  SegmentsLoaded({@required this.loadedSegments, this.selectedSegment})
+      : super([loadedSegments, selectedSegment]);
 }
