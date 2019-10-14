@@ -10,7 +10,6 @@ import 'package:intl/intl.dart';
 class EditSegmentBottomSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     final bloc = BlocProvider.of<ScheduleEditorBloc>(context);
 
     const cornerRadius = 5.0;

@@ -21,7 +21,13 @@ class TemporarySegmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<ScheduleEditorBloc>(context);
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
-        builder: (BuildContext context, ScheduleEditorState currentState) {
+        condition: (pState, cState) {
+      final prevState = Utils.tryCast<SegmentsLoaded>(pState);
+      final curState = Utils.tryCast<SegmentsLoaded>(cState);
+      if (prevState == null || curState == null) return true;
+
+      return prevState.selectedSegment != curState.selectedSegment;
+    }, builder: (BuildContext context, ScheduleEditorState currentState) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null && state.selectedSegment != null) {
         final SleepSegment segment = state.selectedSegment;

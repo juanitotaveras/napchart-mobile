@@ -32,6 +32,7 @@ class ScheduleEditorBloc
       }
       return;
     }
+
     if (event is TemporarySleepSegmentDragged) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null) {
@@ -50,6 +51,7 @@ class ScheduleEditorBloc
       }
       return;
     }
+
     if (event is TemporarySleepSegmentStartTimeDragged) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null) {
@@ -65,6 +67,7 @@ class ScheduleEditorBloc
       }
       return;
     }
+
     if (event is TemporarySleepSegmentEndTimeDragged) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null) {
@@ -80,14 +83,15 @@ class ScheduleEditorBloc
       }
       return;
     }
+
     if (event is SelectedSegmentCancelled) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null) {
-        yield SegmentsLoaded(
-            selectedSegment: null, loadedSegments: state.loadedSegments);
+        yield SegmentsLoaded(loadedSegments: state.loadedSegments);
       }
       return;
     }
+
     if (event is SelectedSegmentSaved) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null) {
