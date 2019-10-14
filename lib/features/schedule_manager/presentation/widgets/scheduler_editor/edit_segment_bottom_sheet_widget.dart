@@ -18,7 +18,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
         builder: (BuildContext context, ScheduleEditorState state) {
       if (state is TemporarySegmentCreated || state is SelectedSegmentChanged) {
         print('XYZ');
-        final SleepSegment segment = (state as dynamic).segment;
+        final SleepSegment segment = (state as dynamic).selectedSegment;
         final DateFormat formatter = DateFormat('Hm');
         return Container(
             height: 130,
@@ -98,7 +98,6 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                     Expanded(flex: 100, child: Container()),
                     FlatButton(
                       onPressed: () {
-                        print('saved pressed');
                         bloc.dispatch(SelectedSegmentSaved());
                       },
                       child: Text('SAVE',

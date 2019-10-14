@@ -6,6 +6,7 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_e
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/calendar_grid_painter.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/edit_segment_bottom_sheet_widget.dart';
+import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/loaded_segment_widget.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
 
 class ScheduleEditor extends StatelessWidget {
@@ -125,31 +126,60 @@ class CalendarGrid extends StatelessWidget {
         BlocProvider.of<ScheduleEditorBloc>(context);
     RenderBox box = context.findRenderObject();
     final calendarHeight = 1440.0;
+    print('look at le bloc: ${bloc}');
     // TODO: Add more segments to the stack
-    return GestureDetector(
-        onTapUp: (TapUpDetails details) {
-          RenderBox b = context.findRenderObject();
+    return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
+      builder: (BuildContext context, ScheduleEditorState state) {
+        List<SleepSegment> loadedSegments = null;
+        if (state is TemporarySegmentCreated) {
+          loadedSegments = state.loadedSegments;
+        } else if (state is SelectedSegmentChanged) {
+          loadedSegments = state.loadedSegments;
+        } else if (state is SegmentsLoaded) {
+          loadedSegments = state.loadedSegments;
+        }
 
-          var relativeTapPos = b.globalToLocal(details.globalPosition);
-          if (relativeTapPos.dx >= this.leftLineOffset.dx) {
-            bloc.dispatch(
-                TemporarySleepSegmentCreated(relativeTapPos, hourSpacing));
-          }
-        },
-        child: Stack(children: <Widget>[
-          Container(
-              height: calendarHeight,
-              width: double.infinity,
-              child: CustomPaint(
-                painter: CalendarGridPainter(hourSpacing: this.hourSpacing),
-              )),
-          // ...segWidgets,
-          Container(
-              height: calendarHeight,
-              width: double.infinity,
-              margin: EdgeInsets.only(left: 41.0),
-              child: TemporarySegmentWidget(
-                  marginRight: 10.0, hourSpacing: 60, calendarGrid: box))
-        ]));
+        List<Widget> loadedSegmentWidgets = [];
+        if (loadedSegments != null) {
+          loadedSegmentWidgets = loadedSegments.map((seg) {
+            return Container(
+                height: calendarHeight,
+                width: double.infinity,
+                margin: EdgeInsets.only(left: 41.0),
+                child: LoadedSegmentWidget(
+                    marginRight: 10.0,
+                    hourSpacing: 60,
+                    calendarGrid: box,
+                    segment: seg));
+          }).toList();
+        }
+        print('loaded: $loadedSegments');
+        return GestureDetector(
+            onTapUp: (TapUpDetails details) {
+              RenderBox b = context.findRenderObject();
+
+              var relativeTapPos = b.globalToLocal(details.globalPosition);
+              if (relativeTapPos.dx >= this.leftLineOffset.dx) {
+                bloc.dispatch(
+                    TemporarySleepSegmentCreated(relativeTapPos, hourSpacing));
+              }
+            },
+            child: Stack(children: <Widget>[
+              Container(
+                  height: calendarHeight,
+                  width: double.infinity,
+                  child: CustomPaint(
+                    painter: CalendarGridPainter(hourSpacing: this.hourSpacing),
+                  )),
+              ...loadedSegmentWidgets,
+              Container(
+                  height: calendarHeight,
+                  width: double.infinity,
+                  margin: EdgeInsets.only(left: 41.0),
+                  child: TemporarySegmentWidget(
+                      marginRight: 10.0, hourSpacing: 60, calendarGrid: box))
+            ]));
+      },
+    );
   }
 }

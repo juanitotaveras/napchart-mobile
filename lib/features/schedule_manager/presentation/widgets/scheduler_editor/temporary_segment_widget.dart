@@ -22,7 +22,7 @@ class TemporarySegmentWidget extends StatelessWidget {
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
         builder: (BuildContext context, ScheduleEditorState state) {
       if (state is TemporarySegmentCreated || state is SelectedSegmentChanged) {
-        final SleepSegment segment = (state as dynamic).segment;
+        final SleepSegment segment = (state as dynamic).selectedSegment;
         final topMargin =
             (hourSpacing * segment.startTime.hour + segment.startTime.minute)
                 .toDouble();

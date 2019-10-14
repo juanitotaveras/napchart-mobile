@@ -12,17 +12,22 @@ class InitialScheduleEditorState extends ScheduleEditorState {
 }
 
 class TemporarySegmentCreated extends ScheduleEditorState {
-  final SleepSegment segment;
-
-  TemporarySegmentCreated({@required this.segment}) : super([segment]);
+  final SleepSegment selectedSegment;
+  final List<SleepSegment> loadedSegments;
+  TemporarySegmentCreated(
+      {@required this.selectedSegment, @required this.loadedSegments})
+      : super([selectedSegment]);
 }
 
 class SelectedSegmentChanged extends ScheduleEditorState {
-  final SleepSegment segment;
-  SelectedSegmentChanged({@required this.segment}) : super([segment]);
+  final SleepSegment selectedSegment;
+  final List<SleepSegment> loadedSegments;
+  SelectedSegmentChanged(
+      {@required this.selectedSegment, @required this.loadedSegments})
+      : super([selectedSegment]);
 }
 
 class SegmentsLoaded extends ScheduleEditorState {
-  final List<SleepSegment> segments;
-  SegmentsLoaded({@required this.segments}) : super([segments]);
+  final List<SleepSegment> loadedSegments;
+  SegmentsLoaded({@required this.loadedSegments}) : super([loadedSegments]);
 }
