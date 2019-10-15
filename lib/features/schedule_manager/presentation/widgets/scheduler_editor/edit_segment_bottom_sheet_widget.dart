@@ -7,6 +7,41 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_e
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:intl/intl.dart';
 
+abstract class EditBottomSheetView {
+  String getStartTime();
+  String getEndTime();
+}
+
+class ViewModel {
+  String startTime;
+  String endTime;
+}
+
+class EditSegmentBottomSheetPresenter extends EditBottomSheetView {
+  // wait... view model should not know about presenter.
+  // who instantiates presenter??????
+
+  // Actually, this is not correct
+
+  final SegmentsLoaded state;
+  final ViewModel vm = ViewModel();
+  EditSegmentBottomSheetPresenter(this.state) {
+    vm.startTime = formatter.format(state.selectedSegment.startTime);
+    vm.endTime = formatter.format(state.selectedSegment.endTime);
+  }
+
+  final DateFormat formatter = DateFormat('Hm');
+  @override
+  String getStartTime() {
+    return vm.startTime;
+  }
+
+  @override
+  String getEndTime() {
+    return vm.endTime;
+  }
+}
+
 class EditSegmentBottomSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -14,6 +49,35 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
 
     const cornerRadius = 5.0;
     const corner = Radius.circular(cornerRadius);
+
+    // TODO: Implement a 'should update' function
+    //     using prevState, curState
+
+    // Widget must have a "presenter" which formats time, selects language, etc
+    // OR we can do this in the Bloc, and the "state" will actually have the
+    // "state" of the UI
+    /*
+    Widget should be grabbing values from a ViewModel, which 
+    is populated by the Presenter.
+
+    ViewModel can be instantiated in the build() method.
+    Should ViewModel have a reference
+
+
+    ViewModel implements View 'interface', so we know what methods are available.
+
+
+
+    Summary:
+    ViewModel should be instantiated in the "build method". 
+    Widget does not know about Presenter.
+    But ViewModel must instantiate presenter
+    ViewModel should also implement a View abstract class,
+    So that widget knows what is available.
+
+    // ViewModel is going to need our current state,
+    so that the Presenter knows what to put inside
+    */
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
         condition: (prevState, curState) {
       final pState = Utils.tryCast<SegmentsLoaded>(prevState);
@@ -24,8 +88,9 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
     }, builder: (BuildContext context, ScheduleEditorState currentState) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null && state.selectedSegment != null) {
+        final presenter = EditSegmentBottomSheetPresenter(state);
         final SleepSegment segment = state.selectedSegment;
-        final DateFormat formatter = DateFormat('Hm');
+
         return Container(
             height: 130,
             // color: Colors.blue,
@@ -64,7 +129,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                         Text('Start time',
                             style: TextStyle(
                                 fontSize: 14.0, fontFamily: 'Roboto')),
-                        Text('${formatter.format(segment.startTime)}'),
+                        Text(presenter.getStartTime()),
                       ],
                     ),
                     Expanded(child: Container()),
@@ -72,7 +137,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text('End time', style: TextStyle(fontSize: 14.0)),
-                        Text('${formatter.format(segment.endTime)}')
+                        Text(presenter.getEndTime())
                       ],
                     ),
                     Expanded(child: Container()),
