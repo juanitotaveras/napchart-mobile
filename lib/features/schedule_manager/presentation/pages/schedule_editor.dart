@@ -11,20 +11,6 @@ import 'package:polysleep/features/schedule_manager/presentation/widgets/schedul
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
 
 class ScheduleEditor extends StatelessWidget {
-  renderWidget(BuildContext context) {
-    return Column(
-      // mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        renderHeader(),
-        Expanded(
-            child: ListView(children: <Widget>[
-          CalendarGrid(hourSpacing: 60.0, leftLineOffset: Offset(40.0, 0.0)),
-        ])),
-        EditSegmentBottomSheetWidget(),
-      ],
-    );
-  }
-
   Widget renderHeader() {
     return Container(
       height: 60,
@@ -62,6 +48,7 @@ class ScheduleEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('build called');
     return Scaffold(
         appBar: AppBar(
             // Here we take the value from the MyHomePage object that was created by
@@ -80,38 +67,18 @@ class ScheduleEditor extends StatelessWidget {
             child: Center(
                 child: Padding(
                     padding: const EdgeInsets.only(top: 0.0),
-                    child:
-                        BlocListener<ScheduleEditorBloc, ScheduleEditorState>(
-                      listener:
-                          (BuildContext context, ScheduleEditorState state) {
-                        // if (state is TemporarySegmentCreated) {
-                        //   // do nothing
-                        //   print('hi state');
-                        //   // showModalBottomSheet(
-                        //   //     context: context,
-                        //   //     builder: (context) {
-                        //   //       return Container(
-                        //   //           height: 100,
-                        //   //           child: Column(
-                        //   //             children: <Widget>[
-                        //   //               ListTile(title: Text('SOME STUFF'))
-                        //   //             ],
-                        //   //           ));
-                        //   //     });
-                        // }
-                      },
-                      child:
-                          BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
-                        builder:
-                            (BuildContext context, ScheduleEditorState state) {
-                          // if (state is TemporarySegmentExists) {
-                          //   return renderWidget(state.segment);
-                          // } else {
-                          //   return renderWidget(null);
-                          // }
-                          return renderWidget(context);
-                        },
-                      ),
+                    child: Column(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        renderHeader(),
+                        Expanded(
+                            child: ListView(children: <Widget>[
+                          CalendarGrid(
+                              hourSpacing: 60.0,
+                              leftLineOffset: Offset(40.0, 0.0)),
+                        ])),
+                        EditSegmentBottomSheetWidget(),
+                      ],
                     )))));
   }
 }
@@ -131,25 +98,31 @@ class CalendarGrid extends StatelessWidget {
     // TODO: Add more segments to the stack
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
       builder: (BuildContext context, ScheduleEditorState currentState) {
+        print('inside inner bloc builder');
         final state = Utils.tryCast<SegmentsLoaded>(currentState);
         List<SleepSegment> loadedSegments =
             (state == null) ? null : state.loadedSegments;
 
         List<Widget> loadedSegmentWidgets = [];
         if (loadedSegments != null) {
-          loadedSegmentWidgets = loadedSegments.map((seg) {
-            return Container(
-                height: calendarHeight,
-                width: double.infinity,
-                margin: EdgeInsets.only(left: 41.0),
-                child: LoadedSegmentWidget(
-                    marginRight: 10.0,
-                    hourSpacing: 60,
-                    calendarGrid: box,
-                    segment: seg));
-          }).toList();
+          loadedSegmentWidgets = loadedSegments
+              .asMap()
+              .map((index, seg) {
+                return MapEntry(
+                    index,
+                    Container(
+                        height: calendarHeight,
+                        width: double.infinity,
+                        margin: EdgeInsets.only(left: 41.0),
+                        child: LoadedSegmentWidget(
+                            marginRight: 10.0,
+                            hourSpacing: 60,
+                            segment: seg,
+                            index: index)));
+              })
+              .values
+              .toList();
         }
-        print('loaded: $loadedSegments');
         return GestureDetector(
             onTapUp: (TapUpDetails details) {
               RenderBox b = context.findRenderObject();
@@ -173,7 +146,7 @@ class CalendarGrid extends StatelessWidget {
                   width: double.infinity,
                   margin: EdgeInsets.only(left: 41.0),
                   child: TemporarySegmentWidget(
-                      marginRight: 10.0, hourSpacing: 60, calendarGrid: box))
+                      marginRight: 10.0, hourSpacing: 60))
             ]));
       },
     );

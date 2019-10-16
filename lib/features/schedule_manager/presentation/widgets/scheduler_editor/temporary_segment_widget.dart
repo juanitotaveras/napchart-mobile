@@ -5,6 +5,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
+import 'package:polysleep/features/schedule_manager/presentation/pages/schedule_editor.dart';
 
 const cornerRadius = 10.0;
 const corner = Radius.circular(cornerRadius);
@@ -12,22 +13,21 @@ const corner = Radius.circular(cornerRadius);
 class TemporarySegmentWidget extends StatelessWidget {
   final double marginRight;
   final double hourSpacing;
-  final RenderBox calendarGrid;
 
-  TemporarySegmentWidget(
-      {this.marginRight, this.hourSpacing, this.calendarGrid});
+  TemporarySegmentWidget({this.marginRight, this.hourSpacing});
 
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<ScheduleEditorBloc>(context);
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
-        condition: (pState, cState) {
+        /*condition: (pState, cState) {
       final prevState = Utils.tryCast<SegmentsLoaded>(pState);
       final curState = Utils.tryCast<SegmentsLoaded>(cState);
       if (prevState == null || curState == null) return true;
 
       return prevState.selectedSegment != curState.selectedSegment;
-    }, builder: (BuildContext context, ScheduleEditorState currentState) {
+    }, */
+        builder: (BuildContext context, ScheduleEditorState currentState) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null && state.selectedSegment != null) {
         final SleepSegment segment = state.selectedSegment;
@@ -37,8 +37,10 @@ class TemporarySegmentWidget extends StatelessWidget {
         return Stack(children: [
           GestureDetector(
               onVerticalDragUpdate: (DragUpdateDetails details) {
+                RenderBox box = context.findRenderObject();
+                var relativeTapPos = box.globalToLocal(details.globalPosition);
                 bloc.dispatch(TemporarySleepSegmentDragged(
-                    details, calendarGrid, hourSpacing));
+                    details, relativeTapPos, hourSpacing));
               },
               child: Container(
                   height: segment.getDurationMinutes().toDouble(),
@@ -67,9 +69,11 @@ class TemporarySegmentWidget extends StatelessWidget {
         right: marginRight + 15,
         child: GestureDetector(
             onVerticalDragUpdate: (DragUpdateDetails details) {
+              RenderBox box = context.findRenderObject();
+              var relativeTapPos = box.globalToLocal(details.globalPosition);
               BlocProvider.of<ScheduleEditorBloc>(context).dispatch(
                   TemporarySleepSegmentStartTimeDragged(
-                      details, calendarGrid, hourSpacing));
+                      details, relativeTapPos, hourSpacing));
             },
             child: renderDragCircleGraphic()));
   }
@@ -81,9 +85,11 @@ class TemporarySegmentWidget extends StatelessWidget {
         left: 15,
         child: GestureDetector(
             onVerticalDragUpdate: (DragUpdateDetails details) {
+              RenderBox box = context.findRenderObject();
+              var relativeTapPos = box.globalToLocal(details.globalPosition);
               BlocProvider.of<ScheduleEditorBloc>(context).dispatch(
                   TemporarySleepSegmentEndTimeDragged(
-                      details, calendarGrid, hourSpacing));
+                      details, relativeTapPos, hourSpacing));
             },
             child: renderDragCircleGraphic()));
   }

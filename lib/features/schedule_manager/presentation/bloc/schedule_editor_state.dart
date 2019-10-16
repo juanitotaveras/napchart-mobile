@@ -6,7 +6,7 @@ abstract class ScheduleEditorState extends Equatable {
   ScheduleEditorState([List props = const <dynamic>[]]) : super(props);
 }
 
-class InitialScheduleEditorState extends ScheduleEditorState {
+class Init extends ScheduleEditorState {
   @override
   List<Object> get props => [];
 }

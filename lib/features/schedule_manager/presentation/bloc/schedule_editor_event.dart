@@ -19,29 +19,33 @@ class SelectedSegmentCancelled extends ScheduleEditorEvent {}
 
 class TemporarySleepSegmentDragged extends ScheduleEditorEvent {
   final DragUpdateDetails details;
-  final RenderBox calendarGrid;
+  final Offset touchCoord;
   final double hourSpacing;
-  TemporarySleepSegmentDragged(
-      this.details, this.calendarGrid, this.hourSpacing)
+  TemporarySleepSegmentDragged(this.details, this.touchCoord, this.hourSpacing)
       : super([details]);
 }
 
 class TemporarySleepSegmentStartTimeDragged extends ScheduleEditorEvent {
   final DragUpdateDetails details;
-  final RenderBox calendarGrid;
+  final Offset touchCoord;
   final double hourSpacing;
   TemporarySleepSegmentStartTimeDragged(
-      this.details, this.calendarGrid, this.hourSpacing)
+      this.details, this.touchCoord, this.hourSpacing)
       : super([details]);
 }
 
 class TemporarySleepSegmentEndTimeDragged extends ScheduleEditorEvent {
   final DragUpdateDetails details;
-  final RenderBox calendarGrid;
+  final Offset touchCoord;
   final double hourSpacing;
   TemporarySleepSegmentEndTimeDragged(
-      this.details, this.calendarGrid, this.hourSpacing)
+      this.details, this.touchCoord, this.hourSpacing)
       : super([details]);
+}
+
+class LoadedSegmentTapped extends ScheduleEditorEvent {
+  final int idx;
+  LoadedSegmentTapped(this.idx) : super([idx]);
 }
 
 class SelectedSegmentSaved extends ScheduleEditorEvent {}

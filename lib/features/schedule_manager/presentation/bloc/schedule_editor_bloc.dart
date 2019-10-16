@@ -9,10 +9,18 @@ import './bloc.dart';
 
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
+  ScheduleEditorBloc() {
+    print('CREATE LE BLOC ');
+    // TODO: Make call to repository here
+  }
   @override
-  ScheduleEditorState get initialState => SegmentsLoaded(
-      selectedSegment: null,
-      loadedSegments: []); //InitialScheduleEditorState();
+  ScheduleEditorState get initialState {
+    // NOTE: This is called before the constructor...
+    // so do we make the call here?
+    // probably not.
+    print('dat init tho');
+    return Init();
+  }
 
   @override
   Stream<ScheduleEditorState> mapEventToState(
@@ -29,6 +37,10 @@ class ScheduleEditorBloc
         yield SegmentsLoaded(
             selectedSegment: selectedSegment,
             loadedSegments: state.loadedSegments);
+      } else {
+        // temporary
+        yield SegmentsLoaded(
+            loadedSegments: [], selectedSegment: selectedSegment);
       }
       return;
     }
@@ -36,8 +48,11 @@ class ScheduleEditorBloc
     if (event is TemporarySleepSegmentDragged) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null) {
-        final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
-            event.details, event.calendarGrid, event.hourSpacing, 15);
+        // print('state not null here');
+        // final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
+        //     event.details, event.calendarGrid, event.hourSpacing, 15);
+        final t = GridTapToTimeConverter.touchInputToTime(
+            event.touchCoord, event.hourSpacing, 15);
         SleepSegment currentSegment = state.selectedSegment;
         if (t.compareTo(currentSegment.startTime) != 0) {
           final selectedSegment = SleepSegment(
@@ -55,8 +70,8 @@ class ScheduleEditorBloc
     if (event is TemporarySleepSegmentStartTimeDragged) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null) {
-        final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
-            event.details, event.calendarGrid, event.hourSpacing, 5);
+        final t = GridTapToTimeConverter.touchInputToTime(
+            event.touchCoord, event.hourSpacing, 5);
         SleepSegment currentSegment = state.selectedSegment;
         if (t.compareTo(currentSegment.startTime) != 0) {
           final newSeg =
@@ -71,8 +86,8 @@ class ScheduleEditorBloc
     if (event is TemporarySleepSegmentEndTimeDragged) {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null) {
-        final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
-            event.details, event.calendarGrid, event.hourSpacing, 5);
+        final t = GridTapToTimeConverter.touchInputToTime(
+            event.touchCoord, event.hourSpacing, 5);
         SleepSegment currentSegment = state.selectedSegment;
         if (t.compareTo(currentSegment.startTime) != 0) {
           final newSeg =
@@ -115,7 +130,11 @@ class GridTapToTimeConverter {
 class SegmentDragToTimeChangeConverter {
   static DateTime dragInputToNewTime(DragUpdateDetails details,
       RenderBox calendarGrid, double hourSpacing, int granularity) {
+    assert(calendarGrid != null);
+    print('le drag ${calendarGrid}');
     var relativeTapPos = calendarGrid.globalToLocal(details.globalPosition);
+    print('le drag 2');
+
     return GridTapToTimeConverter.touchInputToTime(
         relativeTapPos, hourSpacing, granularity);
   }
