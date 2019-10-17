@@ -9,23 +9,22 @@ import './bloc.dart';
 
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
-  ScheduleEditorBloc() {
-    print('CREATE LE BLOC ');
-    // TODO: Make call to repository here
-  }
   @override
-  ScheduleEditorState get initialState {
-    // NOTE: This is called before the constructor...
-    // so do we make the call here?
-    // probably not.
-    print('dat init tho');
-    return Init();
-  }
+  ScheduleEditorState get initialState => Init();
 
   @override
   Stream<ScheduleEditorState> mapEventToState(
     ScheduleEditorEvent event,
   ) async* {
+    if (event is LoadSchedule) {
+      print('LOAD SCHEDULE EVENT RECEIVED');
+      /*
+      loadedSegments = await loadSegments();
+      yield SegmentsLoaded(loadedSegments: loadedSegments);
+      */
+      return;
+    }
+
     if (event is TemporarySleepSegmentCreated) {
       DateTime t = GridTapToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourPixels, 30);
@@ -131,10 +130,7 @@ class SegmentDragToTimeChangeConverter {
   static DateTime dragInputToNewTime(DragUpdateDetails details,
       RenderBox calendarGrid, double hourSpacing, int granularity) {
     assert(calendarGrid != null);
-    print('le drag ${calendarGrid}');
     var relativeTapPos = calendarGrid.globalToLocal(details.globalPosition);
-    print('le drag 2');
-
     return GridTapToTimeConverter.touchInputToTime(
         relativeTapPos, hourSpacing, granularity);
   }

@@ -19,8 +19,8 @@ class CalendarGridPainter extends CustomPainter {
     var offset = Offset(marginLeft, 0);
     TextPainter textPainter =
         TextPainter(textDirection: TextDirection.ltr, textAlign: TextAlign.end);
-    TextStyle textStyle = TextStyle(
-        color: Colors.white, fontFamily: 'Times New Roman', fontSize: 12.0);
+    TextStyle textStyle =
+        TextStyle(color: Colors.white, fontFamily: 'Roboto', fontSize: 12.0);
     for (int i = 0; i < 24; i++) {
       var right = Offset(size.width, offset.dy);
       canvas.drawLine(offset, right, paint);

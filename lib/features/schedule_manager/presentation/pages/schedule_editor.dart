@@ -5,12 +5,59 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
+import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/calendar_grid.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/calendar_grid_painter.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/edit_segment_bottom_sheet_widget.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/loaded_segment_widget.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
 
-class ScheduleEditor extends StatelessWidget {
+class ScheduleEditor extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _ScheduleEditorState();
+}
+
+class _ScheduleEditorState extends State<ScheduleEditor> {
+  ScheduleEditorBloc bloc = ScheduleEditorBloc();
+  bool initCalled = false;
+  @override
+  Widget build(BuildContext context) {
+    if (!initCalled) {
+      bloc.dispatch(LoadSchedule());
+      initCalled = true;
+    }
+    return Scaffold(
+        appBar: AppBar(
+            // Here we take the value from the MyHomePage object that was created by
+            // the App.build method, and use it to set our appbar title.
+            automaticallyImplyLeading: true,
+            //`true` if you want Flutter to automatically add Back Button when needed,
+            //or `false` if you want to force your own back button every where
+            title: Text('Edit schedule'),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context, false),
+            )),
+        //drawer: NavigationDrawer(),
+        body: BlocProvider(
+            builder: (context) => this.bloc,
+            child: Center(
+                child: Padding(
+                    padding: const EdgeInsets.only(top: 0.0),
+                    child: Column(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        renderHeader(),
+                        Expanded(
+                            child: ListView(children: <Widget>[
+                          CalendarGrid(
+                              hourSpacing: 60.0,
+                              leftLineOffset: Offset(40.0, 0.0)),
+                        ])),
+                        EditSegmentBottomSheetWidget(),
+                      ],
+                    )))));
+  }
+
   Widget renderHeader() {
     return Container(
       height: 60,
@@ -47,108 +94,8 @@ class ScheduleEditor extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    print('build called');
-    return Scaffold(
-        appBar: AppBar(
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
-            automaticallyImplyLeading: true,
-            //`true` if you want Flutter to automatically add Back Button when needed,
-            //or `false` if you want to force your own back button every where
-            title: Text('Edit schedule'),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context, false),
-            )),
-        //drawer: NavigationDrawer(),
-        body: BlocProvider(
-            builder: (context) => ScheduleEditorBloc(),
-            child: Center(
-                child: Padding(
-                    padding: const EdgeInsets.only(top: 0.0),
-                    child: Column(
-                      // mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        renderHeader(),
-                        Expanded(
-                            child: ListView(children: <Widget>[
-                          CalendarGrid(
-                              hourSpacing: 60.0,
-                              leftLineOffset: Offset(40.0, 0.0)),
-                        ])),
-                        EditSegmentBottomSheetWidget(),
-                      ],
-                    )))));
-  }
-}
-
-class CalendarGrid extends StatelessWidget {
-  final double hourSpacing;
-  final Offset leftLineOffset;
-  CalendarGrid({this.hourSpacing, this.leftLineOffset});
-
-  @override
-  Widget build(BuildContext context) {
-    final ScheduleEditorBloc bloc =
-        BlocProvider.of<ScheduleEditorBloc>(context);
-    RenderBox box = context.findRenderObject();
-    final calendarHeight = 1440.0;
-    print('look at le bloc: ${bloc}');
-    // TODO: Add more segments to the stack
-    return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
-      builder: (BuildContext context, ScheduleEditorState currentState) {
-        print('inside inner bloc builder');
-        final state = Utils.tryCast<SegmentsLoaded>(currentState);
-        List<SleepSegment> loadedSegments =
-            (state == null) ? null : state.loadedSegments;
-
-        List<Widget> loadedSegmentWidgets = [];
-        if (loadedSegments != null) {
-          loadedSegmentWidgets = loadedSegments
-              .asMap()
-              .map((index, seg) {
-                return MapEntry(
-                    index,
-                    Container(
-                        height: calendarHeight,
-                        width: double.infinity,
-                        margin: EdgeInsets.only(left: 41.0),
-                        child: LoadedSegmentWidget(
-                            marginRight: 10.0,
-                            hourSpacing: 60,
-                            segment: seg,
-                            index: index)));
-              })
-              .values
-              .toList();
-        }
-        return GestureDetector(
-            onTapUp: (TapUpDetails details) {
-              RenderBox b = context.findRenderObject();
-
-              var relativeTapPos = b.globalToLocal(details.globalPosition);
-              if (relativeTapPos.dx >= this.leftLineOffset.dx) {
-                bloc.dispatch(
-                    TemporarySleepSegmentCreated(relativeTapPos, hourSpacing));
-              }
-            },
-            child: Stack(children: <Widget>[
-              Container(
-                  height: calendarHeight,
-                  width: double.infinity,
-                  child: CustomPaint(
-                    painter: CalendarGridPainter(hourSpacing: this.hourSpacing),
-                  )),
-              ...loadedSegmentWidgets,
-              Container(
-                  height: calendarHeight,
-                  width: double.infinity,
-                  margin: EdgeInsets.only(left: 41.0),
-                  child: TemporarySegmentWidget(
-                      marginRight: 10.0, hourSpacing: 60))
-            ]));
-      },
-    );
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
   }
 }

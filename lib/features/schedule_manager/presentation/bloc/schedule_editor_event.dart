@@ -7,6 +7,8 @@ abstract class ScheduleEditorEvent extends Equatable {
   ScheduleEditorEvent([List props = const <dynamic>[]]) : super(props);
 }
 
+class LoadSchedule extends ScheduleEditorEvent {}
+
 class TemporarySleepSegmentCreated extends ScheduleEditorEvent {
   final Offset touchCoord;
   final double hourPixels;
