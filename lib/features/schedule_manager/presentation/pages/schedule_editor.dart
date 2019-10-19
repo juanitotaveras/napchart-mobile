@@ -10,6 +10,7 @@ import 'package:polysleep/features/schedule_manager/presentation/widgets/schedul
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/edit_segment_bottom_sheet_widget.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/loaded_segment_widget.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
+import '../../../../injection_container.dart';
 
 class ScheduleEditor extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class ScheduleEditor extends StatefulWidget {
 }
 
 class _ScheduleEditorState extends State<ScheduleEditor> {
-  ScheduleEditorBloc bloc = ScheduleEditorBloc();
+  ScheduleEditorBloc bloc = sl<ScheduleEditorBloc>();
   bool initCalled = false;
   @override
   Widget build(BuildContext context) {

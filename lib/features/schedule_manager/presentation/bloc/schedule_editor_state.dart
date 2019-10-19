@@ -11,6 +11,8 @@ class Init extends ScheduleEditorState {
   List<Object> get props => [];
 }
 
+class Loading extends ScheduleEditorState {}
+
 class TemporarySegmentCreated extends ScheduleEditorState {
   final SleepSegment selectedSegment;
   final List<SleepSegment> loadedSegments;

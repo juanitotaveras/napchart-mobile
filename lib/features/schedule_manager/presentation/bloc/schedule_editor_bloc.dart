@@ -3,20 +3,27 @@ import 'dart:ui';
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
+import 'package:polysleep/core/usecases/usecase.dart';
 import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/data/repositories/schedule_editor_repository_impl.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import './bloc.dart';
 
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
   final GetCurrentSchedule getCurrentSchedule;
+  final GetDefaultSchedule getDefaultSchedule;
 
-  ScheduleEditorBloc({@required GetCurrentSchedule getCurrentSchedule})
+  ScheduleEditorBloc(
+      {@required GetCurrentSchedule getCurrentSchedule,
+      @required GetDefaultSchedule getDefaultSchedule})
       : assert(getCurrentSchedule != null),
-        getCurrentSchedule = getCurrentSchedule;
+        assert(getDefaultSchedule != null),
+        getCurrentSchedule = getCurrentSchedule,
+        getDefaultSchedule = getDefaultSchedule;
 
   @override
   ScheduleEditorState get initialState => Init();
@@ -25,110 +32,116 @@ class ScheduleEditorBloc
   Stream<ScheduleEditorState> mapEventToState(
     ScheduleEditorEvent event,
   ) async* {
-    if (event is LoadSchedule) {
-      print('LOAD SCHEDULE EVENT RECEIVED');
-      /*
-      loadedSegments = await loadSegments();
-      yield SegmentsLoaded(loadedSegments: loadedSegments);
-      */
-      final resp = await getCurrentSchedule(Params(segmentList: []));
-      yield* resp.fold((failure) async* {
+    final eventHandlers = {
+      'LoadSchedule': handleLoadSchedule,
+      'TemporarySleepSegmentCreated': handleTemporarySleepSegmentCreated,
+      'TemporarySleepSegmentDragged': handleTemporarySleepSegmentDragged,
+      'TemporarySleepSegmentStartTimeDragged':
+          handleTemporarySleepSegmentStartTimeDragged,
+      'TemporarySleepSegmentEndTimeDragged':
+          handleTemporarySleepSegmentEndTimeDragged,
+      'SelectedSegmentCancelled': handleSelectedSegmentCancelled,
+      'SelectedSegmentSaved': handleSelectedSegmentSaved
+    };
+    if (eventHandlers.containsKey(event.toString())) {
+      final handler = eventHandlers[event.toString()];
+      yield* handler(event);
+    }
+  }
+
+  Stream<ScheduleEditorState> handleLoadSchedule(event) async* {
+    final resp = await getCurrentSchedule(NoParams());
+    yield* resp.fold((failure) async* {
+      final defResp = await getDefaultSchedule(NoParams());
+      yield* defResp.fold((failure) async* {
         yield SegmentsLoaded(loadedSegments: []);
       }, (schedule) async* {
         yield SegmentsLoaded(loadedSegments: schedule.segments);
       });
-      // yield SegmentsLoaded(loadedSegments: Right(loadedSegments));
-      return;
-    }
+    }, (schedule) async* {
+      yield SegmentsLoaded(loadedSegments: schedule.segments);
+    });
+  }
 
-    if (event is TemporarySleepSegmentCreated) {
-      DateTime t = GridTapToTimeConverter.touchInputToTime(
-          event.touchCoord, event.hourPixels, 30);
-      DateTime endTime = t.add(Duration(minutes: 60));
-      SleepSegment selectedSegment =
-          SleepSegment(startTime: t, endTime: endTime);
-      final state = Utils.tryCast<SegmentsLoaded>(currentState);
-      if (state != null) {
+  Stream<ScheduleEditorState> handleTemporarySleepSegmentCreated(event) async* {
+    DateTime t = GridTapToTimeConverter.touchInputToTime(
+        event.touchCoord, event.hourPixels, 30);
+    DateTime endTime = t.add(Duration(minutes: 60));
+    SleepSegment selectedSegment = SleepSegment(startTime: t, endTime: endTime);
+    final state = Utils.tryCast<SegmentsLoaded>(currentState);
+    if (state != null) {
+      yield SegmentsLoaded(
+          selectedSegment: selectedSegment,
+          loadedSegments: state.loadedSegments);
+    } else {
+      // temporary
+      yield SegmentsLoaded(
+          loadedSegments: [], selectedSegment: selectedSegment);
+    }
+  }
+
+  Stream<ScheduleEditorState> handleTemporarySleepSegmentDragged(event) async* {
+    final state = Utils.tryCast<SegmentsLoaded>(currentState);
+    if (state != null) {
+      final t = GridTapToTimeConverter.touchInputToTime(
+          event.touchCoord, event.hourSpacing, 15);
+      SleepSegment currentSegment = state.selectedSegment;
+      if (t.compareTo(currentSegment.startTime) != 0) {
+        final selectedSegment = SleepSegment(
+            startTime: t,
+            endTime:
+                t.add(Duration(minutes: currentSegment.getDurationMinutes())));
         yield SegmentsLoaded(
             selectedSegment: selectedSegment,
             loadedSegments: state.loadedSegments);
-      } else {
-        // temporary
+      }
+    }
+  }
+
+  Stream<ScheduleEditorState> handleTemporarySleepSegmentStartTimeDragged(
+      event) async* {
+    final state = Utils.tryCast<SegmentsLoaded>(currentState);
+    if (state != null) {
+      final t = GridTapToTimeConverter.touchInputToTime(
+          event.touchCoord, event.hourSpacing, 5);
+      SleepSegment currentSegment = state.selectedSegment;
+      if (t.compareTo(currentSegment.startTime) != 0) {
+        final newSeg =
+            SleepSegment(startTime: t, endTime: currentSegment.endTime);
         yield SegmentsLoaded(
-            loadedSegments: [], selectedSegment: selectedSegment);
+            selectedSegment: newSeg, loadedSegments: state.loadedSegments);
       }
-      return;
     }
+  }
 
-    if (event is TemporarySleepSegmentDragged) {
-      final state = Utils.tryCast<SegmentsLoaded>(currentState);
-      if (state != null) {
-        // print('state not null here');
-        // final t = SegmentDragToTimeChangeConverter.dragInputToNewTime(
-        //     event.details, event.calendarGrid, event.hourSpacing, 15);
-        final t = GridTapToTimeConverter.touchInputToTime(
-            event.touchCoord, event.hourSpacing, 15);
-        SleepSegment currentSegment = state.selectedSegment;
-        if (t.compareTo(currentSegment.startTime) != 0) {
-          final selectedSegment = SleepSegment(
-              startTime: t,
-              endTime: t
-                  .add(Duration(minutes: currentSegment.getDurationMinutes())));
-          yield SegmentsLoaded(
-              selectedSegment: selectedSegment,
-              loadedSegments: state.loadedSegments);
-        }
-      }
-      return;
-    }
-
-    if (event is TemporarySleepSegmentStartTimeDragged) {
-      final state = Utils.tryCast<SegmentsLoaded>(currentState);
-      if (state != null) {
-        final t = GridTapToTimeConverter.touchInputToTime(
-            event.touchCoord, event.hourSpacing, 5);
-        SleepSegment currentSegment = state.selectedSegment;
-        if (t.compareTo(currentSegment.startTime) != 0) {
-          final newSeg =
-              SleepSegment(startTime: t, endTime: currentSegment.endTime);
-          yield SegmentsLoaded(
-              selectedSegment: newSeg, loadedSegments: state.loadedSegments);
-        }
-      }
-      return;
-    }
-
-    if (event is TemporarySleepSegmentEndTimeDragged) {
-      final state = Utils.tryCast<SegmentsLoaded>(currentState);
-      if (state != null) {
-        final t = GridTapToTimeConverter.touchInputToTime(
-            event.touchCoord, event.hourSpacing, 5);
-        SleepSegment currentSegment = state.selectedSegment;
-        if (t.compareTo(currentSegment.startTime) != 0) {
-          final newSeg =
-              SleepSegment(startTime: currentSegment.startTime, endTime: t);
-          yield SegmentsLoaded(
-              selectedSegment: newSeg, loadedSegments: state.loadedSegments);
-        }
-      }
-      return;
-    }
-
-    if (event is SelectedSegmentCancelled) {
-      final state = Utils.tryCast<SegmentsLoaded>(currentState);
-      if (state != null) {
-        yield SegmentsLoaded(loadedSegments: state.loadedSegments);
-      }
-      return;
-    }
-
-    if (event is SelectedSegmentSaved) {
-      final state = Utils.tryCast<SegmentsLoaded>(currentState);
-      if (state != null) {
+  Stream<ScheduleEditorState> handleTemporarySleepSegmentEndTimeDragged(
+      event) async* {
+    final state = Utils.tryCast<SegmentsLoaded>(currentState);
+    if (state != null) {
+      final t = GridTapToTimeConverter.touchInputToTime(
+          event.touchCoord, event.hourSpacing, 5);
+      SleepSegment currentSegment = state.selectedSegment;
+      if (t.compareTo(currentSegment.startTime) != 0) {
+        final newSeg =
+            SleepSegment(startTime: currentSegment.startTime, endTime: t);
         yield SegmentsLoaded(
-            loadedSegments: [state.selectedSegment, ...state.loadedSegments]);
+            selectedSegment: newSeg, loadedSegments: state.loadedSegments);
       }
-      return;
+    }
+  }
+
+  Stream<ScheduleEditorState> handleSelectedSegmentCancelled(event) async* {
+    final state = Utils.tryCast<SegmentsLoaded>(currentState);
+    if (state != null) {
+      yield SegmentsLoaded(loadedSegments: state.loadedSegments);
+    }
+  }
+
+  Stream<ScheduleEditorState> handleSelectedSegmentSaved(event) async* {
+    final state = Utils.tryCast<SegmentsLoaded>(currentState);
+    if (state != null) {
+      yield SegmentsLoaded(
+          loadedSegments: [state.selectedSegment, ...state.loadedSegments]);
     }
   }
 }

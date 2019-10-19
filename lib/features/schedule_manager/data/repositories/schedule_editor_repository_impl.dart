@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:polysleep/core/error/exceptions.dart';
 import 'package:polysleep/core/error/failure.dart';
+import 'package:polysleep/features/schedule_manager/data/datasources/assets_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_schedule_model.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
@@ -11,7 +12,10 @@ import 'package:meta/meta.dart';
 
 class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
   final PreferencesDataSource preferencesDataSource;
-  ScheduleEditorRepositoryImpl({@required this.preferencesDataSource});
+  final AssetsDataSource assetsDataSource;
+
+  ScheduleEditorRepositoryImpl(
+      {@required this.preferencesDataSource, @required this.assetsDataSource});
   // temporary
   getSegments() async {
     final segments = [
@@ -38,4 +42,19 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
     // TODO: implement putTemporarySleepSegment
     return null;
   }
+
+  @override
+  Future<Either<Failure, SleepSchedule>> getDefaultSchedule() async {
+    try {
+      print('before le arg');
+      final defaultSchedule = await assetsDataSource.getDefaultSchedule();
+      print('ARG');
+      return Right(defaultSchedule);
+    } on AssetsException {
+      return Left(AssetsFailure());
+    }
+  }
+
+  // We will need to return a list of all our schedule at some point.
+  // How about a
 }

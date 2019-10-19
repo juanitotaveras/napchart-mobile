@@ -10,4 +10,6 @@ abstract class ScheduleEditorRepository {
 
   // If no current schedule found, return the monophasic schedule as default.
   Future<Either<Failure, SleepSchedule>> getCurrentSchedule();
+
+  Future<Either<Failure, SleepSchedule>> getDefaultSchedule();
 }

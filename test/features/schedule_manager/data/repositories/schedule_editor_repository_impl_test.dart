@@ -1,36 +1,96 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polysleep/core/error/exceptions.dart';
+import 'package:polysleep/core/error/failure.dart';
+import 'package:polysleep/features/schedule_manager/data/datasources/assets_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_schedule_model.dart';
+import 'package:polysleep/features/schedule_manager/data/models/sleep_segment_model.dart';
 import 'package:polysleep/features/schedule_manager/data/repositories/schedule_editor_repository_impl.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockPreferencesDataSource extends Mock implements PreferencesDataSource {}
 
+class MockAssetsDataSource extends Mock implements AssetsDataSource {}
+
 void main() {
   ScheduleEditorRepository repository;
-  PreferencesDataSource dataSource;
+  PreferencesDataSource preferencesDataSource;
+  AssetsDataSource assetsDataSource;
   setUp(() {
-    dataSource = MockPreferencesDataSource();
-    repository =
-        ScheduleEditorRepositoryImpl(preferencesDataSource: dataSource);
+    preferencesDataSource = MockPreferencesDataSource();
+    assetsDataSource = MockAssetsDataSource();
+    repository = ScheduleEditorRepositoryImpl(
+        preferencesDataSource: preferencesDataSource,
+        assetsDataSource: assetsDataSource);
   });
 
   group('get current schedule', () {
-    final tSleepScheduleModel = SleepScheduleModel(segments: []);
+    final tSegments = [
+      SleepSegmentModel(
+          startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6))
+    ];
+    final tSleepScheduleModel =
+        SleepScheduleModel(name: "Monophasic", segments: tSegments);
     test('should call prefs data source to get current schedule', () async {
       // arrange
-      when(dataSource.getCurrentSchedule())
+      when(preferencesDataSource.getCurrentSchedule())
           .thenAnswer((_) async => tSleepScheduleModel);
 
       // act
-      await repository.getCurrentSchedule();
+      final result = await repository.getCurrentSchedule();
 
       // assert
-      verify(dataSource.getCurrentSchedule());
+      verify(preferencesDataSource.getCurrentSchedule());
+      expect(result, Right(tSleepScheduleModel));
+    });
+
+    test('should return failure when call is not successful', () async {
+      // arrange
+      when(preferencesDataSource.getCurrentSchedule())
+          .thenThrow(PreferencesException());
+
+      // act
+      final result = await repository.getCurrentSchedule();
+
+      // assert
+      verify(preferencesDataSource.getCurrentSchedule());
+      expect(result, equals(Left(PreferencesFailure())));
+    });
+  });
+  group('get default schedule', () {
+    final tSegments = [
+      SleepSegmentModel(
+          startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6))
+    ];
+    final tSleepScheduleModel =
+        SleepScheduleModel(name: "Monophasic", segments: tSegments);
+
+    test('should parse monophasic asset to get default schedule', () async {
+      // arrange
+      when(assetsDataSource.getDefaultSchedule())
+          .thenAnswer((_) async => tSleepScheduleModel);
+
+      // act
+      final result = await repository.getDefaultSchedule();
+
+      verify(assetsDataSource.getDefaultSchedule());
+      expect(result, Right(tSleepScheduleModel));
+    });
+
+    test('should return failure when call not successful', () async {
+      when(assetsDataSource.getDefaultSchedule()).thenThrow(AssetsException());
+
+      // act
+      final result = await repository.getDefaultSchedule();
+
+      verify(assetsDataSource.getDefaultSchedule());
+      expect(result, equals(Left(AssetsFailure())));
     });
   });
 }
