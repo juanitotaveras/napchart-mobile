@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:polysleep/core/error/exceptions.dart';
 import 'package:polysleep/core/error/failure.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_schedule_model.dart';
@@ -23,9 +24,12 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
 
   @override
   Future<Either<Failure, SleepSchedule>> getCurrentSchedule() async {
-    final segments =
-        await preferencesDataSource.getCurrentSchedule(); //getSegments();
-    return Right(segments);
+    try {
+      final currentSchedule = await preferencesDataSource.getCurrentSchedule();
+      return Right(currentSchedule);
+    } on PreferencesException {
+      return Left(PreferencesFailure());
+    }
   }
 
   @override

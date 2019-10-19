@@ -4,5 +4,7 @@ import 'package:meta/meta.dart';
 
 class SleepSchedule extends Equatable {
   final List<SleepSegment> segments;
-  SleepSchedule({@required this.segments}) : super([segments]);
+  final String name;
+  SleepSchedule({@required this.segments, this.name = ""})
+      : super([segments, name]);
 }

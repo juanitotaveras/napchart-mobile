@@ -12,7 +12,8 @@ void main() {
     SleepSegmentModel(
         startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6))
   ];
-  final tSleepScheduleModel = SleepScheduleModel(segments: tSleepSegments);
+  final tSleepScheduleModel =
+      SleepScheduleModel(name: "Monophasic", segments: tSleepSegments);
 
   test('should be subclass of SleepSchedule', () async {
     // assert
@@ -31,5 +32,23 @@ void main() {
       // assert
       expect(result, tSleepScheduleModel);
     });
+  });
+
+  group('toJson', () {
+    test(
+      'should return a JSON map containing the proper data',
+      () async {
+        // act
+        final result = tSleepScheduleModel.toJson();
+        // assert
+        final expectedMap = {
+          "name": "Monophasic",
+          "segments": [
+            {"start": "22:00", "end": "06:00"}
+          ]
+        };
+        expect(result, expectedMap);
+      },
+    );
   });
 }

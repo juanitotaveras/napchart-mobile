@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import './features/schedule_manager/presentation/pages/home_page.dart';
 import './features/schedule_manager/presentation/localizations.dart';
+import 'injection_container.dart' as di;
 
-void main() => runApp(MyApp());
+void main() async {
+  await di.init();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
