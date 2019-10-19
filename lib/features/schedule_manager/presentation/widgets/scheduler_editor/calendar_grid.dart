@@ -19,7 +19,6 @@ class CalendarGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final ScheduleEditorBloc bloc =
         BlocProvider.of<ScheduleEditorBloc>(context);
-    RenderBox box = context.findRenderObject();
     final calendarHeight = 1440.0;
     // TODO: Add more segments to the stack
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(

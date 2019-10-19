@@ -24,7 +24,6 @@ class CreateTemporarySleepSegment extends UseCase<SleepSegment, Params> {
 
   @override
   Future<Either<Failure, SleepSegment>> call(Params params) async {
-    // TODO: implement call
     return await repository.putTemporarySleepSegment(params.segment);
   }
 }

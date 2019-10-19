@@ -1,14 +1,23 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:polysleep/core/utils.dart';
+import 'package:polysleep/features/schedule_manager/data/repositories/schedule_editor_repository_impl.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
 import './bloc.dart';
 
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
+  final GetCurrentSchedule getCurrentSchedule;
+
+  ScheduleEditorBloc({@required GetCurrentSchedule getCurrentSchedule})
+      : assert(getCurrentSchedule != null),
+        getCurrentSchedule = getCurrentSchedule;
+
   @override
   ScheduleEditorState get initialState => Init();
 
@@ -22,6 +31,13 @@ class ScheduleEditorBloc
       loadedSegments = await loadSegments();
       yield SegmentsLoaded(loadedSegments: loadedSegments);
       */
+      final resp = await getCurrentSchedule(Params(segmentList: []));
+      yield* resp.fold((failure) async* {
+        yield SegmentsLoaded(loadedSegments: []);
+      }, (schedule) async* {
+        yield SegmentsLoaded(loadedSegments: schedule.segments);
+      });
+      // yield SegmentsLoaded(loadedSegments: Right(loadedSegments));
       return;
     }
 
