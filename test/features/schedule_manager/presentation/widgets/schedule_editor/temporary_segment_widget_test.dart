@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
@@ -8,27 +11,29 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_e
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/loaded_segment_widget.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/material.dart';
+import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
 
 class MockBloc extends Mock implements ScheduleEditorBloc {}
 
 void main() {
-  group('loaded segments widget', () {
+  group('temporary segments widget', () {
     ScheduleEditorBloc bloc;
+    StreamController<ScheduleEditorState> streamController;
     setUp(() {
       bloc = MockBloc();
+      final state = SegmentsLoaded(
+          loadedSegments: <SleepSegment>[],
+          selectedSegment: SleepSegment(
+              startTime: SegmentDateTime(hr: 22),
+              endTime: SegmentDateTime(hr: 6)));
+      when(bloc.currentState).thenAnswer((_) => state);
     });
-    testWidgets('Widget dispatches event when tapped',
+    /*testWidgets('Widget dispatches event when tapped',
         (WidgetTester tester) async {
       // arrange
       final index = 0;
-      final widgetUnderTest = LoadedSegmentWidget(
-          key: Key('k'),
-          marginRight: 5,
-          hourSpacing: 60,
-          segment: SleepSegment(
-              startTime: SegmentDateTime(hr: 1, min: 0),
-              endTime: SegmentDateTime(hr: 2, min: 0)),
-          index: index);
+      final widgetUnderTest =
+          TemporarySegmentWidget(marginRight: 5, hourSpacing: 60);
       final w = BlocProvider(
           builder: (context) => bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
@@ -39,19 +44,18 @@ void main() {
 
       // assert
       verify(bloc.dispatch(LoadedSegmentTapped(index)));
-    });
+    });*/
 
     testWidgets('Should only have one block if segments is in one day',
         (WidgetTester tester) async {
-      final index = 0;
-
-      final widgetUnderTest = LoadedSegmentWidget(
-          marginRight: 5,
-          hourSpacing: 60,
-          segment: SleepSegment(
-              startTime: SegmentDateTime(hr: 1, min: 0),
-              endTime: SegmentDateTime(hr: 2, min: 0)),
-          index: index);
+      final state = SegmentsLoaded(
+          loadedSegments: <SleepSegment>[],
+          selectedSegment: SleepSegment(
+              startTime: SegmentDateTime(hr: 22),
+              endTime: SegmentDateTime(hr: 23)));
+      when(bloc.currentState).thenAnswer((_) => state);
+      final widgetUnderTest =
+          TemporarySegmentWidget(marginRight: 5, hourSpacing: 60);
       final w = BlocProvider(
           builder: (context) => bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
@@ -60,28 +64,21 @@ void main() {
       // act
 
       // assert
-      final widgets = find.byKey(Key('piece'));
+      final widgets = find.byKey(Key('tempPiece'));
       expect(widgets, findsOneWidget);
     });
 
     testWidgets('Should have two blocks if segment spans two days',
         (WidgetTester tester) async {
-      final startTime = SegmentDateTime(hr: 22);
-      final endTime = SegmentDateTime(hr: 6);
-      assert(startTime.isAfter(endTime));
-
-      final widgetUnderTest = LoadedSegmentWidget(
-          marginRight: 5,
-          hourSpacing: 60,
-          segment: SleepSegment(startTime: startTime, endTime: endTime),
-          index: 0);
+      final widgetUnderTest =
+          TemporarySegmentWidget(marginRight: 5, hourSpacing: 60);
       final w = BlocProvider(
           builder: (context) => bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
       await tester.pumpWidget(w);
 
       // act
-      final widgets = find.byKey(Key('piece'));
+      final widgets = find.byKey(Key('tempPiece'));
 
       expect(widgets, findsNWidgets(2));
     });

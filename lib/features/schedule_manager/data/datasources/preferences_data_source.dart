@@ -6,7 +6,8 @@ import 'package:meta/meta.dart';
 
 abstract class PreferencesDataSource {
   Future<SleepScheduleModel> getCurrentSchedule();
-  Future<void> putCurrentSchedule(SleepScheduleModel currentSchedule);
+  Future<SleepScheduleModel> putCurrentSchedule(
+      SleepScheduleModel currentSchedule);
 }
 
 const CURRENT_SCHEDULE = 'CURRENT_SCHEDULE';
@@ -27,8 +28,21 @@ class PreferencesDataSourceImpl implements PreferencesDataSource {
   }
 
   @override
-  Future<void> putCurrentSchedule(SleepScheduleModel currentSchedule) {
-    return sharedPreferences.setString(
+  Future<SleepScheduleModel> putCurrentSchedule(
+      SleepScheduleModel currentSchedule) async {
+    // Will return Future<bool> - true is success, false is failure
+    final success = await sharedPreferences.setString(
         CURRENT_SCHEDULE, json.encode(currentSchedule.toJson()));
+    if (success) {
+      // read new state
+      final updatedJson = sharedPreferences.getString(CURRENT_SCHEDULE);
+      if (updatedJson != null) {
+        return Future.value(
+            SleepScheduleModel.fromJson(json.decode(updatedJson)));
+      } else {
+        throw PreferencesException();
+      }
+    }
+    throw PreferencesException();
   }
 }

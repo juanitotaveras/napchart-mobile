@@ -7,23 +7,31 @@ import 'package:polysleep/core/usecases/usecase.dart';
 import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/data/repositories/schedule_editor_repository_impl.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/bloc.dart'
+    as prefix0;
 import './bloc.dart';
 
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
   final GetCurrentSchedule getCurrentSchedule;
   final GetDefaultSchedule getDefaultSchedule;
+  final SaveCurrentSchedule saveCurrentSchedule;
 
   ScheduleEditorBloc(
       {@required GetCurrentSchedule getCurrentSchedule,
-      @required GetDefaultSchedule getDefaultSchedule})
+      @required GetDefaultSchedule getDefaultSchedule,
+      @required SaveCurrentSchedule saveCurrentSchedule})
       : assert(getCurrentSchedule != null),
         assert(getDefaultSchedule != null),
+        assert(saveCurrentSchedule != null),
         getCurrentSchedule = getCurrentSchedule,
-        getDefaultSchedule = getDefaultSchedule;
+        getDefaultSchedule = getDefaultSchedule,
+        saveCurrentSchedule = saveCurrentSchedule;
 
   @override
   ScheduleEditorState get initialState => Init();
@@ -41,7 +49,9 @@ class ScheduleEditorBloc
       'TemporarySleepSegmentEndTimeDragged':
           handleTemporarySleepSegmentEndTimeDragged,
       'SelectedSegmentCancelled': handleSelectedSegmentCancelled,
-      'SelectedSegmentSaved': handleSelectedSegmentSaved
+      'SelectedSegmentSaved': handleSelectedSegmentSaved,
+      'SaveChangesPressed': handleSaveChangesPressed,
+      'LoadedSegmentTapped': handleLoadedSegmentTapped
     };
     if (eventHandlers.containsKey(event.toString())) {
       final handler = eventHandlers[event.toString()];
@@ -130,6 +140,21 @@ class ScheduleEditorBloc
     }
   }
 
+  Stream<ScheduleEditorState> handleSaveChangesPressed(event) async* {
+    final state = Utils.tryCast<SegmentsLoaded>(currentState);
+    if (state != null) {
+      SleepSchedule schedule = SleepSchedule(segments: state.loadedSegments);
+      final resp = await saveCurrentSchedule(Params(schedule: schedule));
+      yield* resp.fold((failure) async* {
+        // print('there has been an error');
+        // show error state
+      }, (updatedSchedule) async* {
+        // print(' great success!');
+        print(updatedSchedule);
+      });
+    }
+  }
+
   Stream<ScheduleEditorState> handleSelectedSegmentCancelled(event) async* {
     final state = Utils.tryCast<SegmentsLoaded>(currentState);
     if (state != null) {
@@ -142,6 +167,15 @@ class ScheduleEditorBloc
     if (state != null) {
       yield SegmentsLoaded(
           loadedSegments: [state.selectedSegment, ...state.loadedSegments]);
+    }
+  }
+
+  Stream<ScheduleEditorState> handleLoadedSegmentTapped(event) async* {
+    final state = Utils.tryCast<SegmentsLoaded>(currentState);
+    if (state != null) {
+      // make this segment into editiing segment
+      final index = (event as LoadedSegmentTapped).idx;
+      // final segs = state.loadedSegments.m
     }
   }
 }

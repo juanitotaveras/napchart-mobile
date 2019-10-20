@@ -4,6 +4,7 @@ import 'package:polysleep/core/error/failure.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/assets_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_schedule_model.dart';
+import 'package:polysleep/features/schedule_manager/data/models/sleep_segment_model.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
@@ -40,18 +41,36 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
   Future<Either<Failure, SleepSegment>> putTemporarySleepSegment(
       SleepSegment segment) {
     // TODO: implement putTemporarySleepSegment
+
     return null;
   }
 
   @override
   Future<Either<Failure, SleepSchedule>> getDefaultSchedule() async {
     try {
-      print('before le arg');
       final defaultSchedule = await assetsDataSource.getDefaultSchedule();
-      print('ARG');
       return Right(defaultSchedule);
     } on AssetsException {
       return Left(AssetsFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, SleepSchedule>> putCurrentSchedule(
+      SleepSchedule schedule) async {
+    try {
+      // TODO:
+      List<SleepSegmentModel> mSegments = schedule.segments
+          .map((f) =>
+              SleepSegmentModel(startTime: f.startTime, endTime: f.endTime))
+          .toList();
+      final model =
+          SleepScheduleModel(segments: mSegments, name: schedule.name);
+      final SleepSchedule updatedModel =
+          await preferencesDataSource.putCurrentSchedule(model);
+      return Right(updatedModel);
+    } on PreferencesException {
+      return Left(PreferencesFailure());
     }
   }
 

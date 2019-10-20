@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
@@ -31,36 +32,112 @@ class TemporarySegmentWidget extends StatelessWidget {
       final state = Utils.tryCast<SegmentsLoaded>(currentState);
       if (state != null && state.selectedSegment != null) {
         final SleepSegment segment = state.selectedSegment;
-        final topMargin =
-            (hourSpacing * segment.startTime.hour + segment.startTime.minute)
-                .toDouble();
-        return Stack(children: [
-          GestureDetector(
-              onVerticalDragUpdate: (DragUpdateDetails details) {
-                RenderBox box = context.findRenderObject();
-                var relativeTapPos = box.globalToLocal(details.globalPosition);
-                bloc.dispatch(TemporarySleepSegmentDragged(
-                    details, relativeTapPos, hourSpacing));
-              },
-              child: Container(
-                  height: segment.getDurationMinutes().toDouble(),
-                  margin: EdgeInsets.only(right: marginRight, top: topMargin),
-                  decoration: BoxDecoration(
-                      color: Colors.blue[900].withOpacity(0.5),
-                      border: Border.all(width: 3, color: Colors.white),
-                      borderRadius: BorderRadius.only(
-                          topLeft: corner,
-                          topRight: corner,
-                          bottomLeft: corner,
-                          bottomRight: corner)))),
-          renderDragCircleTop(topMargin, context),
-          renderDragCircleBottom(
-              topMargin, segment.getDurationMinutes().toDouble(), context)
-        ]);
+        final List<Widget> segments = [];
+        if (!segment.startAndEndsOnSameDay()) {
+          // must create two segments
+          final topMarginA = segment.getStartMinutesFromMidnight().toDouble();
+          final minutesToMidnight =
+              MINUTES_PER_DAY - segment.getStartMinutesFromMidnight();
+          final startWidgetList = startSegment(
+              context, bloc, minutesToMidnight.toDouble(), topMarginA);
+          final endWidgetList = endSegment(context, bloc,
+              segment.getEndMinutesFromMidnight().toDouble(), 0.0);
+          segments.insertAll(0, startWidgetList);
+          segments.insertAll(segments.length, endWidgetList);
+        } else {
+          final topMargin =
+              (hourSpacing * segment.startTime.hour + segment.startTime.minute)
+                  .toDouble();
+          final wholeWidgetList = wholeWidget(context, bloc,
+              segment.getDurationMinutes().toDouble(), topMargin);
+          segments.insertAll(0, wholeWidgetList);
+          print(segments);
+        }
+
+        return Stack(children: segments);
       } else {
         return Container();
       }
     });
+  }
+
+  List<Widget> startSegment(BuildContext context, ScheduleEditorBloc bloc,
+      double height, double margin) {
+    return [
+      GestureDetector(
+          onVerticalDragUpdate: (DragUpdateDetails details) {
+            RenderBox box = context.findRenderObject();
+            var relativeTapPos = box.globalToLocal(details.globalPosition);
+            bloc.dispatch(TemporarySleepSegmentDragged(
+                details, relativeTapPos, hourSpacing));
+          },
+          child: Container(
+              key: Key('tempPiece'),
+              height: height,
+              margin: EdgeInsets.only(right: marginRight, top: margin),
+              decoration: BoxDecoration(
+                  color: Colors.blue[900].withOpacity(0.5),
+                  border: Border.all(width: 3, color: Colors.white),
+                  borderRadius: BorderRadius.only(
+                      topLeft: corner,
+                      topRight: corner,
+                      bottomLeft: corner,
+                      bottomRight: corner)))),
+      renderDragCircleTop(margin, context)
+    ];
+  }
+
+  List<Widget> endSegment(BuildContext context, ScheduleEditorBloc bloc,
+      double height, double margin) {
+    return [
+      GestureDetector(
+          onVerticalDragUpdate: (DragUpdateDetails details) {
+            RenderBox box = context.findRenderObject();
+            var relativeTapPos = box.globalToLocal(details.globalPosition);
+            bloc.dispatch(TemporarySleepSegmentDragged(
+                details, relativeTapPos, hourSpacing));
+          },
+          child: Container(
+              key: Key('tempPiece'),
+              height: height,
+              margin: EdgeInsets.only(right: marginRight, top: margin),
+              decoration: BoxDecoration(
+                  color: Colors.blue[900].withOpacity(0.5),
+                  border: Border.all(width: 3, color: Colors.white),
+                  borderRadius: BorderRadius.only(
+                      topLeft: corner,
+                      topRight: corner,
+                      bottomLeft: corner,
+                      bottomRight: corner)))),
+      renderDragCircleBottom(margin, height, context)
+    ];
+  }
+
+  List<Widget> wholeWidget(BuildContext context, ScheduleEditorBloc bloc,
+      double height, double margin) {
+    return [
+      GestureDetector(
+          onVerticalDragUpdate: (DragUpdateDetails details) {
+            RenderBox box = context.findRenderObject();
+            var relativeTapPos = box.globalToLocal(details.globalPosition);
+            bloc.dispatch(TemporarySleepSegmentDragged(
+                details, relativeTapPos, hourSpacing));
+          },
+          child: Container(
+              key: Key('tempPiece'),
+              height: height,
+              margin: EdgeInsets.only(right: marginRight, top: margin),
+              decoration: BoxDecoration(
+                  color: Colors.blue[900].withOpacity(0.5),
+                  border: Border.all(width: 3, color: Colors.white),
+                  borderRadius: BorderRadius.only(
+                      topLeft: corner,
+                      topRight: corner,
+                      bottomLeft: corner,
+                      bottomRight: corner)))),
+      renderDragCircleTop(margin, context),
+      renderDragCircleBottom(margin, height, context)
+    ];
   }
 
   Widget renderDragCircleTop(double topMargin, BuildContext context) {

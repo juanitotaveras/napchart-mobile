@@ -93,4 +93,36 @@ void main() {
       expect(result, equals(Left(AssetsFailure())));
     });
   });
+
+  group('put current schedule', () {
+    final tSegments = [
+      SleepSegmentModel(
+          startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6))
+    ];
+    final tSleepScheduleModel =
+        SleepScheduleModel(name: "Monophasic", segments: tSegments);
+    test('should return failure when put not successful', () async {
+      when(preferencesDataSource.putCurrentSchedule(any))
+          .thenThrow(PreferencesException());
+
+      // act
+      final result = await repository.putCurrentSchedule(tSleepScheduleModel);
+
+      verify(preferencesDataSource.putCurrentSchedule(any));
+      expect(result, equals(Left(PreferencesFailure())));
+    });
+
+    test(
+        'should store current schedule and return the updated one if successful',
+        () async {
+      when(preferencesDataSource.putCurrentSchedule(any))
+          .thenAnswer((_) async => tSleepScheduleModel);
+
+      // act
+      final result = await repository.putCurrentSchedule(tSleepScheduleModel);
+
+      verify(preferencesDataSource.putCurrentSchedule(any));
+      expect(result, equals(Right(tSleepScheduleModel)));
+    });
+  });
 }

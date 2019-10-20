@@ -37,8 +37,18 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context, false),
-            )),
+            ),
+            actions: <Widget>[
+              // action button
+              IconButton(
+                icon: Icon(Icons.save),
+                onPressed: () {
+                  bloc.dispatch(SaveChangesPressed());
+                },
+              ),
+            ]),
         //drawer: NavigationDrawer(),
+
         body: BlocProvider(
             builder: (context) => this.bloc,
             child: Center(

@@ -8,6 +8,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedu
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 
@@ -15,17 +16,22 @@ class MockGetCurrentSchedule extends Mock implements GetCurrentSchedule {}
 
 class MockGetDefaultSchedule extends Mock implements GetDefaultSchedule {}
 
+class MockSaveCurrentSchedule extends Mock implements SaveCurrentSchedule {}
+
 void main() {
   ScheduleEditorBloc bloc;
   MockGetCurrentSchedule mockGetCurrentSchedule;
   MockGetDefaultSchedule mockGetDefaultSchedule;
+  MockSaveCurrentSchedule mockSaveCurrentSchedule;
 
   setUp(() {
     mockGetDefaultSchedule = MockGetDefaultSchedule();
     mockGetCurrentSchedule = MockGetCurrentSchedule();
+    mockSaveCurrentSchedule = MockSaveCurrentSchedule();
     bloc = ScheduleEditorBloc(
         getCurrentSchedule: mockGetCurrentSchedule,
-        getDefaultSchedule: mockGetDefaultSchedule);
+        getDefaultSchedule: mockGetDefaultSchedule,
+        saveCurrentSchedule: mockSaveCurrentSchedule);
   });
 
   final tSegments = [
@@ -113,4 +119,26 @@ void main() {
     // act
     bloc.dispatch(LoadSchedule());
   });
+
+  test(
+      'Should call saveCurrentSchedule use case when button button press received',
+      () async {
+    // arrange
+    // arrange
+    when(mockGetCurrentSchedule(any))
+        .thenAnswer((_) async => Right(tSleepSchedule));
+    when(mockSaveCurrentSchedule(any))
+        .thenAnswer((_) async => Right(tSleepSchedule));
+    bloc.dispatch(LoadSchedule());
+
+    await untilCalled(mockGetCurrentSchedule(any));
+    // act
+    bloc.dispatch(SaveChangesPressed());
+    await untilCalled(mockSaveCurrentSchedule(any));
+    // assert
+    verify(mockGetCurrentSchedule(any));
+    verify(mockSaveCurrentSchedule(any));
+  });
+
+  test('Should show error if saveCurrentSchedule fails', () async {});
 }

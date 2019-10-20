@@ -12,4 +12,7 @@ abstract class ScheduleEditorRepository {
   Future<Either<Failure, SleepSchedule>> getCurrentSchedule();
 
   Future<Either<Failure, SleepSchedule>> getDefaultSchedule();
+
+  Future<Either<Failure, SleepSchedule>> putCurrentSchedule(
+      SleepSchedule schedule);
 }

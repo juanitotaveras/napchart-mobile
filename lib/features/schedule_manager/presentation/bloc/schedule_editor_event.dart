@@ -51,3 +51,5 @@ class LoadedSegmentTapped extends ScheduleEditorEvent {
 }
 
 class SelectedSegmentSaved extends ScheduleEditorEvent {}
+
+class SaveChangesPressed extends ScheduleEditorEvent {}
