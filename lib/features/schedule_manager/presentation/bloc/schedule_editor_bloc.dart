@@ -9,9 +9,11 @@ import 'package:polysleep/features/schedule_manager/data/repositories/schedule_e
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+// import 'package:polysleep/features/schedule_manager/domain/usecases/create_temporary_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/create_temporary_segment.dart';
 import './bloc.dart';
 
 class ScheduleEditorBloc
@@ -21,15 +23,34 @@ class ScheduleEditorBloc
   final SaveCurrentSchedule saveCurrentSchedule;
 
   ScheduleEditorBloc(
-      {@required GetCurrentSchedule getCurrentSchedule,
-      @required GetDefaultSchedule getDefaultSchedule,
-      @required SaveCurrentSchedule saveCurrentSchedule})
-      : assert(getCurrentSchedule != null),
-        assert(getDefaultSchedule != null),
-        assert(saveCurrentSchedule != null),
-        getCurrentSchedule = getCurrentSchedule,
-        getDefaultSchedule = getDefaultSchedule,
-        saveCurrentSchedule = saveCurrentSchedule;
+      {@required this.getCurrentSchedule,
+      @required this.getDefaultSchedule,
+      @required this.saveCurrentSchedule}) {
+    assert(getCurrentSchedule != null);
+    assert(getDefaultSchedule != null);
+    assert(saveCurrentSchedule != null);
+  }
+
+  final _selectedSegmentStreamController =
+      StreamController<SleepSegment>.broadcast();
+  Stream<SleepSegment> get selectedSegment =>
+      _selectedSegmentStreamController.stream.asBroadcastStream();
+  StreamSink<SleepSegment> get _inSegment =>
+      _selectedSegmentStreamController.sink;
+
+  final _loadedSegmentsStreamController =
+      StreamController<List<SleepSegment>>.broadcast();
+  Stream<List<SleepSegment>> get loadedSegments =>
+      _loadedSegmentsStreamController.stream.asBroadcastStream();
+  StreamSink<List<SleepSegment>> get _inLoaded =>
+      _loadedSegmentsStreamController.sink;
+
+  @override
+  void dispose() {
+    _selectedSegmentStreamController.close();
+    _loadedSegmentsStreamController.close();
+    super.dispose();
+  }
 
   @override
   ScheduleEditorState get initialState => Init();
@@ -57,6 +78,15 @@ class ScheduleEditorBloc
     }
   }
 
+  /*
+Question: Can the use case get the current state and compute output state?
+So use case doesn't need to call the repository if everything is in memory, right?
+
+USE CASE for temporarySleepSegmentCreated:
+input: selectedSegment, loadedSegments  // prev state, action
+output: SleepSchedule entity
+  */
+
   Stream<ScheduleEditorState> handleLoadSchedule(event) async* {
     final resp = await getCurrentSchedule(NoParams());
     yield* resp.fold((failure) async* {
@@ -67,8 +97,6 @@ class ScheduleEditorBloc
         yield SegmentsLoaded(loadedSegments: schedule.segments);
       });
     }, (schedule) async* {
-      print('le load');
-
       yield SegmentsLoaded(loadedSegments: schedule.segments);
     });
   }
@@ -76,13 +104,20 @@ class ScheduleEditorBloc
   Stream<ScheduleEditorState> handleTemporarySleepSegmentCreated(event) async* {
     DateTime t = GridTapToTimeConverter.touchInputToTime(
         event.touchCoord, event.hourPixels, 30);
+    /*
+TEST
+        */
+    // CreateTemporarySleepSegment(Params(segment: null, currentSchedule: []));
+    CreateTemporarySleepSegment usecase = CreateTemporarySleepSegment();
     DateTime endTime = t.add(Duration(minutes: 60));
     SleepSegment selectedSegment = SleepSegment(startTime: t, endTime: endTime);
     final state = Utils.tryCast<SegmentsLoaded>(currentState);
     if (state != null) {
-      yield SegmentsLoaded(
-          selectedSegment: selectedSegment,
-          loadedSegments: state.loadedSegments);
+      // yield SegmentsLoaded(
+      //     selectedSegment: selectedSegment,
+      //     loadedSegments: state.loadedSegments);
+      _inSegment.add(selectedSegment);
+      yield usecase(state, t);
     } else {
       // temporary
       yield SegmentsLoaded(
@@ -101,6 +136,7 @@ class ScheduleEditorBloc
             startTime: t,
             endTime:
                 t.add(Duration(minutes: currentSegment.getDurationMinutes())));
+        _inSegment.add(selectedSegment);
         yield SegmentsLoaded(
             selectedSegment: selectedSegment,
             loadedSegments: state.loadedSegments);
@@ -118,6 +154,7 @@ class ScheduleEditorBloc
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg =
             SleepSegment(startTime: t, endTime: currentSegment.endTime);
+        _inSegment.add(newSeg);
         yield SegmentsLoaded(
             selectedSegment: newSeg, loadedSegments: state.loadedSegments);
       }
@@ -134,6 +171,7 @@ class ScheduleEditorBloc
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg =
             SleepSegment(startTime: currentSegment.startTime, endTime: t);
+        _inSegment.add(newSeg);
         yield SegmentsLoaded(
             selectedSegment: newSeg, loadedSegments: state.loadedSegments);
       }

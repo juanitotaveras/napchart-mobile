@@ -7,58 +7,59 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_e
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:polysleep/features/schedule_manager/presentation/pages/schedule_editor.dart';
+import '../../../../../injection_container.dart';
 
 const cornerRadius = 10.0;
 const corner = Radius.circular(cornerRadius);
 
+// class TemporarySegmentWidgetState extends State<TemporarySegmentWidget> {
+//   var _bloc;
+//   final double marginRight;
+//   final double hourSpacing;
+
+//   TemporarySegmentWidgetState({this.marginRight, this.hourSpacing});
+
 class TemporarySegmentWidget extends StatelessWidget {
   final double marginRight;
   final double hourSpacing;
-
+  var _bloc;
   TemporarySegmentWidget({this.marginRight, this.hourSpacing});
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<ScheduleEditorBloc>(context);
-    return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
-        /*condition: (pState, cState) {
-      final prevState = Utils.tryCast<SegmentsLoaded>(pState);
-      final curState = Utils.tryCast<SegmentsLoaded>(cState);
-      if (prevState == null || curState == null) return true;
-
-      return prevState.selectedSegment != curState.selectedSegment;
-    }, */
-        builder: (BuildContext context, ScheduleEditorState currentState) {
-      final state = Utils.tryCast<SegmentsLoaded>(currentState);
-      if (state != null && state.selectedSegment != null) {
-        final SleepSegment segment = state.selectedSegment;
-        final List<Widget> segments = [];
-        if (!segment.startAndEndsOnSameDay()) {
-          // must create two segments
-          final topMarginA = segment.getStartMinutesFromMidnight().toDouble();
-          final minutesToMidnight =
-              MINUTES_PER_DAY - segment.getStartMinutesFromMidnight();
-          final startWidgetList = startSegment(
-              context, bloc, minutesToMidnight.toDouble(), topMarginA);
-          final endWidgetList = endSegment(context, bloc,
-              segment.getEndMinutesFromMidnight().toDouble(), 0.0);
-          segments.insertAll(0, startWidgetList);
-          segments.insertAll(segments.length, endWidgetList);
-        } else {
-          final topMargin =
-              (hourSpacing * segment.startTime.hour + segment.startTime.minute)
-                  .toDouble();
-          final wholeWidgetList = wholeWidget(context, bloc,
-              segment.getDurationMinutes().toDouble(), topMargin);
-          segments.insertAll(0, wholeWidgetList);
-          print(segments);
-        }
-
-        return Stack(children: segments);
-      } else {
-        return Container();
-      }
-    });
+    _bloc = BlocProvider.of<ScheduleEditorBloc>(context);
+    return StreamBuilder<SleepSegment>(
+        stream: _bloc.selectedSegment,
+        initialData: null,
+        builder: (context, snapshot) {
+          final s = snapshot.data;
+          if (s == null) {
+            return Container();
+          }
+          final SleepSegment segment = s;
+          final List<Widget> segments = [];
+          if (!segment.startAndEndsOnSameDay()) {
+            // must create two segments
+            final topMarginA = segment.getStartMinutesFromMidnight().toDouble();
+            final minutesToMidnight =
+                MINUTES_PER_DAY - segment.getStartMinutesFromMidnight();
+            final startWidgetList = startSegment(
+                context, _bloc, minutesToMidnight.toDouble(), topMarginA);
+            final endWidgetList = endSegment(context, _bloc,
+                segment.getEndMinutesFromMidnight().toDouble(), 0.0);
+            segments.insertAll(0, startWidgetList);
+            segments.insertAll(segments.length, endWidgetList);
+          } else {
+            final topMargin = (hourSpacing * segment.startTime.hour +
+                    segment.startTime.minute)
+                .toDouble();
+            final wholeWidgetList = wholeWidget(context, _bloc,
+                segment.getDurationMinutes().toDouble(), topMargin);
+            segments.insertAll(0, wholeWidgetList);
+            print(segments);
+          }
+          return Stack(children: segments);
+        });
   }
 
   List<Widget> startSegment(BuildContext context, ScheduleEditorBloc bloc,
