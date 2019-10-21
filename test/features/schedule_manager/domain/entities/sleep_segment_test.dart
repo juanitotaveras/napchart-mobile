@@ -31,5 +31,18 @@ void main() {
       // assert
       expect(seg.startAndEndsOnSameDay(), true);
     });
+
+    test('cloning should work', () async {
+      final seg = SleepSegment(
+          startTime: SegmentDateTime(hr: 12),
+          endTime: SegmentDateTime(hr: 13),
+          name: 'testSeg');
+      final leClone = seg.clone();
+
+      expect(seg, leClone);
+      // expect(seg === leClone, true);
+      // PROBLEM: We want to check referential equality but unfortunately we overrode ==
+      // check that references are not the same
+    });
   });
 }

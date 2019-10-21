@@ -141,4 +141,82 @@ void main() {
   });
 
   test('Should show error if saveCurrentSchedule fails', () async {});
+
+  test('Should mark segment we are editing when LoadedSegmentTapepd', () async {
+    // arrange
+    when(mockGetCurrentSchedule(any))
+        .thenAnswer((_) async => Right(tSleepSchedule));
+
+    // assert later
+    final tModifiedSchedule = SleepSchedule(
+        segments: tSleepSchedule.segments
+            .map((seg) => SleepSegment(
+                startTime: seg.startTime,
+                endTime: seg.endTime,
+                name: seg.name,
+                isBeingEdited: true))
+            .toList());
+    final seg = tSleepSchedule.segments[0];
+    final tModifiedSegment = SleepSegment(
+        startTime: seg.startTime,
+        endTime: seg.endTime,
+        name: seg.name,
+        isBeingEdited: true);
+    final expected = [
+      Init(),
+      SegmentsLoaded(loadedSegments: tSleepSchedule.segments),
+      SegmentsLoaded(
+          loadedSegments: tModifiedSchedule.segments,
+          selectedSegment: tModifiedSegment)
+    ];
+    expectLater(bloc.state, emitsInOrder(expected));
+
+    // act
+    bloc.dispatch(LoadSchedule());
+    await untilCalled(mockGetCurrentSchedule(any));
+    final idxOfTap = 0;
+    bloc.dispatch(LoadedSegmentTapped(idxOfTap));
+  });
+
+  test(
+      'Should replace editing segment with temporary segment when save pressed',
+      () async {
+    // arrange
+    when(mockGetCurrentSchedule(any))
+        .thenAnswer((_) async => Right(tSleepSchedule));
+
+    // assert later
+    final tModifiedSchedule = SleepSchedule(
+        segments: tSleepSchedule.segments
+            .map((seg) => SleepSegment(
+                startTime: seg.startTime,
+                endTime: seg.endTime,
+                name: seg.name,
+                isBeingEdited: true))
+            .toList());
+    final seg = tSleepSchedule.segments[0];
+    final tModifiedSegment = SleepSegment(
+        startTime: seg.startTime,
+        endTime: seg.endTime,
+        name: seg.name,
+        isBeingEdited: true);
+
+    // TODO: Need to simulate start time being changed
+    final expected = [
+      Init(),
+      SegmentsLoaded(loadedSegments: tSleepSchedule.segments),
+      SegmentsLoaded(
+          loadedSegments: tModifiedSchedule.segments,
+          selectedSegment: tModifiedSegment),
+      SegmentsLoaded(
+          loadedSegments: tSleepSchedule.segments, selectedSegment: null)
+    ];
+    expectLater(bloc.state, emitsInOrder(expected));
+
+    // act
+    bloc.dispatch(LoadSchedule());
+    await untilCalled(mockGetCurrentSchedule(any));
+    final idxOfTap = 0;
+    bloc.dispatch(LoadedSegmentTapped(idxOfTap));
+  });
 }

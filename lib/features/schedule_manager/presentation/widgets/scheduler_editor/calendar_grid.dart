@@ -23,6 +23,7 @@ class CalendarGrid extends StatelessWidget {
     // TODO: Add more segments to the stack
     return BlocBuilder<ScheduleEditorBloc, ScheduleEditorState>(
       builder: (BuildContext context, ScheduleEditorState currentState) {
+        print('STATE CHANGE HERE $currentState');
         final state = Utils.tryCast<SegmentsLoaded>(currentState);
         List<SleepSegment> loadedSegments =
             (state == null) ? null : state.loadedSegments;
@@ -30,6 +31,8 @@ class CalendarGrid extends StatelessWidget {
         List<Widget> loadedSegmentWidgets = [];
         if (loadedSegments != null) {
           loadedSegmentWidgets = loadedSegments
+              .where((seg) => !seg.isBeingEdited)
+              .toList()
               .asMap()
               .map((index, seg) {
                 return MapEntry(

@@ -18,7 +18,6 @@ class MockBloc extends Mock implements ScheduleEditorBloc {}
 void main() {
   group('temporary segments widget', () {
     ScheduleEditorBloc bloc;
-    StreamController<ScheduleEditorState> streamController;
     setUp(() {
       bloc = MockBloc();
       final state = SegmentsLoaded(

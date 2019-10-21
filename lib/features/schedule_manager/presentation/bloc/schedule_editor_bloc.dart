@@ -12,8 +12,6 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/bloc.dart'
-    as prefix0;
 import './bloc.dart';
 
 class ScheduleEditorBloc
@@ -69,6 +67,8 @@ class ScheduleEditorBloc
         yield SegmentsLoaded(loadedSegments: schedule.segments);
       });
     }, (schedule) async* {
+      print('le load');
+
       yield SegmentsLoaded(loadedSegments: schedule.segments);
     });
   }
@@ -158,15 +158,53 @@ class ScheduleEditorBloc
   Stream<ScheduleEditorState> handleSelectedSegmentCancelled(event) async* {
     final state = Utils.tryCast<SegmentsLoaded>(currentState);
     if (state != null) {
-      yield SegmentsLoaded(loadedSegments: state.loadedSegments);
+      // If there is an element being edited, revert it back to its previous state
+      final currentlyEditing =
+          state.loadedSegments.where((seg) => seg.isBeingEdited).toList();
+      if (currentlyEditing.length == 0) {
+        yield SegmentsLoaded(loadedSegments: [...state.loadedSegments]);
+        return;
+      }
+      final segs = state.loadedSegments
+          .map((seg) => SleepSegment(
+              startTime: seg.startTime,
+              endTime: seg.endTime,
+              isBeingEdited: false,
+              name: seg.name))
+          .toList();
+      yield SegmentsLoaded(loadedSegments: segs, selectedSegment: null);
     }
   }
 
   Stream<ScheduleEditorState> handleSelectedSegmentSaved(event) async* {
     final state = Utils.tryCast<SegmentsLoaded>(currentState);
     if (state != null) {
-      yield SegmentsLoaded(
-          loadedSegments: [state.selectedSegment, ...state.loadedSegments]);
+      // If no elements are being edited, this is a new segment
+      final currentlyEdited =
+          state.loadedSegments.where((seg) => seg.isBeingEdited).toList();
+      if (currentlyEdited.length == 0) {
+        // this is a new segment
+        yield SegmentsLoaded(
+            loadedSegments: [...state.loadedSegments, state.selectedSegment]);
+        return;
+      }
+      final segs = state.loadedSegments.map((seg) {
+        if (seg.isBeingEdited) {
+          final sel = state.selectedSegment;
+          return SleepSegment(
+              startTime: sel.startTime,
+              endTime: sel.endTime,
+              name: sel.name,
+              isBeingEdited: false);
+        }
+        return SleepSegment(
+            startTime: seg.startTime,
+            endTime: seg.endTime,
+            name: seg.name,
+            isBeingEdited: false);
+      }).toList();
+
+      yield SegmentsLoaded(loadedSegments: segs, selectedSegment: null);
     }
   }
 
@@ -175,7 +213,23 @@ class ScheduleEditorBloc
     if (state != null) {
       // make this segment into editiing segment
       final index = (event as LoadedSegmentTapped).idx;
-      // final segs = state.loadedSegments.m
+      final segs = state.loadedSegments
+          .asMap()
+          .map((idx, seg) {
+            return MapEntry(
+                idx,
+                SleepSegment(
+                    startTime: seg.startTime,
+                    endTime: seg.endTime,
+                    name: seg.name,
+                    isBeingEdited: idx == index));
+          })
+          .values
+          .toList();
+      final selectedSegment =
+          segs.where((seg) => seg.isBeingEdited).toList()[0];
+      yield SegmentsLoaded(
+          loadedSegments: segs, selectedSegment: selectedSegment);
     }
   }
 }

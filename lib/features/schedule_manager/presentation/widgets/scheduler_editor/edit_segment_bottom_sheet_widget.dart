@@ -79,7 +79,6 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                           size: 30.0,
                         ),
                         onPressed: () {
-                          print('cancel pressed ya\'ll');
                           bloc.dispatch(SelectedSegmentCancelled());
                         }),
                     Expanded(

@@ -16,6 +16,8 @@ class Loading extends ScheduleEditorState {}
 class TemporarySegmentCreated extends ScheduleEditorState {
   final SleepSegment selectedSegment;
   final List<SleepSegment> loadedSegments;
+  // TODO: Check if selectedSegment is new or not
+  // Mark the segment in loadedsegments that is being edited
   TemporarySegmentCreated(
       {@required this.selectedSegment, @required this.loadedSegments})
       : super([selectedSegment]);

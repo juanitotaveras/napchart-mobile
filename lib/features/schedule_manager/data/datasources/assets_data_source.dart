@@ -22,7 +22,6 @@ class AssetsDataSourceImpl implements AssetsDataSource {
       final res = await rootBundle
           .loadString('$TEMPLATES_FOLDER_PATH/$DEFAULT_SCHEDULE_NAME');
       final Map<String, dynamic> jsonObj = json.decode(res);
-      print('all is good');
 
       return Future.value(SleepScheduleModel.fromJson(jsonObj));
     } catch (exp) {

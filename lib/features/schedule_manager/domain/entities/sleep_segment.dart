@@ -6,9 +6,13 @@ class SleepSegment {
   DateTime startTime;
   DateTime endTime;
   final String name;
+  final bool isBeingEdited;
 
   SleepSegment(
-      {@required this.startTime, @required this.endTime, this.name = ""}) {
+      {@required this.startTime,
+      @required this.endTime,
+      this.name = "",
+      this.isBeingEdited = false}) {
     if (startTime.isAfter(endTime)) {
       this.startTime =
           SegmentDateTime(hr: startTime.hour, min: startTime.minute, day: 0);
@@ -24,10 +28,20 @@ class SleepSegment {
       other is SleepSegment &&
           runtimeType == other.runtimeType &&
           startTime.isAtSameMomentAs(other.startTime) &&
-          endTime.isAtSameMomentAs(other.endTime);
+          endTime.isAtSameMomentAs(other.endTime) &&
+          isBeingEdited == other.isBeingEdited;
 
   @override
-  int get hashCode => startTime.hashCode + endTime.hashCode;
+  int get hashCode =>
+      startTime.hashCode + endTime.hashCode + isBeingEdited.hashCode;
+
+  SleepSegment clone() {
+    return SleepSegment(
+        startTime: this.startTime,
+        endTime: this.endTime,
+        name: this.name,
+        isBeingEdited: this.isBeingEdited);
+  }
 
   int getStartMinutesFromMidnight() {
     return startTime.hour * 60 + startTime.minute;
