@@ -29,7 +29,7 @@ class TemporarySegmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     _bloc = BlocProvider.of<ScheduleEditorBloc>(context);
     return StreamBuilder<SleepSegment>(
-        stream: _bloc.selectedSegment,
+        stream: _bloc.selectedSegmentStream,
         initialData: null,
         builder: (context, snapshot) {
           final s = snapshot.data;

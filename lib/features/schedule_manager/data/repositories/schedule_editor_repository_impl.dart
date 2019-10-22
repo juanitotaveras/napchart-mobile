@@ -16,7 +16,10 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
   final AssetsDataSource assetsDataSource;
 
   ScheduleEditorRepositoryImpl(
-      {@required this.preferencesDataSource, @required this.assetsDataSource});
+      {@required this.preferencesDataSource, @required this.assetsDataSource}) {
+    print('REPO INIT');
+    // You can store state data here
+  }
   // temporary
   getSegments() async {
     final segments = [

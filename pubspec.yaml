@@ -35,6 +35,9 @@ dependencies:
   # Functional programming
   dartz: ^0.8.6
 
+  # Reactive programming
+  rxdart: ^0.22.4
+
   # Local cache
   shared_preferences: ^0.5.3+4
 
