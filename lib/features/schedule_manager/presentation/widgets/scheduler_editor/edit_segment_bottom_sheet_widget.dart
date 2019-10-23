@@ -53,7 +53,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
     const corner = Radius.circular(cornerRadius);
 
     return StreamBuilder<SleepSegment>(
-      stream: bloc.selectedSegmentStream,
+      stream: bloc.viewModel.selectedSegmentStream,
       initialData: null,
       builder: (context, snapshot) {
         final selectedSegment = snapshot.data;

@@ -21,14 +21,24 @@ import './bloc.dart';
 // Data binding between this and view
 // Another class, our Model, should store the state
 
-/*
-This is going to be a presenter.
-Presenter will have its ViewModel, which will consist of our streams.
-We will implement getters which will format strings
+class ScheduleEditorViewModel {
+  final selectedSegmentSubject = BehaviorSubject<SleepSegment>();
+  Stream<SleepSegment> get selectedSegmentStream =>
+      selectedSegmentSubject.stream;
 
-Questions: Where to convert input?
-Should 
-*/
+  final loadedSegmentsSubject = BehaviorSubject<List<SleepSegment>>();
+  Stream<List<SleepSegment>> get loadedSegmentsStream =>
+      loadedSegmentsSubject.stream;
+
+  dispose() {
+    selectedSegmentSubject.close();
+    loadedSegmentsSubject.close();
+  }
+}
+
+// TODO: Make a Presenter, which takes in a ViewModel, that
+// will format strings and stuff
+
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
   final GetCurrentSchedule getCurrentSchedule;
@@ -50,26 +60,14 @@ class ScheduleEditorBloc
   }
 
 // VIEW MODEL
-
-  final selectedSegmentSubject = BehaviorSubject<SleepSegment>();
-  Stream<SleepSegment> get selectedSegmentStream =>
-      selectedSegmentSubject.stream;
-  StreamSink<SleepSegment> get _selectedSegmentSink =>
-      selectedSegmentSubject.sink;
-
-  final _loadedSegmentsSubject = BehaviorSubject<List<SleepSegment>>();
-  Stream<List<SleepSegment>> get loadedSegmentsStream =>
-      _loadedSegmentsSubject.stream;
-  StreamSink<List<SleepSegment>> get _loadedSegmentsSink =>
-      _loadedSegmentsSubject.sink;
+  final viewModel = ScheduleEditorViewModel();
 
 // TODO: Seed with LoadSchedule so we never even have to call it
   final _eventHandlerSubject = BehaviorSubject<ScheduleEditorEvent>();
 
   @override
   void dispose() {
-    selectedSegmentSubject.close();
-    _loadedSegmentsSubject.close();
+    viewModel.dispose();
     _eventHandlerSubject.close();
     super.dispose();
   }
@@ -82,12 +80,12 @@ class ScheduleEditorBloc
       resp.fold((failure) async {
         final defResp = await getDefaultSchedule(NoParams());
         defResp.fold((failure) async {
-          _loadedSegmentsSink.add([]);
+          viewModel.loadedSegmentsSubject.add([]);
         }, (schedule) async {
-          _loadedSegmentsSink.add(schedule.segments);
+          viewModel.loadedSegmentsSubject.add(schedule.segments);
         });
       }, (schedule) async {
-        _loadedSegmentsSink.add(schedule.segments);
+        viewModel.loadedSegmentsSubject.add(schedule.segments);
       });
     }
 
@@ -96,20 +94,21 @@ class ScheduleEditorBloc
       DateTime t = GridTapToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourPixels, 30);
       DateTime endTime = t.add(Duration(minutes: 60));
-      selectedSegmentSubject.add(SleepSegment(startTime: t, endTime: endTime));
+      viewModel.selectedSegmentSubject
+          .add(SleepSegment(startTime: t, endTime: endTime));
     }
 
     // TemporarySleepSegmentDragged
     else if (event is TemporarySleepSegmentDragged) {
       final t = GridTapToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourSpacing, 15);
-      SleepSegment currentSegment = selectedSegmentSubject.value;
+      SleepSegment currentSegment = viewModel.selectedSegmentSubject.value;
       if (t.compareTo(currentSegment.startTime) != 0) {
         final selectedSegment = SleepSegment(
             startTime: t,
             endTime:
                 t.add(Duration(minutes: currentSegment.getDurationMinutes())));
-        selectedSegmentSubject.add(selectedSegment);
+        viewModel.selectedSegmentSubject.add(selectedSegment);
       }
     }
 
@@ -117,11 +116,11 @@ class ScheduleEditorBloc
     else if (event is TemporarySleepSegmentStartTimeDragged) {
       final t = GridTapToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourSpacing, 5);
-      SleepSegment currentSegment = selectedSegmentSubject.value;
+      SleepSegment currentSegment = viewModel.selectedSegmentSubject.value;
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg =
             SleepSegment(startTime: t, endTime: currentSegment.endTime);
-        selectedSegmentSubject.add(newSeg);
+        viewModel.selectedSegmentSubject.add(newSeg);
       }
     }
 
@@ -129,18 +128,18 @@ class ScheduleEditorBloc
     else if (event is TemporarySleepSegmentEndTimeDragged) {
       final t = GridTapToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourSpacing, 5);
-      SleepSegment currentSegment = selectedSegmentSubject.value;
+      SleepSegment currentSegment = viewModel.selectedSegmentSubject.value;
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg =
             SleepSegment(startTime: currentSegment.startTime, endTime: t);
-        selectedSegmentSubject.add(newSeg);
+        viewModel.selectedSegmentSubject.add(newSeg);
       }
     }
 
     // save changes pressed
     else if (event is SaveChangesPressed) {
       SleepSchedule schedule =
-          SleepSchedule(segments: _loadedSegmentsSubject.value);
+          SleepSchedule(segments: viewModel.loadedSegmentsSubject.value);
       final resp = await saveCurrentSchedule(Params(schedule: schedule));
       resp.fold((failure) async {
         // print('there has been an error');
@@ -153,12 +152,12 @@ class ScheduleEditorBloc
 
     // selected segment cancelled
     else if (event is SelectedSegmentCancelled) {
-      final lSegments = _loadedSegmentsSubject.value;
+      final lSegments = viewModel.loadedSegmentsSubject.value;
       final currentlyEditing =
           lSegments.where((seg) => seg.isBeingEdited).toList();
       if (currentlyEditing.length == 0) {
-        _loadedSegmentsSink.add([...lSegments]);
-        selectedSegmentSubject.add(null);
+        viewModel.loadedSegmentsSubject.add([...lSegments]);
+        viewModel.selectedSegmentSubject.add(null);
       } else {
         final segs = lSegments
             .map((seg) => SleepSegment(
@@ -167,14 +166,14 @@ class ScheduleEditorBloc
                 isBeingEdited: false,
                 name: seg.name))
             .toList();
-        _loadedSegmentsSink.add(segs);
-        selectedSegmentSubject.add(null);
+        viewModel.loadedSegmentsSubject.add(segs);
+        viewModel.selectedSegmentSubject.add(null);
       }
     }
 
     // loaded segment tapped
     else if (event is LoadedSegmentTapped) {
-      final segs = _loadedSegmentsSubject.value
+      final segs = viewModel.loadedSegmentsSubject.value
           .asMap()
           .map((idx, seg) {
             return MapEntry(
@@ -189,20 +188,20 @@ class ScheduleEditorBloc
           .toList();
       final selectedSegment =
           segs.where((seg) => seg.isBeingEdited).toList()[0];
-      _loadedSegmentsSubject.add(segs);
-      selectedSegmentSubject.add(selectedSegment);
+      viewModel.loadedSegmentsSubject.add(segs);
+      viewModel.selectedSegmentSubject.add(selectedSegment);
     }
 
     // selected segment saved
     else if (event is SelectedSegmentSaved) {
-      final lSegments = _loadedSegmentsSubject.value;
-      final sSegment = selectedSegmentSubject.value;
+      final lSegments = viewModel.loadedSegmentsSubject.value;
+      final sSegment = viewModel.selectedSegmentSubject.value;
       final currentlyEdited =
           lSegments.where((seg) => seg.isBeingEdited).toList();
       if (currentlyEdited.length == 0) {
         // this is a new segment
-        _loadedSegmentsSink.add([...lSegments, sSegment]);
-        selectedSegmentSubject.add(null);
+        viewModel.loadedSegmentsSubject.add([...lSegments, sSegment]);
+        viewModel.selectedSegmentSubject.add(null);
       } else {
         final segs = lSegments.map((seg) {
           if (seg.isBeingEdited) {
@@ -219,8 +218,8 @@ class ScheduleEditorBloc
               name: seg.name,
               isBeingEdited: false);
         }).toList();
-        _loadedSegmentsSink.add(segs);
-        selectedSegmentSubject.add(null);
+        viewModel.loadedSegmentsSubject.add(segs);
+        viewModel.selectedSegmentSubject.add(null);
       }
     }
   }
@@ -242,6 +241,7 @@ class ScheduleEditorBloc
   ) async* {}
 }
 
+// TODO: Put these into an EventMapper class
 class GridTapToTimeConverter {
   static DateTime touchInputToTime(
       Offset tapPosition, double hourSpacing, int granularity) {

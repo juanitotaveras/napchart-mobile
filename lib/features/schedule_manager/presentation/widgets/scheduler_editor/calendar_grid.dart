@@ -21,7 +21,7 @@ class CalendarGrid extends StatelessWidget {
         BlocProvider.of<ScheduleEditorBloc>(context);
     final calendarHeight = 1440.0;
     return StreamBuilder<List<SleepSegment>>(
-        stream: bloc.loadedSegmentsStream,
+        stream: bloc.viewModel.loadedSegmentsStream,
         initialData: null,
         builder: (context, snapshot) {
           List<SleepSegment> loadedSegments = snapshot.data;
