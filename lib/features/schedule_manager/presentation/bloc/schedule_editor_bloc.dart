@@ -20,6 +20,15 @@ import './bloc.dart';
 // TODO: Call this a ViewModel/Presenter
 // Data binding between this and view
 // Another class, our Model, should store the state
+
+/*
+This is going to be a presenter.
+Presenter will have its ViewModel, which will consist of our streams.
+We will implement getters which will format strings
+
+Questions: Where to convert input?
+Should 
+*/
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
   final GetCurrentSchedule getCurrentSchedule;
@@ -68,6 +77,7 @@ class ScheduleEditorBloc
   void handleEvent(ScheduleEditorEvent event) async {
     // LoadSchedule
     if (event is LoadSchedule) {
+      // TODO: This use case should actually do both of these things
       final resp = await getCurrentSchedule(NoParams());
       resp.fold((failure) async {
         final defResp = await getDefaultSchedule(NoParams());
@@ -85,11 +95,8 @@ class ScheduleEditorBloc
     else if (event is TemporarySleepSegmentCreated) {
       DateTime t = GridTapToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourPixels, 30);
-      CreateTemporarySleepSegment usecase = CreateTemporarySleepSegment();
       DateTime endTime = t.add(Duration(minutes: 60));
-      SleepSegment selectedSegment =
-          SleepSegment(startTime: t, endTime: endTime);
-      selectedSegmentSubject.add(selectedSegment);
+      selectedSegmentSubject.add(SleepSegment(startTime: t, endTime: endTime));
     }
 
     // TemporarySleepSegmentDragged
@@ -143,6 +150,79 @@ class ScheduleEditorBloc
         print(updatedSchedule);
       });
     }
+
+    // selected segment cancelled
+    else if (event is SelectedSegmentCancelled) {
+      final lSegments = _loadedSegmentsSubject.value;
+      final currentlyEditing =
+          lSegments.where((seg) => seg.isBeingEdited).toList();
+      if (currentlyEditing.length == 0) {
+        _loadedSegmentsSink.add([...lSegments]);
+        selectedSegmentSubject.add(null);
+      } else {
+        final segs = lSegments
+            .map((seg) => SleepSegment(
+                startTime: seg.startTime,
+                endTime: seg.endTime,
+                isBeingEdited: false,
+                name: seg.name))
+            .toList();
+        _loadedSegmentsSink.add(segs);
+        selectedSegmentSubject.add(null);
+      }
+    }
+
+    // loaded segment tapped
+    else if (event is LoadedSegmentTapped) {
+      final segs = _loadedSegmentsSubject.value
+          .asMap()
+          .map((idx, seg) {
+            return MapEntry(
+                idx,
+                SleepSegment(
+                    startTime: seg.startTime,
+                    endTime: seg.endTime,
+                    name: seg.name,
+                    isBeingEdited: idx == event.idx));
+          })
+          .values
+          .toList();
+      final selectedSegment =
+          segs.where((seg) => seg.isBeingEdited).toList()[0];
+      _loadedSegmentsSubject.add(segs);
+      selectedSegmentSubject.add(selectedSegment);
+    }
+
+    // selected segment saved
+    else if (event is SelectedSegmentSaved) {
+      final lSegments = _loadedSegmentsSubject.value;
+      final sSegment = selectedSegmentSubject.value;
+      final currentlyEdited =
+          lSegments.where((seg) => seg.isBeingEdited).toList();
+      if (currentlyEdited.length == 0) {
+        // this is a new segment
+        _loadedSegmentsSink.add([...lSegments, sSegment]);
+        selectedSegmentSubject.add(null);
+      } else {
+        final segs = lSegments.map((seg) {
+          if (seg.isBeingEdited) {
+            final sel = sSegment;
+            return SleepSegment(
+                startTime: sel.startTime,
+                endTime: sel.endTime,
+                name: sel.name,
+                isBeingEdited: false);
+          }
+          return SleepSegment(
+              startTime: seg.startTime,
+              endTime: seg.endTime,
+              name: seg.name,
+              isBeingEdited: false);
+        }).toList();
+        _loadedSegmentsSink.add(segs);
+        selectedSegmentSubject.add(null);
+      }
+    }
   }
 
   @override
@@ -159,156 +239,7 @@ class ScheduleEditorBloc
   @override
   Stream<ScheduleEditorState> mapEventToState(
     ScheduleEditorEvent event,
-  ) async* {
-    final eventHandlers = {
-      'SelectedSegmentCancelled': handleSelectedSegmentCancelled,
-      'SelectedSegmentSaved': handleSelectedSegmentSaved,
-      'SaveChangesPressed': handleSaveChangesPressed,
-      'LoadedSegmentTapped': handleLoadedSegmentTapped
-    };
-    if (eventHandlers.containsKey(event.toString())) {
-      final handler = eventHandlers[event.toString()];
-      yield* handler(event);
-    }
-  }
-
-  Stream<ScheduleEditorState> handleLoadSchedule(event) async* {
-    final resp = await getCurrentSchedule(NoParams());
-    yield* resp.fold((failure) async* {
-      final defResp = await getDefaultSchedule(NoParams());
-      yield* defResp.fold((failure) async* {
-        _loadedSegmentsSink.add([]);
-        yield SegmentsLoaded(loadedSegments: []);
-      }, (schedule) async* {
-        _loadedSegmentsSink.add(schedule.segments);
-        yield SegmentsLoaded(loadedSegments: schedule.segments);
-      });
-    }, (schedule) async* {
-      _loadedSegmentsSink.add(schedule.segments);
-      yield SegmentsLoaded(loadedSegments: schedule.segments);
-    });
-  }
-
-  Stream<ScheduleEditorState> handleTemporarySleepSegmentCreated(event) async* {
-    DateTime t = GridTapToTimeConverter.touchInputToTime(
-        event.touchCoord, event.hourPixels, 30);
-    /*
-TEST
-        */
-    // CreateTemporarySleepSegment(Params(segment: null, currentSchedule: []));
-    CreateTemporarySleepSegment usecase = CreateTemporarySleepSegment();
-    DateTime endTime = t.add(Duration(minutes: 60));
-    SleepSegment selectedSegment = SleepSegment(startTime: t, endTime: endTime);
-    final state = Utils.tryCast<SegmentsLoaded>(currentState);
-    // if (state != null) {
-    // yield SegmentsLoaded(
-    //     selectedSegment: selectedSegment,
-    //     loadedSegments: state.loadedSegments);
-    selectedSegmentSubject.add(selectedSegment);
-    print('adding to insegment');
-    yield usecase(state, t);
-    // }
-  }
-
-  Stream<ScheduleEditorState> handleSaveChangesPressed(event) async* {
-    final state = Utils.tryCast<SegmentsLoaded>(currentState);
-    if (state != null) {}
-  }
-
-  Stream<ScheduleEditorState> handleSelectedSegmentCancelled(event) async* {
-    final state = Utils.tryCast<SegmentsLoaded>(currentState);
-    if (state != null) {
-      // If there is an element being edited, revert it back to its previous state
-      final currentlyEditing =
-          state.loadedSegments.where((seg) => seg.isBeingEdited).toList();
-      if (currentlyEditing.length == 0) {
-        _loadedSegmentsSink.add([...state.loadedSegments]);
-        selectedSegmentSubject.add(null);
-        final l = selectedSegmentSubject.value;
-        yield SegmentsLoaded(loadedSegments: [...state.loadedSegments]);
-        return;
-      }
-      final segs = state.loadedSegments
-          .map((seg) => SleepSegment(
-              startTime: seg.startTime,
-              endTime: seg.endTime,
-              isBeingEdited: false,
-              name: seg.name))
-          .toList();
-      _loadedSegmentsSink.add(segs);
-      selectedSegmentSubject.add(null);
-      yield SegmentsLoaded(loadedSegments: segs, selectedSegment: null);
-    }
-  }
-
-  Stream<ScheduleEditorState> handleSelectedSegmentSaved(event) async* {
-    final state = Utils.tryCast<SegmentsLoaded>(currentState);
-    if (state != null) {
-      // If no elements are being edited, this is a new segment
-      final currentlyEdited =
-          state.loadedSegments.where((seg) => seg.isBeingEdited).toList();
-      if (currentlyEdited.length == 0) {
-        // this is a new segment
-        _loadedSegmentsSink
-            .add([...state.loadedSegments, state.selectedSegment]);
-        selectedSegmentSubject.add(null);
-        yield SegmentsLoaded(
-            loadedSegments: [...state.loadedSegments, state.selectedSegment]);
-        return;
-      }
-      final segs = state.loadedSegments.map((seg) {
-        if (seg.isBeingEdited) {
-          final sel = state.selectedSegment;
-          return SleepSegment(
-              startTime: sel.startTime,
-              endTime: sel.endTime,
-              name: sel.name,
-              isBeingEdited: false);
-        }
-        return SleepSegment(
-            startTime: seg.startTime,
-            endTime: seg.endTime,
-            name: seg.name,
-            isBeingEdited: false);
-      }).toList();
-      _loadedSegmentsSink.add(segs);
-      selectedSegmentSubject.add(null);
-      yield SegmentsLoaded(loadedSegments: segs, selectedSegment: null);
-    }
-  }
-
-  Stream<ScheduleEditorState> handleLoadedSegmentTapped(event) async* {
-    print('LOADED SEGMENT TAPPED');
-    final state = Utils.tryCast<SegmentsLoaded>(currentState);
-    if (state != null) {
-      // make this segment into editiing segment
-      final index = (event as LoadedSegmentTapped).idx;
-      // final lastSegs = await loadedSegments.last;
-      // TODO: Consider putting current state in repository, like an in-memory DB
-      // It might make sense for the repository to store state
-      // PROBLEM: How will we access the current state?!
-      // final currentSegments = selectedSegmentSubject.v
-      final segs = _loadedSegmentsSubject.value
-          .asMap()
-          .map((idx, seg) {
-            return MapEntry(
-                idx,
-                SleepSegment(
-                    startTime: seg.startTime,
-                    endTime: seg.endTime,
-                    name: seg.name,
-                    isBeingEdited: idx == index));
-          })
-          .values
-          .toList();
-      final selectedSegment =
-          segs.where((seg) => seg.isBeingEdited).toList()[0];
-      _loadedSegmentsSink.add(segs);
-      selectedSegmentSubject.add(selectedSegment);
-      yield SegmentsLoaded(
-          loadedSegments: segs, selectedSegment: selectedSegment);
-    }
-  }
+  ) async* {}
 }
 
 class GridTapToTimeConverter {

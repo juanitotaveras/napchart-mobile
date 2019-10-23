@@ -21,6 +21,9 @@ class _ViewModel {
 }
 
 class EditSegmentBottomSheetPresenter extends EditBottomSheetView {
+  // TODO: Presenter should implement some Presenter made by bloc.
+  // Presenter may need to instantiate a BLOC (or get reference to it)
+  // and presenter should send events to bloc
   final SleepSegment selectedSegment;
   final _ViewModel vm = _ViewModel();
   EditSegmentBottomSheetPresenter(this.selectedSegment) {
