@@ -17,27 +17,22 @@ import 'package:polysleep/features/schedule_manager/domain/usecases/create_tempo
 import 'package:rxdart/rxdart.dart';
 import './bloc.dart';
 
-// TODO: Call this a ViewModel/Presenter
-// Data binding between this and view
-// Another class, our Model, should store the state
-
 class ScheduleEditorViewModel {
   final selectedSegmentSubject = BehaviorSubject<SleepSegment>();
   Stream<SleepSegment> get selectedSegmentStream =>
       selectedSegmentSubject.stream;
+  SleepSegment get selectedSegment => selectedSegmentSubject.value;
 
   final loadedSegmentsSubject = BehaviorSubject<List<SleepSegment>>();
   Stream<List<SleepSegment>> get loadedSegmentsStream =>
       loadedSegmentsSubject.stream;
+  List<SleepSegment> get loadedSegments => loadedSegmentsSubject.value;
 
   dispose() {
     selectedSegmentSubject.close();
     loadedSegmentsSubject.close();
   }
 }
-
-// TODO: Make a Presenter, which takes in a ViewModel, that
-// will format strings and stuff
 
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
@@ -54,7 +49,6 @@ class ScheduleEditorBloc
     assert(saveCurrentSchedule != null);
 
     _eventHandlerSubject.stream.listen((ScheduleEditorEvent event) {
-      print('EVENT!!! $event');
       handleEvent(event);
     });
   }
@@ -102,7 +96,7 @@ class ScheduleEditorBloc
     else if (event is TemporarySleepSegmentDragged) {
       final t = GridTapToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourSpacing, 15);
-      SleepSegment currentSegment = viewModel.selectedSegmentSubject.value;
+      SleepSegment currentSegment = viewModel.selectedSegment;
       if (t.compareTo(currentSegment.startTime) != 0) {
         final selectedSegment = SleepSegment(
             startTime: t,
@@ -116,7 +110,7 @@ class ScheduleEditorBloc
     else if (event is TemporarySleepSegmentStartTimeDragged) {
       final t = GridTapToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourSpacing, 5);
-      SleepSegment currentSegment = viewModel.selectedSegmentSubject.value;
+      SleepSegment currentSegment = viewModel.selectedSegment;
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg =
             SleepSegment(startTime: t, endTime: currentSegment.endTime);
@@ -128,7 +122,7 @@ class ScheduleEditorBloc
     else if (event is TemporarySleepSegmentEndTimeDragged) {
       final t = GridTapToTimeConverter.touchInputToTime(
           event.touchCoord, event.hourSpacing, 5);
-      SleepSegment currentSegment = viewModel.selectedSegmentSubject.value;
+      SleepSegment currentSegment = viewModel.selectedSegment;
       if (t.compareTo(currentSegment.startTime) != 0) {
         final newSeg =
             SleepSegment(startTime: currentSegment.startTime, endTime: t);
@@ -139,7 +133,7 @@ class ScheduleEditorBloc
     // save changes pressed
     else if (event is SaveChangesPressed) {
       SleepSchedule schedule =
-          SleepSchedule(segments: viewModel.loadedSegmentsSubject.value);
+          SleepSchedule(segments: viewModel.loadedSegments);
       final resp = await saveCurrentSchedule(Params(schedule: schedule));
       resp.fold((failure) async {
         // print('there has been an error');
@@ -152,7 +146,7 @@ class ScheduleEditorBloc
 
     // selected segment cancelled
     else if (event is SelectedSegmentCancelled) {
-      final lSegments = viewModel.loadedSegmentsSubject.value;
+      final lSegments = viewModel.loadedSegments;
       final currentlyEditing =
           lSegments.where((seg) => seg.isBeingEdited).toList();
       if (currentlyEditing.length == 0) {
@@ -173,7 +167,7 @@ class ScheduleEditorBloc
 
     // loaded segment tapped
     else if (event is LoadedSegmentTapped) {
-      final segs = viewModel.loadedSegmentsSubject.value
+      final segs = viewModel.loadedSegments
           .asMap()
           .map((idx, seg) {
             return MapEntry(
@@ -194,8 +188,8 @@ class ScheduleEditorBloc
 
     // selected segment saved
     else if (event is SelectedSegmentSaved) {
-      final lSegments = viewModel.loadedSegmentsSubject.value;
-      final sSegment = viewModel.selectedSegmentSubject.value;
+      final lSegments = viewModel.loadedSegments;
+      final sSegment = viewModel.selectedSegment;
       final currentlyEdited =
           lSegments.where((seg) => seg.isBeingEdited).toList();
       if (currentlyEdited.length == 0) {
