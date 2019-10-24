@@ -78,7 +78,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                             size: 30.0,
                           ),
                           onPressed: () {
-                            bloc.dispatch(SelectedSegmentCancelled());
+                            bloc.onSelectedSegmentCancelled();
                           }),
                       Expanded(
                           flex: 1,
@@ -136,7 +136,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                       Expanded(flex: 100, child: Container()),
                       FlatButton(
                         onPressed: () {
-                          bloc.dispatch(SelectedSegmentSaved());
+                          bloc.onSelectedSegmentSaved();
                         },
                         child: Text('SAVE',
                             style: TextStyle(fontSize: 20, color: Colors.red)),

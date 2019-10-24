@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     print('result: $result');
     // TODO: Let's refresh our Bloc here
-    _bloc.dispatch(LoadCurrentSchedule());
+    _bloc.onLoadSchedule();
   }
 
   Widget _buildPortrait(context) {
@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         initialData: DateTime.now(),
         builder: (context, currentTimeStream) {
           return StreamBuilder<SleepSchedule>(
-              stream: _bloc.currentScheduleModel.currentScheduleStream,
+              stream: _bloc.viewModel.currentScheduleStream,
               initialData: null,
               builder: (context, currentScheduleStream) {
                 return Expanded(

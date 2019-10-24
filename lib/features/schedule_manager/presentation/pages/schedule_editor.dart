@@ -23,7 +23,7 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
   @override
   Widget build(BuildContext context) {
     if (!initCalled) {
-      bloc.dispatch(LoadSchedule());
+      bloc.onLoadSchedule();
       initCalled = true;
     }
     return Scaffold(
@@ -43,7 +43,7 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
               IconButton(
                 icon: Icon(Icons.save),
                 onPressed: () {
-                  bloc.dispatch(SaveChangesPressed());
+                  bloc.onSaveChangesPressed();
                 },
               ),
             ]),

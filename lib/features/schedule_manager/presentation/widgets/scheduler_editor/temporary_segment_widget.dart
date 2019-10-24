@@ -69,8 +69,7 @@ class TemporarySegmentWidget extends StatelessWidget {
           onVerticalDragUpdate: (DragUpdateDetails details) {
             RenderBox box = context.findRenderObject();
             var relativeTapPos = box.globalToLocal(details.globalPosition);
-            bloc.dispatch(TemporarySleepSegmentDragged(
-                details, relativeTapPos, hourSpacing));
+            bloc.onSelectedSleepSegmentDragged(relativeTapPos, hourSpacing);
           },
           child: Container(
               key: Key('tempPiece'),
@@ -95,8 +94,8 @@ class TemporarySegmentWidget extends StatelessWidget {
           onVerticalDragUpdate: (DragUpdateDetails details) {
             RenderBox box = context.findRenderObject();
             var relativeTapPos = box.globalToLocal(details.globalPosition);
-            bloc.dispatch(TemporarySleepSegmentDragged(
-                details, relativeTapPos, hourSpacing));
+
+            bloc.onSelectedSleepSegmentDragged(relativeTapPos, hourSpacing);
           },
           child: Container(
               key: Key('tempPiece'),
@@ -121,8 +120,8 @@ class TemporarySegmentWidget extends StatelessWidget {
           onVerticalDragUpdate: (DragUpdateDetails details) {
             RenderBox box = context.findRenderObject();
             var relativeTapPos = box.globalToLocal(details.globalPosition);
-            bloc.dispatch(TemporarySleepSegmentDragged(
-                details, relativeTapPos, hourSpacing));
+
+            bloc.onSelectedSleepSegmentDragged(relativeTapPos, hourSpacing);
           },
           child: Container(
               key: Key('tempPiece'),
@@ -149,9 +148,9 @@ class TemporarySegmentWidget extends StatelessWidget {
             onVerticalDragUpdate: (DragUpdateDetails details) {
               RenderBox box = context.findRenderObject();
               var relativeTapPos = box.globalToLocal(details.globalPosition);
-              BlocProvider.of<ScheduleEditorBloc>(context).dispatch(
-                  TemporarySleepSegmentStartTimeDragged(
-                      details, relativeTapPos, hourSpacing));
+              BlocProvider.of<ScheduleEditorBloc>(context)
+                  .onSelectedSleepSegmentStartTimeDragged(
+                      relativeTapPos, hourSpacing);
             },
             child: renderDragCircleGraphic()));
   }
@@ -165,9 +164,8 @@ class TemporarySegmentWidget extends StatelessWidget {
             onVerticalDragUpdate: (DragUpdateDetails details) {
               RenderBox box = context.findRenderObject();
               var relativeTapPos = box.globalToLocal(details.globalPosition);
-              BlocProvider.of<ScheduleEditorBloc>(context).dispatch(
-                  TemporarySleepSegmentEndTimeDragged(
-                      details, relativeTapPos, hourSpacing));
+              BlocProvider.of<ScheduleEditorBloc>(context)
+                  .onSelectedSegmentEndTimeDragged(relativeTapPos, hourSpacing);
             },
             child: renderDragCircleGraphic()));
   }

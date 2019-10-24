@@ -47,7 +47,7 @@ class LoadedSegmentWidget extends StatelessWidget {
 
     return GestureDetector(
         onTapUp: (details) {
-          bloc.dispatch(LoadedSegmentTapped(this.index));
+          bloc.onLoadedSegmentTapped(this.index);
         },
         child: Container(
             key: Key('piece'),
@@ -64,7 +64,7 @@ class LoadedSegmentWidget extends StatelessWidget {
       double height, double margin) {
     return GestureDetector(
         onTapUp: (details) {
-          bloc.dispatch(LoadedSegmentTapped(this.index));
+          bloc.onLoadedSegmentTapped(this.index);
         },
         child: Container(
             key: Key('piece'),
@@ -81,7 +81,7 @@ class LoadedSegmentWidget extends StatelessWidget {
       double height, double margin) {
     return GestureDetector(
         onTapUp: (details) {
-          bloc.dispatch(LoadedSegmentTapped(this.index));
+          bloc.onLoadedSegmentTapped(this.index);
         },
         child: Container(
             key: Key('piece'),

@@ -26,7 +26,7 @@ class HomeBloc {
   StreamSink<DateTime> get _inTime => _currentTimeStateController.sink;
 
   final viewModel = HomeViewModel();
-  final currentScheduleModel = CurrentScheduleModel();
+  // final currentScheduleModel = CurrentScheduleModel();
 
   final _eventHandlerSubject =
       BehaviorSubject<HomeEvent>.seeded(LoadCurrentSchedule());
@@ -43,19 +43,30 @@ class HomeBloc {
         // viewModel.currentScheduleSubject.add(null);
       }, (schedule) async {
         // viewModel.currentScheduleSubject.add(schedule);
-        currentScheduleModel.currentScheduleSubject.add(schedule);
+        viewModel.currentScheduleSubject.add(schedule);
       });
     }
   }
 
-  void dispatch(HomeEvent event) {
-    _handleEvent(event);
+  //! Event handlers
+  void onLoadSchedule() async {
+    final resp = await getCurrentOrDefaultSchedule(NoParams());
+    resp.fold((failure) async {
+      // viewModel.currentScheduleSubject.add(null);
+    }, (schedule) async {
+      // viewModel.currentScheduleSubject.add(schedule);
+      viewModel.currentScheduleSubject.add(schedule);
+    });
   }
+
+  // void dispatch(HomeEvent event) {
+  //   _handleEvent(event);
+  // }
 
   void dispose() {
     _currentTimeStateController.close();
     viewModel.dispose();
-    currentScheduleModel.dispose();
+    // currentScheduleModel.dispose();
   }
 }
 

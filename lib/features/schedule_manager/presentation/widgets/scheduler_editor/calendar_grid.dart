@@ -55,8 +55,8 @@ class CalendarGrid extends StatelessWidget {
 
                 var relativeTapPos = b.globalToLocal(details.globalPosition);
                 if (relativeTapPos.dx >= this.leftLineOffset.dx) {
-                  bloc.dispatch(TemporarySleepSegmentCreated(
-                      relativeTapPos, hourSpacing));
+                  bloc.onTemporarySleepSegmentCreated(
+                      relativeTapPos, hourSpacing);
                 }
               },
               child: Stack(children: <Widget>[
