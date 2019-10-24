@@ -6,6 +6,7 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_e
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
+import 'package:polysleep/injection_container.dart';
 
 import 'calendar_grid_painter.dart';
 import 'loaded_segment_widget.dart';

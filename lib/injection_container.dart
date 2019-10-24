@@ -8,6 +8,7 @@ import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 import 'features/schedule_manager/domain/usecases/get_current_schedule.dart';
 import 'features/schedule_manager/presentation/bloc/home_bloc.dart';
 import 'features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
@@ -19,16 +20,16 @@ Future<void> init() async {
   //! Features - Schedule Editor
   // Bloc
   sl.registerFactory(() => ScheduleEditorBloc(
-        getCurrentSchedule: sl(),
-        getDefaultSchedule: sl(),
+        getCurrentOrDefaultSchedule: sl(),
         saveCurrentSchedule: sl(),
       ));
-  sl.registerFactory(() => HomeBloc());
+  sl.registerFactory(() => HomeBloc(sl()));
 
   // Use cases
   sl.registerLazySingleton(() => GetCurrentSchedule(sl()));
   sl.registerLazySingleton(() => GetDefaultSchedule(sl()));
   sl.registerLazySingleton(() => SaveCurrentSchedule(sl()));
+  sl.registerLazySingleton(() => GetCurrentOrDefaultSchedule(sl(), sl(), sl()));
 
   // Repository
   sl.registerLazySingleton<ScheduleEditorRepository>(() =>

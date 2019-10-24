@@ -32,12 +32,15 @@ class CurrentScheduleGraphic extends StatelessWidget {
     //     .toList();
     List<Widget> segmentWidgets = [];
     if (this.currentSchedule != null) {
-      this.currentSchedule.segments.map((seg) => segmentWidgets.add(Container(
-          width: double.infinity,
-          height: double.infinity,
-          child: CustomPaint(
-            painter: SegmentPainter(seg, currentTime),
-          ))));
+      this
+          .currentSchedule
+          .segments
+          .forEach((seg) => segmentWidgets.add(Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: CustomPaint(
+                painter: SegmentPainter(seg, currentTime),
+              ))));
     }
     final DateTime _startSun = DateTime(2019, 1, 1, 6);
     final DateTime _endSun = DateTime(2019, 1, 1, 18);

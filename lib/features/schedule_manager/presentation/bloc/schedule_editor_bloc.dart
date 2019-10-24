@@ -9,6 +9,7 @@ import 'package:polysleep/features/schedule_manager/data/repositories/schedule_e
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 // import 'package:polysleep/features/schedule_manager/domain/usecases/create_temporary_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
@@ -16,6 +17,7 @@ import 'package:polysleep/features/schedule_manager/domain/usecases/save_current
 import 'package:polysleep/features/schedule_manager/domain/usecases/create_temporary_segment.dart';
 import 'package:rxdart/rxdart.dart';
 import './bloc.dart';
+import 'current_schedule_model.dart';
 
 class ScheduleEditorViewModel {
   final selectedSegmentSubject = BehaviorSubject<SleepSegment>();
@@ -36,16 +38,13 @@ class ScheduleEditorViewModel {
 
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
-  final GetCurrentSchedule getCurrentSchedule;
-  final GetDefaultSchedule getDefaultSchedule;
+  final GetCurrentOrDefaultSchedule getCurrentOrDefaultSchedule;
   final SaveCurrentSchedule saveCurrentSchedule;
 
   ScheduleEditorBloc(
-      {@required this.getCurrentSchedule,
-      @required this.getDefaultSchedule,
+      {@required this.getCurrentOrDefaultSchedule,
       @required this.saveCurrentSchedule}) {
-    assert(getCurrentSchedule != null);
-    assert(getDefaultSchedule != null);
+    assert(getCurrentOrDefaultSchedule != null);
     assert(saveCurrentSchedule != null);
 
     _eventHandlerSubject.stream.listen((ScheduleEditorEvent event) {
@@ -55,6 +54,7 @@ class ScheduleEditorBloc
 
 // VIEW MODEL
   final viewModel = ScheduleEditorViewModel();
+  final currentScheduleModel = CurrentScheduleModel();
 
 // TODO: Seed with LoadSchedule so we never even have to call it
   final _eventHandlerSubject = BehaviorSubject<ScheduleEditorEvent>();
@@ -63,21 +63,16 @@ class ScheduleEditorBloc
   void dispose() {
     viewModel.dispose();
     _eventHandlerSubject.close();
+    currentScheduleModel.dispose();
     super.dispose();
   }
 
   void handleEvent(ScheduleEditorEvent event) async {
     // LoadSchedule
     if (event is LoadSchedule) {
-      // TODO: This use case should actually do both of these things
-      final resp = await getCurrentSchedule(NoParams());
+      final resp = await getCurrentOrDefaultSchedule(NoParams());
       resp.fold((failure) async {
-        final defResp = await getDefaultSchedule(NoParams());
-        defResp.fold((failure) async {
-          viewModel.loadedSegmentsSubject.add([]);
-        }, (schedule) async {
-          viewModel.loadedSegmentsSubject.add(schedule.segments);
-        });
+        viewModel.loadedSegmentsSubject.add([]);
       }, (schedule) async {
         viewModel.loadedSegmentsSubject.add(schedule.segments);
       });
@@ -141,6 +136,7 @@ class ScheduleEditorBloc
       }, (updatedSchedule) async {
         // print(' great success!');
         print(updatedSchedule);
+        currentScheduleModel.currentScheduleSubject.add(schedule);
       });
     }
 

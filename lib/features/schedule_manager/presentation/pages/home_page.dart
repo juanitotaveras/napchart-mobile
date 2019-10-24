@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         initialData: DateTime.now(),
         builder: (context, currentTimeStream) {
           return StreamBuilder<SleepSchedule>(
-              stream: _bloc.viewModel.currentScheduleStream,
+              stream: _bloc.currentScheduleModel.currentScheduleStream,
               initialData: null,
               builder: (context, currentScheduleStream) {
                 return Expanded(

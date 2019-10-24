@@ -106,7 +106,7 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
 
   @override
   void dispose() {
-    bloc.dispose();
+    // bloc.dispose();
     super.dispose();
   }
 }

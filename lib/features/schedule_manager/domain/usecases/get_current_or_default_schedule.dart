@@ -18,17 +18,10 @@ class GetCurrentOrDefaultSchedule extends UseCase<SleepSchedule, NoParams> {
   @override
   Future<Either<Failure, SleepSchedule>> call(NoParams params) async {
     final resp = await getCurrentSchedule(NoParams());
-    resp.fold((failure) async {
+    return await resp.fold((failure) async {
       return await getDefaultSchedule(NoParams());
-      // defResp.fold((failure) async {
-      //   viewModel.loadedSegmentsSubject.add([]);
-      // }, (schedule) async {
-      //   viewModel.loadedSegmentsSubject.add(schedule.segments);
-      // });
     }, (schedule) async {
-      // viewModel.loadedSegmentsSubject.add(schedule.segments);
       return resp;
     });
-    return Left(GeneralFailure());
   }
 }
