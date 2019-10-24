@@ -36,7 +36,7 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
             title: Text('Edit schedule'),
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context, false),
+              onPressed: () => Navigator.pop(context, 'test function'),
             ),
             actions: <Widget>[
               // action button

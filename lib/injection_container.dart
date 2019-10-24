@@ -9,8 +9,10 @@ import 'package:polysleep/features/schedule_manager/domain/usecases/save_current
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/schedule_manager/domain/usecases/get_current_schedule.dart';
+import 'features/schedule_manager/presentation/bloc/home_bloc.dart';
 import 'features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 
+// sl stands for Service Locator
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -21,6 +23,7 @@ Future<void> init() async {
         getDefaultSchedule: sl(),
         saveCurrentSchedule: sl(),
       ));
+  sl.registerFactory(() => HomeBloc());
 
   // Use cases
   sl.registerLazySingleton(() => GetCurrentSchedule(sl()));
