@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/time.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/sun_times_painter.dart';
@@ -9,23 +10,35 @@ import '../../../../core/utils.dart';
 import './current_schedule_graphic_styles.dart';
 
 class CurrentScheduleGraphic extends StatelessWidget {
-  CurrentScheduleGraphic({Key key, this.currentTime}) : super(key: key);
+  CurrentScheduleGraphic(
+      {Key key, @required this.currentTime, @required this.currentSchedule})
+      : super(key: key);
   // TODO: Have a list of segments as input
   final DateTime currentTime;
+  final SleepSchedule currentSchedule;
 
   @override
   Widget build(BuildContext context) {
-    final DateTime _start = DateTime(2019, 1, 1, 22); // y, m d, h, m
-    final DateTime _end = DateTime(2019, 1, 2, 6);
-    final List<SleepSegment> segments = [
-      SleepSegment(startTime: _start, endTime: _end)
-    ];
-    final List<Widget> segmentWidgets = segments
-        .map((seg) => Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: CustomPaint(painter: SegmentPainter(seg, currentTime))))
-        .toList();
+    // final DateTime _start = DateTime(2019, 1, 1, 22); // y, m d, h, m
+    // final DateTime _end = DateTime(2019, 1, 2, 6);
+    // final List<SleepSegment> segments = [
+    //   SleepSegment(startTime: _start, endTime: _end)
+    // ];
+    // List<Widget> segmentWidgets = segments
+    //     .map((seg) => Container(
+    //         width: double.infinity,
+    //         height: double.infinity,
+    //         child: CustomPaint(painter: SegmentPainter(seg, currentTime))))
+    //     .toList();
+    List<Widget> segmentWidgets = [];
+    if (this.currentSchedule != null) {
+      this.currentSchedule.segments.map((seg) => segmentWidgets.add(Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: CustomPaint(
+            painter: SegmentPainter(seg, currentTime),
+          ))));
+    }
     final DateTime _startSun = DateTime(2019, 1, 1, 6);
     final DateTime _endSun = DateTime(2019, 1, 1, 18);
     final sunSegment = SleepSegment(startTime: _startSun, endTime: _endSun);

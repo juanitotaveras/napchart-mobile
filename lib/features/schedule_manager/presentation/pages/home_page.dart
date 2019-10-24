@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/home_event.dart';
 import '../widgets/navigation_drawer.dart';
 import '../localizations.dart';
@@ -94,11 +95,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return StreamBuilder<DateTime>(
         stream: _bloc.currentTime,
         initialData: DateTime.now(),
-        builder: (context, snapshot) {
-          return Expanded(
-              child: CurrentScheduleGraphic(
-                  currentTime: snapshot.data) //BaseScheduleGraphic()
-              );
+        builder: (context, currentTimeStream) {
+          return StreamBuilder<SleepSchedule>(
+              stream: _bloc.viewModel.currentScheduleStream,
+              initialData: null,
+              builder: (context, currentScheduleStream) {
+                return Expanded(
+                    child: CurrentScheduleGraphic(
+                  currentTime: currentTimeStream.data,
+                  currentSchedule: currentScheduleStream.data,
+                ) //BaseScheduleGraphic()
+                    );
+              });
         });
   }
 

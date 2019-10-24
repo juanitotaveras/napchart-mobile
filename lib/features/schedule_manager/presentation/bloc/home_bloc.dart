@@ -20,6 +20,8 @@ class HomeBloc {
   Stream<DateTime> get currentTime => _currentTimeStateController.stream;
   StreamSink<DateTime> get _inTime => _currentTimeStateController.sink;
 
+  final viewModel = HomeViewModel();
+
   final _eventHandlerSubject = BehaviorSubject<HomeEvent>();
   Timer timer;
 
@@ -38,6 +40,7 @@ class HomeBloc {
 
   void dispose() {
     _currentTimeStateController.close();
+    viewModel.dispose();
   }
 }
 

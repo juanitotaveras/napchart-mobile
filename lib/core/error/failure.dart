@@ -9,3 +9,5 @@ abstract class Failure extends Equatable {
 class PreferencesFailure extends Failure {}
 
 class AssetsFailure extends Failure {}
+
+class GeneralFailure extends Failure {}
