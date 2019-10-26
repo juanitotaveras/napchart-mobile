@@ -45,15 +45,18 @@ class EditSegmentBottomSheetPresenter extends EditBottomSheetView {
 }
 
 class EditSegmentBottomSheetWidget extends StatelessWidget {
+  // TODO: Need access to the entire schedule so we can know
+  // if this one is temporary or not.
+  ScheduleEditorBloc _bloc;
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<ScheduleEditorBloc>(context);
+    _bloc = BlocProvider.of<ScheduleEditorBloc>(context);
 
     const cornerRadius = 5.0;
     const corner = Radius.circular(cornerRadius);
 
     return StreamBuilder<SleepSegment>(
-      stream: bloc.viewModel.selectedSegmentStream,
+      stream: _bloc.selectedSegmentStream,
       initialData: null,
       builder: (context, snapshot) {
         final selectedSegment = snapshot.data;
@@ -78,7 +81,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                             size: 30.0,
                           ),
                           onPressed: () {
-                            bloc.onSelectedSegmentCancelled();
+                            _bloc.onSelectedSegmentCancelled();
                           }),
                       Expanded(
                           flex: 1,
@@ -126,17 +129,12 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
                   SizedBox(height: 0),
                   Row(
                     children: <Widget>[
-                      // SizedBox(width: 10),
-                      // RaisedButton(
-                      //   onPressed: () {
-                      //     print('delete pressed');
-                      //   },
-                      //   child: Text('Delete', style: TextStyle(fontSize: 20)),
-                      // ),
+                      SizedBox(width: 10),
+                      deleteButton(true),
                       Expanded(flex: 100, child: Container()),
                       FlatButton(
                         onPressed: () {
-                          bloc.onSelectedSegmentSaved();
+                          _bloc.onSelectedSegmentSaved();
                         },
                         child: Text('SAVE',
                             style: TextStyle(fontSize: 20, color: Colors.red)),
@@ -149,6 +147,19 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
         }
         return Container();
       },
+    );
+  }
+
+  Widget deleteButton(bool shouldShow) {
+    if (!shouldShow) {
+      return SizedBox();
+    }
+    return RaisedButton(
+      onPressed: () {
+        print('delete pressed');
+        _bloc.onDeleteSelectedSegmentPressed();
+      },
+      child: Text('Delete', style: TextStyle(fontSize: 20)),
     );
   }
 }

@@ -29,7 +29,7 @@ class TemporarySegmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     _bloc = BlocProvider.of<ScheduleEditorBloc>(context);
     return StreamBuilder<SleepSegment>(
-        stream: _bloc.viewModel.selectedSegmentStream,
+        stream: _bloc.selectedSegmentStream,
         initialData: null,
         builder: (context, snapshot) {
           final s = snapshot.data;
@@ -149,7 +149,7 @@ class TemporarySegmentWidget extends StatelessWidget {
               RenderBox box = context.findRenderObject();
               var relativeTapPos = box.globalToLocal(details.globalPosition);
               BlocProvider.of<ScheduleEditorBloc>(context)
-                  .onSelectedSleepSegmentStartTimeDragged(
+                  .onSelectedSegmentStartTimeDragged(
                       relativeTapPos, hourSpacing);
             },
             child: renderDragCircleGraphic()));

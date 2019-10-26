@@ -11,30 +11,9 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedu
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 // import 'package:polysleep/features/schedule_manager/domain/usecases/create_temporary_segment.dart';
-import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
-import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
-import 'package:polysleep/features/schedule_manager/domain/usecases/create_temporary_segment.dart';
 import 'package:rxdart/rxdart.dart';
 import './bloc.dart';
-import 'current_schedule_model.dart';
-
-class ScheduleEditorViewModel {
-  final selectedSegmentSubject = BehaviorSubject<SleepSegment>();
-  Stream<SleepSegment> get selectedSegmentStream =>
-      selectedSegmentSubject.stream;
-  SleepSegment get selectedSegment => selectedSegmentSubject.value;
-
-  final loadedSegmentsSubject = BehaviorSubject<List<SleepSegment>>();
-  Stream<List<SleepSegment>> get loadedSegmentsStream =>
-      loadedSegmentsSubject.stream;
-  List<SleepSegment> get loadedSegments => loadedSegmentsSubject.value;
-
-  dispose() {
-    selectedSegmentSubject.close();
-    loadedSegmentsSubject.close();
-  }
-}
 
 class ScheduleEditorBloc
     extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
@@ -48,77 +27,79 @@ class ScheduleEditorBloc
     assert(saveCurrentSchedule != null);
   }
 
-// VIEW MODEL
-  final viewModel = ScheduleEditorViewModel();
-  // final currentScheduleModel = CurrentScheduleModel();
+//! streams
+  final selectedSegmentSubject = BehaviorSubject<SleepSegment>();
+  Stream<SleepSegment> get selectedSegmentStream =>
+      selectedSegmentSubject.stream;
+  SleepSegment get selectedSegment => selectedSegmentSubject.value;
 
-// TODO: Seed with LoadSchedule so we never even have to call it
-  final _eventHandlerSubject = BehaviorSubject<ScheduleEditorEvent>();
+  final loadedSegmentsSubject = BehaviorSubject<List<SleepSegment>>();
+  Stream<List<SleepSegment>> get loadedSegmentsStream =>
+      loadedSegmentsSubject.stream;
+  List<SleepSegment> get loadedSegments => loadedSegmentsSubject.value;
 
   @override
   void dispose() {
-    viewModel.dispose();
-    _eventHandlerSubject.close();
+    selectedSegmentSubject.close();
+    loadedSegmentsSubject.close();
     // currentScheduleModel.dispose();
     super.dispose();
   }
 
-  //! Event handlers
+  /// ---------------   START EVENT HANDLERS
   onLoadSchedule() async {
     final resp = await getCurrentOrDefaultSchedule(NoParams());
     resp.fold((failure) async {
-      viewModel.loadedSegmentsSubject.add([]);
+      loadedSegmentsSubject.add([]);
     }, (schedule) async {
-      viewModel.loadedSegmentsSubject.add(schedule.segments);
+      loadedSegmentsSubject.add(schedule.segments);
     });
   }
 
-  onTemporarySleepSegmentCreated(Offset touchCoord, double hourPixels) {
+  onTemporarySegmentCreated(Offset touchCoord, double hourPixels) {
     DateTime t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourPixels, 30);
     DateTime endTime = t.add(Duration(minutes: 60));
-    viewModel.selectedSegmentSubject
-        .add(SleepSegment(startTime: t, endTime: endTime));
+    selectedSegmentSubject.add(SleepSegment(startTime: t, endTime: endTime));
   }
 
   onSelectedSleepSegmentDragged(Offset touchCoord, double hourSpacing) {
     final t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 15);
-    SleepSegment currentSegment = viewModel.selectedSegment;
+    SleepSegment currentSegment = selectedSegment;
     if (t.compareTo(currentSegment.startTime) != 0) {
       final selectedSegment = SleepSegment(
           startTime: t,
           endTime:
               t.add(Duration(minutes: currentSegment.getDurationMinutes())));
-      viewModel.selectedSegmentSubject.add(selectedSegment);
+      selectedSegmentSubject.add(selectedSegment);
     }
   }
 
-  onSelectedSleepSegmentStartTimeDragged(
-      Offset touchCoord, double hourSpacing) {
+  onSelectedSegmentStartTimeDragged(Offset touchCoord, double hourSpacing) {
     final t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 5);
-    SleepSegment currentSegment = viewModel.selectedSegment;
+    SleepSegment currentSegment = selectedSegment;
     if (t.compareTo(currentSegment.startTime) != 0) {
       final newSeg =
           SleepSegment(startTime: t, endTime: currentSegment.endTime);
-      viewModel.selectedSegmentSubject.add(newSeg);
+      selectedSegmentSubject.add(newSeg);
     }
   }
 
   onSelectedSegmentEndTimeDragged(Offset touchCoord, double hourSpacing) {
     final t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 5);
-    SleepSegment currentSegment = viewModel.selectedSegment;
+    SleepSegment currentSegment = selectedSegment;
     if (t.compareTo(currentSegment.startTime) != 0) {
       final newSeg =
           SleepSegment(startTime: currentSegment.startTime, endTime: t);
-      viewModel.selectedSegmentSubject.add(newSeg);
+      selectedSegmentSubject.add(newSeg);
     }
   }
 
   onSaveChangesPressed() async {
-    SleepSchedule schedule = SleepSchedule(segments: viewModel.loadedSegments);
+    SleepSchedule schedule = SleepSchedule(segments: loadedSegments);
     final resp = await saveCurrentSchedule(Params(schedule: schedule));
     resp.fold((failure) async {
       // print('there has been an error');
@@ -126,17 +107,17 @@ class ScheduleEditorBloc
     }, (updatedSchedule) async {
       // print(' great success!');
       print(updatedSchedule);
-      // viewModel.currentScheduleSubject.add(schedule);
+      // currentScheduleSubject.add(schedule);
     });
   }
 
   onSelectedSegmentCancelled() async {
-    final lSegments = viewModel.loadedSegments;
+    final lSegments = loadedSegments;
     final currentlyEditing =
         lSegments.where((seg) => seg.isBeingEdited).toList();
     if (currentlyEditing.length == 0) {
-      viewModel.loadedSegmentsSubject.add([...lSegments]);
-      viewModel.selectedSegmentSubject.add(null);
+      loadedSegmentsSubject.add([...lSegments]);
+      selectedSegmentSubject.add(null);
     } else {
       final segs = lSegments
           .map((seg) => SleepSegment(
@@ -145,13 +126,13 @@ class ScheduleEditorBloc
               isBeingEdited: false,
               name: seg.name))
           .toList();
-      viewModel.loadedSegmentsSubject.add(segs);
-      viewModel.selectedSegmentSubject.add(null);
+      loadedSegmentsSubject.add(segs);
+      selectedSegmentSubject.add(null);
     }
   }
 
   onLoadedSegmentTapped(int index) async {
-    final segs = viewModel.loadedSegments
+    final segs = loadedSegments
         .asMap()
         .map((idx, seg) {
           return MapEntry(
@@ -165,19 +146,19 @@ class ScheduleEditorBloc
         .values
         .toList();
     final selectedSegment = segs.where((seg) => seg.isBeingEdited).toList()[0];
-    viewModel.loadedSegmentsSubject.add(segs);
-    viewModel.selectedSegmentSubject.add(selectedSegment);
+    loadedSegmentsSubject.add(segs);
+    selectedSegmentSubject.add(selectedSegment);
   }
 
   onSelectedSegmentSaved() {
-    final lSegments = viewModel.loadedSegments;
-    final sSegment = viewModel.selectedSegment;
+    final lSegments = loadedSegments;
+    final sSegment = selectedSegment;
     final currentlyEdited =
         lSegments.where((seg) => seg.isBeingEdited).toList();
     if (currentlyEdited.length == 0) {
       // this is a new segment
-      viewModel.loadedSegmentsSubject.add([...lSegments, sSegment]);
-      viewModel.selectedSegmentSubject.add(null);
+      loadedSegmentsSubject.add([...lSegments, sSegment]);
+      selectedSegmentSubject.add(null);
     } else {
       final segs = lSegments.map((seg) {
         if (seg.isBeingEdited) {
@@ -194,21 +175,23 @@ class ScheduleEditorBloc
             name: seg.name,
             isBeingEdited: false);
       }).toList();
-      viewModel.loadedSegmentsSubject.add(segs);
-      viewModel.selectedSegmentSubject.add(null);
+      loadedSegmentsSubject.add(segs);
+      selectedSegmentSubject.add(null);
     }
   }
 
-  @override
-  ScheduleEditorState get initialState => Init();
+  onDeleteSelectedSegmentPressed() {
+    print('hey hey');
+    final remainingSegments =
+        loadedSegments.where((seg) => !seg.isBeingEdited).toList();
+    loadedSegmentsSubject.add(remainingSegments);
+    selectedSegmentSubject.add(null);
+  }
+
+  /// ---------------   END EVENT HANDLERS
 
   @override
-  void dispatch(ScheduleEditorEvent event) {
-    // TODO: implement dispatch
-    _eventHandlerSubject.add(event);
-    // print('LE DISPATCH: $event');
-    super.dispatch(event);
-  }
+  ScheduleEditorState get initialState => Init();
 
   @override
   Stream<ScheduleEditorState> mapEventToState(

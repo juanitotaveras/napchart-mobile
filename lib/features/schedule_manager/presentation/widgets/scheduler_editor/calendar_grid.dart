@@ -22,7 +22,7 @@ class CalendarGrid extends StatelessWidget {
         BlocProvider.of<ScheduleEditorBloc>(context);
     final calendarHeight = 1440.0;
     return StreamBuilder<List<SleepSegment>>(
-        stream: bloc.viewModel.loadedSegmentsStream,
+        stream: bloc.loadedSegmentsStream,
         initialData: null,
         builder: (context, snapshot) {
           List<SleepSegment> loadedSegments = snapshot.data;
@@ -55,8 +55,7 @@ class CalendarGrid extends StatelessWidget {
 
                 var relativeTapPos = b.globalToLocal(details.globalPosition);
                 if (relativeTapPos.dx >= this.leftLineOffset.dx) {
-                  bloc.onTemporarySleepSegmentCreated(
-                      relativeTapPos, hourSpacing);
+                  bloc.onTemporarySegmentCreated(relativeTapPos, hourSpacing);
                 }
               },
               child: Stack(children: <Widget>[

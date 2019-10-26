@@ -10,12 +10,14 @@ import 'home_event.dart';
 
 class HomeBloc {
   HomeBloc(this.getCurrentOrDefaultSchedule) {
-    _eventHandlerSubject.listen((HomeEvent event) {
-      _handleEvent(event);
-      timer = Timer.periodic(
-          Duration(seconds: 1), (Timer t) => produceCurrentTime());
-    });
+    timer =
+        Timer.periodic(Duration(seconds: 1), (Timer t) => produceCurrentTime());
   }
+
+  final currentScheduleSubject = BehaviorSubject<SleepSchedule>();
+  Stream<SleepSchedule> get currentScheduleStream =>
+      currentScheduleSubject.stream;
+  SleepSchedule get currentSchedule => currentScheduleSubject.value;
 
   final GetCurrentOrDefaultSchedule getCurrentOrDefaultSchedule;
   // TODO: Load our schedule immediately
@@ -25,60 +27,26 @@ class HomeBloc {
   Stream<DateTime> get currentTime => _currentTimeStateController.stream;
   StreamSink<DateTime> get _inTime => _currentTimeStateController.sink;
 
-  final viewModel = HomeViewModel();
-  // final currentScheduleModel = CurrentScheduleModel();
-
-  final _eventHandlerSubject =
-      BehaviorSubject<HomeEvent>.seeded(LoadCurrentSchedule());
   Timer timer;
 
   void produceCurrentTime() {
     _inTime.add(DateTime.now());
   }
 
-  void _handleEvent(HomeEvent event) async {
-    if (event is LoadCurrentSchedule) {
-      final resp = await getCurrentOrDefaultSchedule(NoParams());
-      resp.fold((failure) async {
-        // viewModel.currentScheduleSubject.add(null);
-      }, (schedule) async {
-        // viewModel.currentScheduleSubject.add(schedule);
-        viewModel.currentScheduleSubject.add(schedule);
-      });
-    }
-  }
-
   //! Event handlers
   void onLoadSchedule() async {
     final resp = await getCurrentOrDefaultSchedule(NoParams());
     resp.fold((failure) async {
-      // viewModel.currentScheduleSubject.add(null);
+      // currentScheduleSubject.add(null);
     }, (schedule) async {
-      // viewModel.currentScheduleSubject.add(schedule);
-      viewModel.currentScheduleSubject.add(schedule);
+      // currentScheduleSubject.add(schedule);
+      currentScheduleSubject.add(schedule);
     });
   }
 
-  // void dispatch(HomeEvent event) {
-  //   _handleEvent(event);
-  // }
-
+  //! Cleanup
   void dispose() {
     _currentTimeStateController.close();
-    viewModel.dispose();
-    // currentScheduleModel.dispose();
-  }
-}
-
-class HomeViewModel {
-  final currentScheduleSubject = BehaviorSubject<SleepSchedule>();
-  Stream<SleepSchedule> get currentScheduleStream =>
-      currentScheduleSubject.stream;
-  SleepSchedule get currentSchedule => currentScheduleSubject.value;
-
-  dispose() {
     currentScheduleSubject.close();
   }
 }
-
-// final bloc = HomeBloc();

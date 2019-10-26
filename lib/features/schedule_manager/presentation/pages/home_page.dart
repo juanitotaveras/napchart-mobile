@@ -19,17 +19,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  // final _bloc = HomeBloc();
   final _bloc = sl<HomeBloc>();
   void _goToSleepScheduleCreator(context) async {
-    // TODO: Use await, and refresh our Bloc when we come back
-    final result = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ScheduleEditor()),
     );
-    print('result: $result');
-    // TODO: Let's refresh our Bloc here
     _bloc.onLoadSchedule();
   }
 
@@ -97,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
         initialData: DateTime.now(),
         builder: (context, currentTimeStream) {
           return StreamBuilder<SleepSchedule>(
-              stream: _bloc.viewModel.currentScheduleStream,
+              stream: _bloc.currentScheduleStream,
               initialData: null,
               builder: (context, currentScheduleStream) {
                 return Expanded(
