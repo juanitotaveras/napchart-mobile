@@ -6,6 +6,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/pages/schedule_editor.dart';
 import '../../../../../injection_container.dart';
 
@@ -27,7 +28,7 @@ class TemporarySegmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _bloc = BlocProvider.of<ScheduleEditorBloc>(context);
+    _bloc = ViewModelProvider.of<ScheduleEditorBloc>(context);
     return StreamBuilder<SleepSegment>(
         stream: _bloc.selectedSegmentStream,
         initialData: null,
@@ -148,7 +149,7 @@ class TemporarySegmentWidget extends StatelessWidget {
             onVerticalDragUpdate: (DragUpdateDetails details) {
               RenderBox box = context.findRenderObject();
               var relativeTapPos = box.globalToLocal(details.globalPosition);
-              BlocProvider.of<ScheduleEditorBloc>(context)
+              ViewModelProvider.of<ScheduleEditorBloc>(context)
                   .onSelectedSegmentStartTimeDragged(
                       relativeTapPos, hourSpacing);
             },
@@ -164,7 +165,7 @@ class TemporarySegmentWidget extends StatelessWidget {
             onVerticalDragUpdate: (DragUpdateDetails details) {
               RenderBox box = context.findRenderObject();
               var relativeTapPos = box.globalToLocal(details.globalPosition);
-              BlocProvider.of<ScheduleEditorBloc>(context)
+              ViewModelProvider.of<ScheduleEditorBloc>(context)
                   .onSelectedSegmentEndTimeDragged(relativeTapPos, hourSpacing);
             },
             child: renderDragCircleGraphic()));

@@ -4,14 +4,16 @@ import 'package:polysleep/core/usecases/usecase.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/current_schedule_model.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:rxdart/subjects.dart';
 
 import 'home_event.dart';
 
-class HomeBloc {
-  HomeBloc(this.getCurrentOrDefaultSchedule) {
+class HomeViewModel implements ViewModelBase {
+  HomeViewModel(this.getCurrentOrDefaultSchedule) {
     timer =
         Timer.periodic(Duration(seconds: 1), (Timer t) => produceCurrentTime());
+    onLoadSchedule();
   }
 
   final currentScheduleSubject = BehaviorSubject<SleepSchedule>();

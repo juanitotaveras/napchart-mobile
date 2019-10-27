@@ -5,6 +5,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
 import 'package:polysleep/injection_container.dart';
 
@@ -19,7 +20,7 @@ class CalendarGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ScheduleEditorBloc bloc =
-        BlocProvider.of<ScheduleEditorBloc>(context);
+        ViewModelProvider.of<ScheduleEditorBloc>(context);
     final calendarHeight = 1440.0;
     return StreamBuilder<List<SleepSegment>>(
         stream: bloc.loadedSegmentsStream,

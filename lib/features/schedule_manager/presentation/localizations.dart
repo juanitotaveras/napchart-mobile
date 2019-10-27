@@ -6,63 +6,53 @@ import 'l10n/messages_all.dart';
 class AppLocalizations {
   static Future<AppLocalizations> load(Locale locale) {
     final String name =
-      locale.countryCode == null ? locale.languageCode : locale.toString();
+        locale.countryCode == null ? locale.languageCode : locale.toString();
     final String localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
       return AppLocalizations();
     });
   }
+
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
   String get title {
-    return Intl.message(
-      'Hello World',
-      name: 'title'
-    );
+    return Intl.message('Hello World', name: 'title');
   }
 
   String get home {
-    return Intl.message(
-        'My schedule',
-    name: 'home');
+    return Intl.message('My schedule', name: 'home');
   }
 
   String get settings {
-    return Intl.message(
-        'Settings',
-    name: 'settings');
+    return Intl.message('Settings', name: 'settings');
   }
 
   String get information {
-    return Intl.message(
-      'Information',
-      name: 'information'
-    );
+    return Intl.message('Information', name: 'information');
   }
 
   String get shortPolysleepDescTitle {
-    return Intl.message(
-        'What is polyphasic sleep?',
-        name: 'shortPolysleepDescTitle'
-    );
+    return Intl.message('What is polyphasic sleep?',
+        name: 'shortPolysleepDescTitle');
   }
 
   String get dismissCaps {
-    return Intl.message(
-      'DISMISS',
-      name: 'dismissCaps'
-    );
+    return Intl.message('DISMISS', name: 'dismissCaps');
   }
 
   String get createSleepSchedule {
-    return Intl.message(
-      'Create sleep schedule',
-      name: 'createSleepSchedule'
-    );
+    return Intl.message('Create sleep schedule', name: 'createSleepSchedule');
   }
+
+  String get awakeStart => Intl.message('Awake: ', name: 'awake');
+
+  String get asleepStart => Intl.message('Asleep: ', name: 'asleep');
+
+  String get chooseScheduleButtonText =>
+      Intl.message('Choose Schedule', name: 'chooseSchedule');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

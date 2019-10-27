@@ -12,11 +12,11 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 // import 'package:polysleep/features/schedule_manager/domain/usecases/create_temporary_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import './bloc.dart';
 
-class ScheduleEditorBloc
-    extends Bloc<ScheduleEditorEvent, ScheduleEditorState> {
+class ScheduleEditorBloc implements ViewModelBase {
   final GetCurrentOrDefaultSchedule getCurrentOrDefaultSchedule;
   final SaveCurrentSchedule saveCurrentSchedule;
 
@@ -38,12 +38,9 @@ class ScheduleEditorBloc
       loadedSegmentsSubject.stream;
   List<SleepSegment> get loadedSegments => loadedSegmentsSubject.value;
 
-  @override
   void dispose() {
     selectedSegmentSubject.close();
     loadedSegmentsSubject.close();
-    // currentScheduleModel.dispose();
-    super.dispose();
   }
 
   /// ---------------   START EVENT HANDLERS
@@ -189,14 +186,6 @@ class ScheduleEditorBloc
   }
 
   /// ---------------   END EVENT HANDLERS
-
-  @override
-  ScheduleEditorState get initialState => Init();
-
-  @override
-  Stream<ScheduleEditorState> mapEventToState(
-    ScheduleEditorEvent event,
-  ) async* {}
 }
 
 // TODO: Put these into an EventMapper class

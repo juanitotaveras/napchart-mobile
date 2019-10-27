@@ -8,10 +8,12 @@ import 'package:meta/meta.dart';
 
 abstract class AssetsDataSource {
   Future<SleepScheduleModel> getDefaultSchedule();
+  Future<List<SleepScheduleModel>> getScheduleTemplates();
 }
 
 const DEFAULT_SCHEDULE_NAME = 'monophasic.json';
 const TEMPLATES_FOLDER_PATH = 'assets/schedule_templates';
+const SCHEDULES_LIST = ['monophasic.json', 'biphasic.json'];
 
 class AssetsDataSourceImpl implements AssetsDataSource {
   final AssetBundle rootBundle;
@@ -28,5 +30,23 @@ class AssetsDataSourceImpl implements AssetsDataSource {
       print(exp);
       throw AssetsException();
     }
+  }
+
+  @override
+  Future<List<SleepScheduleModel>> getScheduleTemplates() async {
+    final List<SleepScheduleModel> templates = [];
+    try {
+      SCHEDULES_LIST.forEach((fileName) async {
+        final res =
+            await rootBundle.loadString('$TEMPLATES_FOLDER_PATH/$fileName');
+        final Map<String, dynamic> jsonObj = json.decode(res);
+        final sched = SleepScheduleModel.fromJson(jsonObj);
+        templates.add(sched);
+      });
+    } catch (exp) {
+      print(exp);
+      throw AssetsException();
+    }
+    return Future.value(templates);
   }
 }

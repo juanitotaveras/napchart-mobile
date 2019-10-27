@@ -6,6 +6,7 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_e
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:intl/intl.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 
 abstract class EditBottomSheetView {
   String getStartTime();
@@ -50,7 +51,7 @@ class EditSegmentBottomSheetWidget extends StatelessWidget {
   ScheduleEditorBloc _bloc;
   @override
   Widget build(BuildContext context) {
-    _bloc = BlocProvider.of<ScheduleEditorBloc>(context);
+    _bloc = ViewModelProvider.of<ScheduleEditorBloc>(context);
 
     const cornerRadius = 5.0;
     const corner = Radius.circular(cornerRadius);

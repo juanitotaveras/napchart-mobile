@@ -5,7 +5,7 @@ abstract class ViewModelBase {
   void dispose();
 }
 
-// Generic BLoC provider
+// Generic ViewModel provider
 class ViewModelProvider<T extends ViewModelBase> extends StatefulWidget {
   ViewModelProvider({
     Key key,

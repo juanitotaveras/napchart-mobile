@@ -77,6 +77,16 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, List<SleepSchedule>>> getScheduleTemplates() async {
+    try {
+      final scheduleTemplates = await assetsDataSource.getScheduleTemplates();
+      return Right(scheduleTemplates);
+    } on AssetsException {
+      return Left(AssetsFailure());
+    }
+  }
+
   // We will need to return a list of all our schedule at some point.
   // How about a
 }

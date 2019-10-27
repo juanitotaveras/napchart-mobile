@@ -6,10 +6,12 @@ import 'package:polysleep/features/schedule_manager/data/repositories/schedule_e
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/choose_template_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 import 'features/schedule_manager/domain/usecases/get_current_schedule.dart';
+import 'features/schedule_manager/domain/usecases/load_schedule_templates.dart';
 import 'features/schedule_manager/presentation/bloc/home_bloc.dart';
 import 'features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 
@@ -23,13 +25,15 @@ Future<void> init() async {
         getCurrentOrDefaultSchedule: sl(),
         saveCurrentSchedule: sl(),
       ));
-  sl.registerFactory(() => HomeBloc(sl()));
+  sl.registerFactory(() => HomeViewModel(sl()));
+  sl.registerFactory(() => ChooseTemplateViewModel(sl()));
 
   // Use cases
   sl.registerLazySingleton(() => GetCurrentSchedule(sl()));
   sl.registerLazySingleton(() => GetDefaultSchedule(sl()));
   sl.registerLazySingleton(() => SaveCurrentSchedule(sl()));
   sl.registerLazySingleton(() => GetCurrentOrDefaultSchedule(sl(), sl(), sl()));
+  sl.registerLazySingleton(() => LoadScheduleTemplates(sl()));
 
   // Repository
   sl.registerLazySingleton<ScheduleEditorRepository>(() =>

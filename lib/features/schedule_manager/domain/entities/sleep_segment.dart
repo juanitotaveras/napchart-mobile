@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 
 class SleepSegment {
@@ -62,4 +63,11 @@ class SleepSegment {
 
     return ms ~/ 60000;
   }
+
+  static int getTotalSleepMinutes(List<SleepSegment> segs) => segs
+      .map((seg) => seg.getDurationMinutes())
+      .reduce((segA, segB) => segA + segB);
+
+  static int getTotalAwakeMinutes(List<SleepSegment> segs) =>
+      MINUTES_PER_DAY - SleepSegment.getTotalSleepMinutes(segs);
 }

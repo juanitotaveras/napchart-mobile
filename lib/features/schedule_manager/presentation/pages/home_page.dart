@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/home_event.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import '../widgets/navigation_drawer.dart';
 import '../localizations.dart';
 import 'schedule_editor.dart';
@@ -19,7 +20,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _bloc = sl<HomeBloc>();
+  final _bloc = sl<HomeViewModel>();
   void _goToSleepScheduleCreator(context) async {
     await Navigator.push(
       context,
@@ -109,22 +110,25 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     bool isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      drawer: NavigationDrawer(),
+    return ViewModelProvider(
+      bloc: _bloc,
+      child: Scaffold(
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
+        ),
+        drawer: NavigationDrawer(),
 //      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: /*(isPortrait) ?*/ _buildPortrait(
-          context) /*: _buildLandscape(context)*/,
+        body: /*(isPortrait) ?*/ _buildPortrait(
+            context) /*: _buildLandscape(context)*/,
 //      floatingActionButton: FloatingAction
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _goToSleepScheduleCreator(context),
-        child: Icon(Icons.create),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _goToSleepScheduleCreator(context),
+          child: Icon(Icons.create),
 //        icon: Icon(Icons.create),
 //        label: Text(AppLocalizations.of(context).createSleepSchedule),
+        ),
       ),
     );
   }

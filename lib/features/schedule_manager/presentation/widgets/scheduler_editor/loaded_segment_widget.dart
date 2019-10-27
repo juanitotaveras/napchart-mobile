@@ -4,6 +4,7 @@ import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 
 const cornerRadius = 10.0;
 const corner = Radius.circular(cornerRadius);
@@ -19,7 +20,7 @@ class LoadedSegmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<ScheduleEditorBloc>(context);
+    final bloc = ViewModelProvider.of<ScheduleEditorBloc>(context);
     final List<Widget> segments = [];
     if (!segment.startAndEndsOnSameDay()) {
       // must create two segments
