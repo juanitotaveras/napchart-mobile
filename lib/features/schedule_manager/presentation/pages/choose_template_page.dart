@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/choose_template_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/widgets/current_schedule_graphic.dart';
 import 'package:polysleep/injection_container.dart';
 
 class ChooseTemplatePage extends StatelessWidget {
@@ -12,24 +16,40 @@ class ChooseTemplatePage extends StatelessWidget {
       appBar: AppBar(title: Text('Choose a template')),
       body: ViewModelProvider(
           bloc: this._viewModel,
-          child: Container(
-              width: double.infinity,
-              child: DataTable(
-                columns: [
-                  DataColumn(label: Text('Name')),
-                  DataColumn(label: Text('Sleep time')),
-                  DataColumn(label: Text('Difficulty')),
-                  // DataColumn(label: Text('Info'))
-                ],
-                rows: [
-                  DataRow(cells: [
-                    DataCell(Text('hi')),
-                    DataCell(Text('hi2')),
-                    DataCell(Text('hi3')),
-                    // DataCell(Text('info'))
-                  ])
-                ],
-              ))),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                  flex: 2,
+                  child: ListView(
+                    children: <Widget>[templateChooserRow()],
+                  )),
+              Expanded(
+                child: CurrentScheduleGraphic(
+                  currentTime: DateTime.now(),
+                  currentSchedule: SleepSchedule(name: "", segments: [
+                    SleepSegment(
+                        startTime: SegmentDateTime(hr: 1),
+                        endTime: SegmentDateTime(hr: 3))
+                  ]),
+                ),
+              )
+            ],
+          )),
+    );
+  }
+
+  Widget templateChooserRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Expanded(
+          child: Text('Monophasic'),
+        ),
+        Expanded(child: Text('8h2m asleep')),
+        Expanded(child: Text('Easy')),
+        Expanded(child: Icon(Icons.info))
+      ],
     );
   }
 }
