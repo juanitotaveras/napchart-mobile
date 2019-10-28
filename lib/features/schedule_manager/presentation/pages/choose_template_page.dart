@@ -38,15 +38,17 @@ class ChooseTemplatePage extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   flex: 2,
-                  child: Text(name),
+                  child: Text(
+                    name,
+                    style: TextStyle(fontWeight: FontWeight.w300),
+                  ),
                 ),
                 Expanded(
                     flex: 2,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('8h2m asleep'),
-                        Text('13h awake')
+                        Text('8h 2m'),
                       ],
                     )),
                 Expanded(child: Text(difficulty)),
@@ -78,22 +80,22 @@ class ChooseTemplatePage extends StatelessWidget {
   }
 
   Widget scheduleList(List<Widget> templateRows) {
-    return ListView(
-      children: templateRows,
-      // children: <Widget>[
-      //   ...templateRows,
-      //   // templateChooserRow('Monophasic', 1, 1, 'Easy')
-      // ],
+    return ListView.separated(
+      separatorBuilder: (context, index) => Divider(
+        color: Colors.white,
+      ),
+      itemCount: templateRows.length,
+      itemBuilder: (context, index) => templateRows[index],
     );
   }
 
   Widget pageBody() {
-    return StreamBuilder<List<SleepSchedule>>(
+    return StreamBuilder<LoadedSchedulesState>(
         stream: _viewModel.schedules.stream,
         initialData: null,
-        builder: (context, schedulesStream) {
+        builder: (context, loadedStream) {
           final List<Widget> templateRows = [];
-          final schedules = _viewModel.schedules.stream.value;
+          final schedules = _viewModel.schedules.stream.value.schedules;
           if (schedules != null) {
             schedules.forEach((SleepSchedule sched) {
               templateRows.add(
@@ -105,7 +107,8 @@ class ChooseTemplatePage extends StatelessWidget {
               Expanded(
                   flex: 2,
                   child: Container(child: scheduleList(templateRows)
-                      /*dataTable(schedules)*/)),
+                      // dataTable(schedules)
+                      )),
               Expanded(
                 child: CurrentScheduleGraphic(
                   currentTime: DateTime.now(),
