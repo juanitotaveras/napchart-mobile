@@ -7,8 +7,10 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 
 class SleepScheduleModel extends SleepSchedule {
   SleepScheduleModel(
-      {@required List<SleepSegmentModel> segments, String name = ""})
-      : super(segments: segments, name: name);
+      {@required List<SleepSegmentModel> segments,
+      String name = "",
+      String difficulty = ""})
+      : super(segments: segments, name: name, difficulty: difficulty);
 
   factory SleepScheduleModel.fromJson(Map<String, dynamic> json) {
     final jsonSegments = json['segments'];
@@ -16,7 +18,10 @@ class SleepScheduleModel extends SleepSchedule {
         .map<SleepSegmentModel>(
             (jsonSeg) => SleepSegmentModel.fromJson(jsonSeg))
         .toList();
-    return SleepScheduleModel(name: json['name'], segments: segments);
+    return SleepScheduleModel(
+        name: json['name'],
+        segments: segments,
+        difficulty: json['difficulty'] ?? 'Easy');
   }
   Map<String, dynamic> toJson() {
     final segmentModels = this.segments.map((seg) => seg as SleepSegmentModel);

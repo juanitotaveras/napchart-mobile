@@ -1,10 +1,10 @@
 {
-  "name": "Monophasic",
-  "difficulty": "Easy",
+  "name": "Everyman 1",
   "segments": [
     {
       "start": "22:00",
       "end": "6:00"
     }
-  ]
+  ],
+  "difficulty": "Medium"
 }

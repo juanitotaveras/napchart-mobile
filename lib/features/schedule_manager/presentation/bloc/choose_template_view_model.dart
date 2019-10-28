@@ -15,7 +15,7 @@ class ChooseTemplateViewModel extends ViewModelBase {
     loadTemplates();
   }
 
-  final schedules = PublishSubject<List<SleepSchedule>>();
+  final schedules = BehaviorSubject<List<SleepSchedule>>();
 
   void loadTemplates() async {
     final resp = await this.loadScheduleTemplates(NoParams());

@@ -6,7 +6,8 @@ import 'package:meta/meta.dart';
 class SleepSchedule extends Equatable {
   final List<SleepSegment> segments;
   final String name;
-  SleepSchedule({@required this.segments, this.name = ""})
+  final String difficulty;
+  SleepSchedule({@required this.segments, this.name = "", this.difficulty = ""})
       : super([segments, name]);
 
   int get totalSleepMinutes {

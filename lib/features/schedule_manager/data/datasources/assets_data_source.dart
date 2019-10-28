@@ -13,7 +13,29 @@ abstract class AssetsDataSource {
 
 const DEFAULT_SCHEDULE_NAME = 'monophasic.json';
 const TEMPLATES_FOLDER_PATH = 'assets/schedule_templates';
-const SCHEDULES_LIST = ['monophasic.json', 'biphasic.json'];
+const SCHEDULES_LIST = [
+  'monophasic.json',
+  'bimaxion.json',
+  'dual_core_1.json',
+  'dual_core_2.json',
+  'dual_core_3.json',
+  'dual_core_4.json',
+  'dymaxion.json',
+  'everyman_1.json',
+  'everyman_2.json',
+  'everyman_3.json',
+  'everyman_4.json',
+  'everyman_5.json',
+  'naptation.json',
+  'SPAMAYL.json',
+  'siesta.json',
+  'tesla.json',
+  'tri_core_1.json',
+  'tri_core_2.json',
+  'trimaxion.json',
+  'triphasic.json',
+  'uberman.json',
+];
 
 class AssetsDataSourceImpl implements AssetsDataSource {
   final AssetBundle rootBundle;
