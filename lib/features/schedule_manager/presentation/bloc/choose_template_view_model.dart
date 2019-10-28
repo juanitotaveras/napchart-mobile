@@ -22,7 +22,7 @@ class ChooseTemplateViewModel extends ViewModelBase {
   }
 
   final schedules = BehaviorSubject<LoadedSchedulesState>();
-  final selectedIndex = BehaviorSubject<int>.seeded(-1);
+  final selectedScheduleSubject = BehaviorSubject<SleepSchedule>();
 
   void loadTemplates() async {
     final resp = await this.loadScheduleTemplates(NoParams());
@@ -31,6 +31,13 @@ class ChooseTemplateViewModel extends ViewModelBase {
     }, (templates) async {
       schedules.add(LoadedSchedulesState(schedules: templates));
     });
+  }
+
+  void setIsSelected(int index) async {
+    print('setting $index');
+    schedules.add(LoadedSchedulesState(
+        schedules: schedules.value.schedules, selectedIndex: index));
+    selectedScheduleSubject.add(schedules.value.schedules[index]);
   }
 
   @override

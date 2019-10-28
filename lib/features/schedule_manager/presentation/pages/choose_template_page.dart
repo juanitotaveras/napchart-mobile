@@ -25,13 +25,17 @@ class ChooseTemplatePage extends StatelessWidget {
   }
 
   Widget templateChooserRow(
-      String name, int sleepMin, int wakeMin, String difficulty) {
+      String name, int sleepMin, int wakeMin, String difficulty, int index,
+      {isSelected = false}) {
     return InkWell(
         onTap: () {
           print('tapped!');
+          print('le name: $name index: $index');
+          _viewModel.setIsSelected(index);
         },
         child: Container(
             padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+            color: isSelected ? Colors.red : Colors.transparent,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -89,36 +93,44 @@ class ChooseTemplatePage extends StatelessWidget {
     );
   }
 
+  Widget scheduleGraphic() {
+    return StreamBuilder<SleepSchedule>(
+      stream: _viewModel.selectedScheduleSubject.stream,
+      initialData: null,
+      builder: (context, selectedScheduleStream) {
+        return CurrentScheduleGraphic(
+          currentTime: DateTime.now(),
+          currentSchedule: selectedScheduleStream.data,
+        );
+      },
+    );
+  }
+
   Widget pageBody() {
     return StreamBuilder<LoadedSchedulesState>(
         stream: _viewModel.schedules.stream,
         initialData: null,
         builder: (context, loadedStream) {
           final List<Widget> templateRows = [];
-          final schedules = _viewModel.schedules.stream.value.schedules;
+          final schedules = loadedStream.data.schedules;
           if (schedules != null) {
+            var idx = 0;
             schedules.forEach((SleepSchedule sched) {
-              templateRows.add(
-                  templateChooserRow(sched.name, 100, 200, sched.difficulty));
+              templateRows.add(templateChooserRow(
+                  sched.name, 100, 200, sched.difficulty, idx,
+                  isSelected: loadedStream.data.selectedIndex == idx));
+              idx++;
             });
           }
           return Column(
             children: <Widget>[
               Expanded(
                   flex: 2,
-                  child: Container(child: scheduleList(templateRows)
-                      // dataTable(schedules)
-                      )),
-              Expanded(
-                child: CurrentScheduleGraphic(
-                  currentTime: DateTime.now(),
-                  currentSchedule: SleepSchedule(name: "", segments: [
-                    SleepSegment(
-                        startTime: SegmentDateTime(hr: 1),
-                        endTime: SegmentDateTime(hr: 3))
-                  ]),
-                ),
-              )
+                  child: Container(
+                      padding: EdgeInsets.only(top: 10),
+                      child: scheduleList(templateRows)
+                      /* dataTable(schedules)*/)),
+              Expanded(child: scheduleGraphic())
             ],
           );
         });
