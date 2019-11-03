@@ -19,7 +19,19 @@ class ChooseTemplatePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Choose a template')),
+      appBar: AppBar(
+        title: Text('Choose a template'),
+        actions: <Widget>[
+          FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              _viewModel.onSaveSchedulePressed();
+            },
+            child: Text("Save"),
+            shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
+          ),
+        ],
+      ),
       body: ViewModelProvider(bloc: this._viewModel, child: pageBody()),
     );
   }

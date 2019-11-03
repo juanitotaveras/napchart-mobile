@@ -42,12 +42,13 @@ class ScheduleEditorHeaderPresenter {
 }
 
 class ScheduleEditorHeader extends StatelessWidget {
-  void _goToChooseTemplatePage(_context) async {
+  void _goToChooseTemplatePage(_context, ScheduleEditorBloc _viewModel) async {
     await Navigator.push(
         _context,
         MaterialPageRoute(
             builder: (context) => ChooseTemplatePage(),
             fullscreenDialog: true));
+    _viewModel.onLoadSchedule();
   }
 
   @override
@@ -76,7 +77,7 @@ class ScheduleEditorHeader extends StatelessWidget {
                       RaisedButton(
                           child: Text(presenter.chooseScheduleButtonText),
                           onPressed: () {
-                            _goToChooseTemplatePage(context);
+                            _goToChooseTemplatePage(context, _viewModel);
                           }),
                 ),
                 Align(

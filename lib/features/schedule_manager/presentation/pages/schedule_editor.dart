@@ -37,16 +37,20 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
             //or `false` if you want to force your own back button every where
             title: Text('Edit schedule'),
             leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context, 'test function'),
-            ),
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context, 'test function');
+                }),
             actions: <Widget>[
               // action button
-              IconButton(
-                icon: Icon(Icons.save),
+              FlatButton(
+                textColor: Colors.white,
                 onPressed: () {
                   bloc.onSaveChangesPressed();
                 },
+                child: Text("Save"),
+                shape:
+                    CircleBorder(side: BorderSide(color: Colors.transparent)),
               ),
             ]),
         //drawer: NavigationDrawer(),
