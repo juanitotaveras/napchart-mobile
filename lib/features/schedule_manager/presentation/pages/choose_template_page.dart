@@ -35,7 +35,10 @@ class ChooseTemplatePage extends StatelessWidget {
         },
         child: Container(
             padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
-            color: isSelected ? Colors.red : Colors.transparent,
+            decoration: BoxDecoration(
+                color: isSelected ? Colors.red : Colors.transparent,
+                border: Border(
+                    bottom: BorderSide(color: Colors.white30, width: 1))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -84,13 +87,16 @@ class ChooseTemplatePage extends StatelessWidget {
   }
 
   Widget scheduleList(List<Widget> templateRows) {
-    return ListView.separated(
-      separatorBuilder: (context, index) => Divider(
-        color: Colors.white,
-      ),
-      itemCount: templateRows.length,
-      itemBuilder: (context, index) => templateRows[index],
+    return ListView(
+      children: templateRows,
     );
+    // return ListView.separated(
+    //   separatorBuilder: (context, index) => Divider(
+    //     color: Colors.white,
+    //   ),
+    //   itemCount: templateRows.length,
+    //   itemBuilder: (context, index) => templateRows[index],
+    // );
   }
 
   Widget scheduleGraphic() {

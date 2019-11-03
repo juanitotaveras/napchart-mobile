@@ -27,7 +27,7 @@ const SCHEDULES_LIST = [
   'everyman_4.json',
   'everyman_5.json',
   'naptation.json',
-  'SPAMAYL.json',
+  'spamayl.json',
   'siesta.json',
   'tesla.json',
   'tri_core_1.json',

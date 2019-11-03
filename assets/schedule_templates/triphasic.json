@@ -2,8 +2,17 @@
   "name": "Triphasic",
   "segments": [
     {
-      "start": "22:00",
-      "end": "6:00"
+      "start": "22:30",
+      "end": "0:00"
+    },
+    {
+      "start": "6:30",
+      "end": "8:00"
+    },
+    {
+      "start": "14:30",
+      "end": "16:00"
     }
-  ]
+  ],
+  "difficulty": "Moderate"
 }

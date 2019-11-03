@@ -2,8 +2,17 @@
   "name": "Dual Core 1",
   "segments": [
     {
-      "start": "22:00",
-      "end": "6:00"
+      "start": "21:30",
+      "end": "0:50"
+    },
+    {
+      "start": "5:50",
+      "end": "7:30"
+    },
+    {
+      "start": "14:00",
+      "end": "14:20"
     }
-  ]
+  ],
+  "difficulty": "Easy"
 }

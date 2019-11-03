@@ -2,8 +2,12 @@
   "name": "Everyman 1",
   "segments": [
     {
-      "start": "22:00",
-      "end": "6:00"
+      "start": "23:00",
+      "end": "5:00"
+    },
+    {
+      "start": "13:00",
+      "end": "13:20"
     }
   ],
   "difficulty": "Medium"
