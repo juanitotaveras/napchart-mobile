@@ -64,10 +64,10 @@ class SleepSegment {
     return ms ~/ 60000;
   }
 
-  static int getTotalSleepMinutes(List<SleepSegment> segs) => segs
+  static int getTotalSleepMinutes(List<SleepSegment> segs) =>
+      MINUTES_PER_DAY - getTotalAwakeMinutes(segs);
+
+  static int getTotalAwakeMinutes(List<SleepSegment> segs) => segs
       .map((seg) => seg.getDurationMinutes())
       .reduce((segA, segB) => segA + segB);
-
-  static int getTotalAwakeMinutes(List<SleepSegment> segs) =>
-      MINUTES_PER_DAY - SleepSegment.getTotalSleepMinutes(segs);
 }

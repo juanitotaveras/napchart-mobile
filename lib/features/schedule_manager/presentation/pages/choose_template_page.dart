@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/choose_template_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/current_schedule_graphic.dart';
@@ -15,6 +16,8 @@ class ChooseTemplatePresenter {
 }
 
 class ChooseTemplatePage extends StatelessWidget {
+  ChooseTemplatePage(this._seBloc);
+  final ScheduleEditorBloc _seBloc;
   final _viewModel = sl<ChooseTemplateViewModel>();
   @override
   Widget build(BuildContext context) {
@@ -25,9 +28,12 @@ class ChooseTemplatePage extends StatelessWidget {
           FlatButton(
             textColor: Colors.white,
             onPressed: () {
-              _viewModel.onSaveSchedulePressed();
+              // _viewModel.onSaveSchedulePressed();
+              _seBloc.onTemplateScheduleSet(
+                  _viewModel.selectedScheduleSubject.value);
+              Navigator.pop(context, false);
             },
-            child: Text("Save"),
+            child: Text("DONE"),
             shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
           ),
         ],
@@ -143,7 +149,7 @@ class ChooseTemplatePage extends StatelessWidget {
           return Column(
             children: <Widget>[
               Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: Container(
                       padding: EdgeInsets.only(top: 10),
                       child: scheduleList(templateRows)

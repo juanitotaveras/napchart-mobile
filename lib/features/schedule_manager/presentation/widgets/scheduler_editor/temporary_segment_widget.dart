@@ -13,13 +13,6 @@ import '../../../../../injection_container.dart';
 const cornerRadius = 10.0;
 const corner = Radius.circular(cornerRadius);
 
-// class TemporarySegmentWidgetState extends State<TemporarySegmentWidget> {
-//   var _bloc;
-//   final double marginRight;
-//   final double hourSpacing;
-
-//   TemporarySegmentWidgetState({this.marginRight, this.hourSpacing});
-
 class TemporarySegmentWidget extends StatelessWidget {
   final double marginRight;
   final double hourSpacing;
@@ -57,7 +50,6 @@ class TemporarySegmentWidget extends StatelessWidget {
             final wholeWidgetList = wholeWidget(context, _bloc,
                 segment.getDurationMinutes().toDouble(), topMargin);
             segments.insertAll(0, wholeWidgetList);
-            print(segments);
           }
           return Stack(children: segments);
         });
@@ -71,6 +63,15 @@ class TemporarySegmentWidget extends StatelessWidget {
             RenderBox box = context.findRenderObject();
             var relativeTapPos = box.globalToLocal(details.globalPosition);
             bloc.onSelectedSleepSegmentDragged(relativeTapPos, hourSpacing);
+          },
+          onVerticalDragEnd: (DragEndDetails details) {
+            bloc.onSelectedSleepSegmentEndDrag();
+          },
+          onVerticalDragStart: (DragStartDetails details) {
+            RenderBox box = context.findRenderObject();
+            var relativeTapPos = box.globalToLocal(details.globalPosition);
+
+            bloc.onSelectedSegmentStartDrag(relativeTapPos, hourSpacing);
           },
           child: Container(
               key: Key('tempPiece'),
@@ -98,6 +99,15 @@ class TemporarySegmentWidget extends StatelessWidget {
 
             bloc.onSelectedSleepSegmentDragged(relativeTapPos, hourSpacing);
           },
+          onVerticalDragEnd: (DragEndDetails details) {
+            bloc.onSelectedSleepSegmentEndDrag();
+          },
+          onVerticalDragStart: (DragStartDetails details) {
+            RenderBox box = context.findRenderObject();
+            var relativeTapPos = box.globalToLocal(details.globalPosition);
+
+            bloc.onSelectedSegmentStartDrag(relativeTapPos, hourSpacing);
+          },
           child: Container(
               key: Key('tempPiece'),
               height: height,
@@ -123,6 +133,15 @@ class TemporarySegmentWidget extends StatelessWidget {
             var relativeTapPos = box.globalToLocal(details.globalPosition);
 
             bloc.onSelectedSleepSegmentDragged(relativeTapPos, hourSpacing);
+          },
+          onVerticalDragEnd: (DragEndDetails details) {
+            bloc.onSelectedSleepSegmentEndDrag();
+          },
+          onVerticalDragStart: (DragStartDetails details) {
+            RenderBox box = context.findRenderObject();
+            var relativeTapPos = box.globalToLocal(details.globalPosition);
+
+            bloc.onSelectedSegmentStartDrag(relativeTapPos, hourSpacing);
           },
           child: Container(
               key: Key('tempPiece'),

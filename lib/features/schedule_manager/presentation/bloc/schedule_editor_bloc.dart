@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
+import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/core/usecases/usecase.dart';
 import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/data/repositories/schedule_editor_repository_impl.dart';
@@ -38,6 +39,9 @@ class ScheduleEditorBloc implements ViewModelBase {
       loadedSegmentsSubject.stream;
   List<SleepSegment> get loadedSegments => loadedSegmentsSubject.value;
 
+  var isDragging = false;
+  Duration startDragDiffTime;
+
   void dispose() {
     selectedSegmentSubject.close();
     loadedSegmentsSubject.close();
@@ -60,17 +64,53 @@ class ScheduleEditorBloc implements ViewModelBase {
     selectedSegmentSubject.add(SleepSegment(startTime: t, endTime: endTime));
   }
 
+  onSelectedSegmentStartDrag(Offset touchCoord, double hourSpacing) {
+    final t =
+        GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 15);
+    this.startDragDiffTime = this.selectedSegment.startTime.difference(t).abs();
+    print('start drag diff FOR START-  SECTION ${startDragDiffTime.inHours}');
+  }
+
+  onSelectedSegmentEndSectionStartDrag(Offset touchCoord, double hourSpacing) {
+    // onSelectedSegmentStartDrag(touchCoord, hourSpacing);
+    final t =
+        GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 15);
+    // if (t.isBefore(this.selectedSegment.startTime)) {
+    // get minutes from midnight to now, and start to midnight
+
+    final Duration min = t.difference(SegmentDateTime(hr: 0, min: 0));
+    final Duration min2 = min +
+        Duration(
+            minutes: MINUTES_PER_DAY -
+                this.selectedSegment.getStartMinutesFromMidnight());
+    this.startDragDiffTime =
+        min2; //this.selectedSegment.startTime.difference(t).abs();
+    print('start drag diff FOR END SECTION ${startDragDiffTime.inHours}');
+    // print('min2: $min2');
+  }
+
   onSelectedSleepSegmentDragged(Offset touchCoord, double hourSpacing) {
     final t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 15);
-    SleepSegment currentSegment = selectedSegment;
-    if (t.compareTo(currentSegment.startTime) != 0) {
-      final selectedSegment = SleepSegment(
-          startTime: t,
-          endTime:
-              t.add(Duration(minutes: currentSegment.getDurationMinutes())));
-      selectedSegmentSubject.add(selectedSegment);
-    }
+    // TODO: This does not work well when you start dragging on ending segment, and segment
+    // is split in two.
+    // if (startDragDiffTime == null) {
+    //   this.startDragDiffTime =
+    //       this.selectedSegment.startTime.difference(t).abs();
+    // }
+    // print('t: $t');
+    final newStartTime = t.subtract(startDragDiffTime);
+    // if (newStartTime )
+    final newSeg = SleepSegment(
+        startTime: newStartTime,
+        endTime: newStartTime
+            .add(Duration(minutes: selectedSegment.getDurationMinutes())));
+    print('NEW SEG: ${newSeg.startTime}   ${newSeg.endTime}');
+    selectedSegmentSubject.add(newSeg);
+  }
+
+  onSelectedSleepSegmentEndDrag() {
+    this.startDragDiffTime = null;
   }
 
   onSelectedSegmentStartTimeDragged(Offset touchCoord, double hourSpacing) {
@@ -178,10 +218,14 @@ class ScheduleEditorBloc implements ViewModelBase {
   }
 
   onDeleteSelectedSegmentPressed() {
-    print('hey hey');
     final remainingSegments =
         loadedSegments.where((seg) => !seg.isBeingEdited).toList();
     loadedSegmentsSubject.add(remainingSegments);
+    selectedSegmentSubject.add(null);
+  }
+
+  onTemplateScheduleSet(SleepSchedule schedule) {
+    loadedSegmentsSubject.add(schedule.segments);
     selectedSegmentSubject.add(null);
   }
 

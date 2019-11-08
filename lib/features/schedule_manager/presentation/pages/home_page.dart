@@ -117,18 +117,28 @@ class _MyHomePageState extends State<MyHomePage> {
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
+          actions: <Widget>[
+            FlatButton(
+              textColor: Colors.white,
+              onPressed: () {
+                _goToSleepScheduleCreator(context);
+              },
+              child: Text("EDIT"),
+              shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
+            ),
+          ],
         ),
         drawer: NavigationDrawer(),
 //      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: /*(isPortrait) ?*/ _buildPortrait(
             context) /*: _buildLandscape(context)*/,
 //      floatingActionButton: FloatingAction
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _goToSleepScheduleCreator(context),
-          child: Icon(Icons.create),
-//        icon: Icon(Icons.create),
-//        label: Text(AppLocalizations.of(context).createSleepSchedule),
-        ),
+//         floatingActionButton: FloatingActionButton(
+//           onPressed: () => _goToSleepScheduleCreator(context),
+//           child: Icon(Icons.create),
+// //        icon: Icon(Icons.create),
+// //        label: Text(AppLocalizations.of(context).createSleepSchedule),
+//         ),
       ),
     );
   }

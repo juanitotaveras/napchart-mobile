@@ -48,7 +48,7 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
                 onPressed: () {
                   bloc.onSaveChangesPressed();
                 },
-                child: Text("Save"),
+                child: Text("SAVE"),
                 shape:
                     CircleBorder(side: BorderSide(color: Colors.transparent)),
               ),

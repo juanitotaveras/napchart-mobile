@@ -15,7 +15,7 @@ class ScheduleEditorHeaderPresenter {
       SleepSegment.getTotalSleepMinutes(this._viewModel.loadedSegments);
   int get _sleepH => _sleepMins ~/ 60;
   int get _sleepM => _sleepMins - (_sleepMins ~/ 60) * 60;
-  String get sleepTime {
+  String get asleepTime {
     return AppLocalizations.of(_context).awakeStart +
         _sleepH.toString() +
         " hrs " +
@@ -46,9 +46,9 @@ class ScheduleEditorHeader extends StatelessWidget {
     await Navigator.push(
         _context,
         MaterialPageRoute(
-            builder: (context) => ChooseTemplatePage(),
+            builder: (context) => ChooseTemplatePage(_viewModel),
             fullscreenDialog: true));
-    _viewModel.onLoadSchedule();
+    // _viewModel.onLoadSchedule();
   }
 
   @override
@@ -83,7 +83,7 @@ class ScheduleEditorHeader extends StatelessWidget {
                 Align(
                     alignment: Alignment(1.0, -0.5),
                     child: Text(
-                      presenter.sleepTime,
+                      presenter.asleepTime,
                       textAlign: TextAlign.right,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontWeight: FontWeight.bold),
