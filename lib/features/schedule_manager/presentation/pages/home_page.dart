@@ -36,37 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          children: <Widget>[
-            currentSchedule(context),
-            Card(
-                child: Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                ListTile(
-                  title: Text(
-                      AppLocalizations.of(context).shortPolysleepDescTitle),
-                  subtitle: Text(
-                      'Polyphasic sleep is the practice of sleeping more than once in a 24 hour period.'
-                      '\nIf you take naps, you\'re sleeping polyphasically.'),
-                ),
-                ButtonTheme.bar(
-                    child: ButtonBar(children: <Widget>[
-                  FlatButton(
-                    child: Text(AppLocalizations.of(context).dismissCaps),
-                    onPressed: () {
-                      /* */
-                    },
-                  ),
-                  FlatButton(
-                    child: Text('LEARN MORE'),
-                    onPressed: () {
-                      /* */
-                    },
-                  )
-                ]))
-              ]),
-            )),
-          ],
+          children: <Widget>[currentSchedule(context), nextNapCard(context)],
         ),
       ),
     );
@@ -130,17 +100,114 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         drawer: NavigationDrawer(),
-//      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: /*(isPortrait) ?*/ _buildPortrait(
             context) /*: _buildLandscape(context)*/,
-//      floatingActionButton: FloatingAction
-//         floatingActionButton: FloatingActionButton(
-//           onPressed: () => _goToSleepScheduleCreator(context),
-//           child: Icon(Icons.create),
-// //        icon: Icon(Icons.create),
-// //        label: Text(AppLocalizations.of(context).createSleepSchedule),
-//         ),
       ),
     );
+  }
+
+  Widget nextNapCard(context) {
+    final model = _bloc; //ViewModelProvider.of<HomeViewModel>(context);
+    return Card(
+        child: Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: Column(
+              // mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                nextNapCardCentralSection(_bloc.shouldShowNapNavigationArrows),
+                ButtonTheme.bar(
+                    child: ButtonBar(children: <Widget>[
+                  FlatButton(
+                    child: Text('START NAP'),
+                    onPressed: () {
+                      /* */
+                    },
+                  )
+                ]))
+              ],
+            )));
+  }
+
+  Widget nextNapCardCentralSection(bool multipleNaps) {
+    if (!multipleNaps) {
+      return Column(
+        children: <Widget>[
+          ListTile(
+            title: Text('Nap will last 5h20m'),
+            subtitle: Text('22:00-6:00'),
+          ),
+          ListTile(
+            title: Text('Alarm'),
+            leading: Icon(Icons.alarm_on),
+            subtitle: Text('Set for 5:00am'),
+          ),
+          ListTile(
+              title: Text('Notifications'),
+              leading: Icon(Icons.notifications_active)),
+        ],
+      );
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        IconButton(
+          icon: Icon(Icons.arrow_back_ios, size: 10.0),
+          onPressed: () {},
+        ),
+        Expanded(
+          child: Column(
+            children: <Widget>[
+              ListTile(
+                title: Text('Nap will last 5h20m'),
+                subtitle: Text('22:00-6:00'),
+              ),
+              ListTile(
+                title: Text('Alarm'),
+                leading: Icon(Icons.alarm_on),
+                subtitle: Text('Set for 5:00am'),
+              ),
+              ListTile(
+                  title: Text('Notifications'),
+                  leading: Icon(Icons.notifications_active)),
+            ],
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.arrow_forward_ios, size: 10.0),
+          onPressed: () {},
+        )
+      ],
+    );
+  }
+
+  Widget polysleepInfoCard() {
+    return Card(
+        child: Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+        ListTile(
+          title: Text(AppLocalizations.of(context).shortPolysleepDescTitle),
+          subtitle: Text(
+              'Polyphasic sleep is the practice of sleeping more than once in a 24 hour period.'
+              '\nIf you take naps, you\'re sleeping polyphasically.'),
+        ),
+        ButtonTheme.bar(
+            child: ButtonBar(children: <Widget>[
+          FlatButton(
+            child: Text(AppLocalizations.of(context).dismissCaps),
+            onPressed: () {
+              /* */
+            },
+          ),
+          FlatButton(
+            child: Text('LEARN MORE'),
+            onPressed: () {
+              /* */
+            },
+          )
+        ]))
+      ]),
+    ));
   }
 }

@@ -25,7 +25,7 @@ Future<void> init() async {
         getCurrentOrDefaultSchedule: sl(),
         saveCurrentSchedule: sl(),
       ));
-  sl.registerFactory(() => HomeViewModel(sl()));
+  sl.registerFactory(() => HomeViewModel(getCurrentOrDefaultSchedule: sl()));
   sl.registerFactory(() => ChooseTemplateViewModel(sl(), sl()));
 
   // Use cases

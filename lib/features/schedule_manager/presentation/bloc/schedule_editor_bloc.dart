@@ -85,27 +85,17 @@ class ScheduleEditorBloc implements ViewModelBase {
                 this.selectedSegment.getStartMinutesFromMidnight());
     this.startDragDiffTime =
         min2; //this.selectedSegment.startTime.difference(t).abs();
-    print('start drag diff FOR END SECTION ${startDragDiffTime.inHours}');
-    // print('min2: $min2');
   }
 
   onSelectedSleepSegmentDragged(Offset touchCoord, double hourSpacing) {
     final t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 15);
-    // TODO: This does not work well when you start dragging on ending segment, and segment
-    // is split in two.
-    // if (startDragDiffTime == null) {
-    //   this.startDragDiffTime =
-    //       this.selectedSegment.startTime.difference(t).abs();
-    // }
-    // print('t: $t');
     final newStartTime = t.subtract(startDragDiffTime);
     // if (newStartTime )
     final newSeg = SleepSegment(
         startTime: newStartTime,
         endTime: newStartTime
             .add(Duration(minutes: selectedSegment.getDurationMinutes())));
-    print('NEW SEG: ${newSeg.startTime}   ${newSeg.endTime}');
     selectedSegmentSubject.add(newSeg);
   }
 

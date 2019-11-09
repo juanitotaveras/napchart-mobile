@@ -1,0 +1,84 @@
+import 'package:dartz/dartz.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:polysleep/core/usecases/usecase.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/home_bloc.dart';
+
+class MockGetCurrentOrDefaultSchedule extends Mock
+    implements GetCurrentOrDefaultSchedule {}
+
+class MockGetDefaultSchedule extends Mock implements GetDefaultSchedule {}
+
+void main() {
+  HomeViewModel model;
+  MockGetCurrentOrDefaultSchedule mockGetCurrentOrDefaultSchedule;
+  final tSegments = [
+    SleepSegment(
+        startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6))
+  ];
+  final tSleepSchedule = SleepSchedule(name: "Monophasic", segments: tSegments);
+
+  setUp(() {
+    mockGetCurrentOrDefaultSchedule = MockGetCurrentOrDefaultSchedule();
+    when(mockGetCurrentOrDefaultSchedule(any))
+        .thenAnswer((_) async => Right(tSleepSchedule));
+    model = HomeViewModel(
+        getCurrentOrDefaultSchedule: mockGetCurrentOrDefaultSchedule);
+  });
+
+  test('loadSchedule() should call getCurrentOrDefaultSchedule', () async {
+    // arrange
+
+    // act
+    model.onLoadSchedule();
+    await untilCalled(mockGetCurrentOrDefaultSchedule(any));
+
+    // assert
+    verify(mockGetCurrentOrDefaultSchedule(NoParams()));
+  });
+
+  final tSleepScheduleEmpty =
+      SleepSchedule(segments: [], difficulty: 'Nil', name: 'Test');
+  test('should not show nav arrows if we have 0 segments', () async {
+    // arrange
+    when(mockGetCurrentOrDefaultSchedule(any))
+        .thenAnswer((_) async => Right(tSleepScheduleEmpty));
+
+    // act
+    model.onLoadSchedule();
+    await untilCalled(mockGetCurrentOrDefaultSchedule(any));
+    // assert
+    expect(model.shouldShowNapNavigationArrows, false);
+  });
+
+  test('should not show nav arrows if we have 1 segment', () async {
+    // assert
+    expect(model.shouldShowNapNavigationArrows, false);
+  });
+
+  final tSegmentsB = [
+    SleepSegment(
+        startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6)),
+    SleepSegment(
+        startTime: SegmentDateTime(hr: 12),
+        endTime: SegmentDateTime(hr: 12, min: 30))
+  ];
+  final tSleepScheduleMultiple = SleepSchedule(segments: tSegmentsB);
+  test('should show arrows if we have at least 2 segments', () async {
+    // arrange
+    when(mockGetCurrentOrDefaultSchedule(any))
+        .thenAnswer((_) async => Right(tSleepScheduleMultiple));
+
+    // act
+    model.onLoadSchedule();
+    await untilCalled(mockGetCurrentOrDefaultSchedule(any));
+
+    // assert
+    expect(model.shouldShowNapNavigationArrows, true);
+  });
+}

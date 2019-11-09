@@ -28,7 +28,7 @@ class ClockDialPainter extends CustomPainter {
         ),
         textStyle = const TextStyle(
           color: Colors.white,
-          fontFamily: 'Times New Roman',
+          fontFamily: 'Roboto',
           fontSize: 12.0,
         ) {
     tickPaint.color = Colors.blueGrey;

@@ -8,6 +8,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/loaded_segment_widget.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ void main() {
       when(bloc.currentState).thenAnswer((_) => state);
       final widgetUnderTest =
           TemporarySegmentWidget(marginRight: 5, hourSpacing: 60);
-      final w = BlocProvider(
+      final w = ViewModelProvider(
           builder: (context) => bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
       await tester.pumpWidget(w);
@@ -71,7 +72,7 @@ void main() {
         (WidgetTester tester) async {
       final widgetUnderTest =
           TemporarySegmentWidget(marginRight: 5, hourSpacing: 60);
-      final w = BlocProvider(
+      final w = ViewModelProvider(
           builder: (context) => bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
       await tester.pumpWidget(w);
