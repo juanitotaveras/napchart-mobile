@@ -123,9 +123,8 @@ class ChooseTemplatePage extends StatelessWidget {
       initialData: null,
       builder: (context, selectedScheduleStream) {
         return CurrentScheduleGraphic(
-          currentTime: DateTime.now(),
-          currentSchedule: selectedScheduleStream.data,
-        );
+            currentTime: DateTime.now(),
+            currentSchedule: selectedScheduleStream.data);
       },
     );
   }

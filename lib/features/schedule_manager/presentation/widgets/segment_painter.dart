@@ -10,7 +10,11 @@ import '../time_formatter.dart';
 class SegmentPainter extends CustomPainter {
   final SleepSegment segment;
   final DateTime currentTime;
-  SegmentPainter(this.segment, this.currentTime);
+  final bool isSelected;
+  SegmentPainter(
+      {@required this.segment,
+      @required this.currentTime,
+      @required this.isSelected});
   @override
   void paint(Canvas canvas, Size size) {
     var angleCalculator = AngleCalculator(currentTime, segment);
@@ -19,7 +23,7 @@ class SegmentPainter extends CustomPainter {
     var radius = min(size.width, size.height) / 2.2 - 2;
     var segmentWidth = radius / 2;
 
-    var paint = Paint()..color = Colors.red;
+    var paint = Paint()..color = this.isSelected ? Colors.blue : Colors.red;
     canvas.drawArc(
         Rect.fromCircle(center: centerPoint, radius: radius),
         angleCalculator.getStartAngle(),

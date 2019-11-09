@@ -11,15 +11,20 @@ import './current_schedule_graphic_styles.dart';
 
 class CurrentScheduleGraphic extends StatelessWidget {
   CurrentScheduleGraphic(
-      {Key key, @required this.currentTime, @required this.currentSchedule})
+      {Key key,
+      @required this.currentTime,
+      @required this.currentSchedule,
+      this.selectedSegmentIndex = -1})
       : super(key: key);
   final DateTime currentTime;
   final SleepSchedule currentSchedule;
+  final int selectedSegmentIndex;
 
   @override
   Widget build(BuildContext context) {
     List<Widget> segmentWidgets = [];
     if (this.currentSchedule != null) {
+      var idx = 0;
       this
           .currentSchedule
           .segments
@@ -27,7 +32,10 @@ class CurrentScheduleGraphic extends StatelessWidget {
               width: double.infinity,
               height: double.infinity,
               child: CustomPaint(
-                painter: SegmentPainter(seg, currentTime),
+                painter: SegmentPainter(
+                    isSelected: (idx++ == this.selectedSegmentIndex),
+                    segment: seg,
+                    currentTime: currentTime),
               ))));
     }
     final DateTime _startSun = DateTime(2019, 1, 1, 6);
@@ -74,9 +82,7 @@ class CurrentScheduleGraphic extends StatelessWidget {
                     clockText: ClockText.arabic, startTime: this.currentTime),
               ),
             ),
-            Stack(
-              children: segmentWidgets,
-            ),
+            ...segmentWidgets,
             Container(
                 width: double.infinity,
                 height: double.infinity,

@@ -101,6 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: CurrentScheduleGraphic(
                   currentTime: currentTimeStream.data,
                   currentSchedule: currentScheduleStream.data,
+                  selectedSegmentIndex: _bloc.selectedSegment,
                 ));
               });
         });
