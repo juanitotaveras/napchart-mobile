@@ -6,17 +6,21 @@ import 'package:polysleep/features/schedule_manager/domain/entities/segment_date
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_time.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/home_bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/home_view_model.dart';
 
 class MockGetCurrentOrDefaultSchedule extends Mock
     implements GetCurrentOrDefaultSchedule {}
 
 class MockGetDefaultSchedule extends Mock implements GetDefaultSchedule {}
 
+class MockGetCurrentTime extends Mock implements GetCurrentTime {}
+
 void main() {
   HomeViewModel model;
   MockGetCurrentOrDefaultSchedule mockGetCurrentOrDefaultSchedule;
+  MockGetCurrentTime mockGetCurrentTime;
   final tSegments = [
     SleepSegment(
         startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6))
@@ -25,10 +29,12 @@ void main() {
 
   setUp(() {
     mockGetCurrentOrDefaultSchedule = MockGetCurrentOrDefaultSchedule();
+    mockGetCurrentTime = MockGetCurrentTime();
     when(mockGetCurrentOrDefaultSchedule(any))
         .thenAnswer((_) async => Right(tSleepSchedule));
     model = HomeViewModel(
-        getCurrentOrDefaultSchedule: mockGetCurrentOrDefaultSchedule);
+        getCurrentOrDefaultSchedule: mockGetCurrentOrDefaultSchedule,
+        getCurrentTime: mockGetCurrentTime);
   });
 
   test('loadSchedule() should call getCurrentOrDefaultSchedule', () async {
@@ -63,7 +69,7 @@ void main() {
 
   final tSegmentsB = [
     SleepSegment(
-        startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6)),
+        startTime: SegmentDateTime(hr: 23), endTime: SegmentDateTime(hr: 5)),
     SleepSegment(
         startTime: SegmentDateTime(hr: 12),
         endTime: SegmentDateTime(hr: 12, min: 30))
@@ -80,5 +86,20 @@ void main() {
 
     // assert
     expect(model.shouldShowNapNavigationArrows, true);
+  });
+
+  test('selected segment should default to first segment after current time',
+      () async {
+    // arrange
+    when(mockGetCurrentOrDefaultSchedule(any))
+        .thenAnswer((_) async => Right(tSleepScheduleMultiple));
+    when(mockGetCurrentTime()).thenReturn(SegmentDateTime(hr: 1));
+
+    // act
+    model.onLoadSchedule();
+    await untilCalled(mockGetCurrentOrDefaultSchedule(any));
+
+    // assert
+    expect(model.selectedSegment, 1);
   });
 }

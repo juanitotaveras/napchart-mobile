@@ -3,14 +3,18 @@ import 'dart:async';
 import 'package:polysleep/core/usecases/usecase.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_time.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/current_schedule_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:meta/meta.dart';
-import 'home_event.dart';
 
 class HomeViewModel implements ViewModelBase {
-  HomeViewModel({@required this.getCurrentOrDefaultSchedule}) {
+  final GetCurrentOrDefaultSchedule getCurrentOrDefaultSchedule;
+  final GetCurrentTime getCurrentTime;
+  HomeViewModel(
+      {@required this.getCurrentOrDefaultSchedule,
+      @required this.getCurrentTime}) {
     timer =
         Timer.periodic(Duration(seconds: 1), (Timer t) => produceCurrentTime());
     onLoadSchedule();
@@ -26,8 +30,6 @@ class HomeViewModel implements ViewModelBase {
   Stream<int> get seletedSegmentStream => selectedSegmentSubject.stream;
   int get selectedSegment => selectedSegmentSubject.value;
 
-  final GetCurrentOrDefaultSchedule getCurrentOrDefaultSchedule;
-
   /* We want the current time to be output as a stream every second (or minute),
  so that our UI can update accordingly */
   final _currentTimeStateController = StreamController<DateTime>();
@@ -37,7 +39,7 @@ class HomeViewModel implements ViewModelBase {
   Timer timer;
 
   void produceCurrentTime() {
-    _inTime.add(DateTime.now());
+    _inTime.add(this.getCurrentTime());
   }
 
   //! Event handlers
@@ -48,12 +50,14 @@ class HomeViewModel implements ViewModelBase {
     }, (schedule) async {
       // currentScheduleSubject.add(schedule);
       currentScheduleSubject.add(schedule);
+      // TODO: Set our selected segment
     });
   }
 
   //! Class methods
-  bool get shouldShowNapNavigationArrows =>
-      this.currentSchedule.segments.length > 1;
+  bool get shouldShowNapNavigationArrows => this.currentSchedule == null
+      ? false
+      : this.currentSchedule.segments.length > 1;
 
   //! Cleanup
   void dispose() {

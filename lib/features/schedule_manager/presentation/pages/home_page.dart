@@ -8,7 +8,7 @@ import 'schedule_editor.dart';
 import '../widgets/base_schedule.dart';
 import '../widgets/current_schedule_graphic.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/time.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/home_bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/home_view_model.dart';
 import '../../../../injection_container.dart';
 
 class MyHomePage extends StatefulWidget {
