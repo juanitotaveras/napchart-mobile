@@ -87,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // TODO: Add currently selected segment
   Widget currentSchedule(context) {
     return StreamBuilder<DateTime>(
         stream: _bloc.currentTime,
@@ -100,8 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: CurrentScheduleGraphic(
                   currentTime: currentTimeStream.data,
                   currentSchedule: currentScheduleStream.data,
-                ) //BaseScheduleGraphic()
-                    );
+                ));
               });
         });
   }

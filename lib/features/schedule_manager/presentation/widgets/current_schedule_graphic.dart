@@ -13,23 +13,11 @@ class CurrentScheduleGraphic extends StatelessWidget {
   CurrentScheduleGraphic(
       {Key key, @required this.currentTime, @required this.currentSchedule})
       : super(key: key);
-  // TODO: Have a list of segments as input
   final DateTime currentTime;
   final SleepSchedule currentSchedule;
 
   @override
   Widget build(BuildContext context) {
-    // final DateTime _start = DateTime(2019, 1, 1, 22); // y, m d, h, m
-    // final DateTime _end = DateTime(2019, 1, 2, 6);
-    // final List<SleepSegment> segments = [
-    //   SleepSegment(startTime: _start, endTime: _end)
-    // ];
-    // List<Widget> segmentWidgets = segments
-    //     .map((seg) => Container(
-    //         width: double.infinity,
-    //         height: double.infinity,
-    //         child: CustomPaint(painter: SegmentPainter(seg, currentTime))))
-    //     .toList();
     List<Widget> segmentWidgets = [];
     if (this.currentSchedule != null) {
       this
