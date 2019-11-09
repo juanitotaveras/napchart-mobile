@@ -140,8 +140,7 @@ class ScheduleEditorBloc implements ViewModelBase {
 
   onSelectedSegmentCancelled() async {
     final lSegments = loadedSegments;
-    final currentlyEditing =
-        lSegments.where((seg) => seg.isBeingEdited).toList();
+    final currentlyEditing = lSegments.where((seg) => seg.isSelected).toList();
     if (currentlyEditing.length == 0) {
       loadedSegmentsSubject.add([...lSegments]);
       selectedSegmentSubject.add(null);
@@ -150,7 +149,7 @@ class ScheduleEditorBloc implements ViewModelBase {
           .map((seg) => SleepSegment(
               startTime: seg.startTime,
               endTime: seg.endTime,
-              isBeingEdited: false,
+              isSelected: false,
               name: seg.name))
           .toList();
       loadedSegmentsSubject.add(segs);
@@ -168,11 +167,11 @@ class ScheduleEditorBloc implements ViewModelBase {
                   startTime: seg.startTime,
                   endTime: seg.endTime,
                   name: seg.name,
-                  isBeingEdited: idx == index));
+                  isSelected: idx == index));
         })
         .values
         .toList();
-    final selectedSegment = segs.where((seg) => seg.isBeingEdited).toList()[0];
+    final selectedSegment = segs.where((seg) => seg.isSelected).toList()[0];
     loadedSegmentsSubject.add(segs);
     selectedSegmentSubject.add(selectedSegment);
   }
@@ -180,27 +179,26 @@ class ScheduleEditorBloc implements ViewModelBase {
   onSelectedSegmentSaved() {
     final lSegments = loadedSegments;
     final sSegment = selectedSegment;
-    final currentlyEdited =
-        lSegments.where((seg) => seg.isBeingEdited).toList();
+    final currentlyEdited = lSegments.where((seg) => seg.isSelected).toList();
     if (currentlyEdited.length == 0) {
       // this is a new segment
       loadedSegmentsSubject.add([...lSegments, sSegment]);
       selectedSegmentSubject.add(null);
     } else {
       final segs = lSegments.map((seg) {
-        if (seg.isBeingEdited) {
+        if (seg.isSelected) {
           final sel = sSegment;
           return SleepSegment(
               startTime: sel.startTime,
               endTime: sel.endTime,
               name: sel.name,
-              isBeingEdited: false);
+              isSelected: false);
         }
         return SleepSegment(
             startTime: seg.startTime,
             endTime: seg.endTime,
             name: seg.name,
-            isBeingEdited: false);
+            isSelected: false);
       }).toList();
       loadedSegmentsSubject.add(segs);
       selectedSegmentSubject.add(null);
@@ -209,7 +207,7 @@ class ScheduleEditorBloc implements ViewModelBase {
 
   onDeleteSelectedSegmentPressed() {
     final remainingSegments =
-        loadedSegments.where((seg) => !seg.isBeingEdited).toList();
+        loadedSegments.where((seg) => !seg.isSelected).toList();
     loadedSegmentsSubject.add(remainingSegments);
     selectedSegmentSubject.add(null);
   }

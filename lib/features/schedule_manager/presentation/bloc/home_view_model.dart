@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:polysleep/core/usecases/usecase.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_time.dart';
@@ -49,6 +50,14 @@ class HomeViewModel implements ViewModelBase {
       // currentScheduleSubject.add(null);
     }, (schedule) async {
       // currentScheduleSubject.add(schedule);
+      // get first segment which ends after current time
+      final curTime = this.getCurrentTime();
+      final curSegTime = SegmentDateTime(hr: curTime.hour, min: curTime.minute);
+      for (int i = 0; i < schedule.segments.length; i++) {
+        final seg = schedule.segments[i];
+        // get seg that has an end time which is after current time
+        // and closest to current time
+      }
       currentScheduleSubject.add(schedule);
       // TODO: Set our selected segment
     });

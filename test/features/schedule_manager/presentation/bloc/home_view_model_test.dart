@@ -100,6 +100,6 @@ void main() {
     await untilCalled(mockGetCurrentOrDefaultSchedule(any));
 
     // assert
-    expect(model.selectedSegment, 1);
+    expect(model.currentSchedule.segments[1].isSelected, true);
   });
 }

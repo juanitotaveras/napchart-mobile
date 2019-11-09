@@ -168,14 +168,14 @@ void main() {
                 startTime: seg.startTime,
                 endTime: seg.endTime,
                 name: seg.name,
-                isBeingEdited: true))
+                isSelected: true))
             .toList());
     final seg = tSleepSchedule.segments[0];
     final tModifiedSegment = SleepSegment(
         startTime: seg.startTime,
         endTime: seg.endTime,
         name: seg.name,
-        isBeingEdited: true);
+        isSelected: true);
     final expected = [
       Init(),
       SegmentsLoaded(loadedSegments: tSleepSchedule.segments),
@@ -205,14 +205,14 @@ void main() {
                 startTime: seg.startTime,
                 endTime: seg.endTime,
                 name: seg.name,
-                isBeingEdited: true))
+                isSelected: true))
             .toList());
     final seg = tSleepSchedule.segments[0];
     final tModifiedSegment = SleepSegment(
         startTime: seg.startTime,
         endTime: seg.endTime,
         name: seg.name,
-        isBeingEdited: true);
+        isSelected: true);
 
     // TODO: Need to simulate start time being changed
     final expected = [

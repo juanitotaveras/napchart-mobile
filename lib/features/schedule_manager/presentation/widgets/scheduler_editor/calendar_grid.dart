@@ -31,7 +31,7 @@ class CalendarGrid extends StatelessWidget {
           List<Widget> loadedSegmentWidgets = [];
           if (loadedSegments != null) {
             loadedSegmentWidgets = loadedSegments
-                .where((seg) => !seg.isBeingEdited)
+                .where((seg) => !seg.isSelected)
                 .toList()
                 .asMap()
                 .map((index, seg) {
