@@ -32,6 +32,8 @@ void main() {
     mockGetCurrentTime = MockGetCurrentTime();
     when(mockGetCurrentOrDefaultSchedule(any))
         .thenAnswer((_) async => Right(tSleepSchedule));
+    when(mockGetCurrentTime()).thenReturn(SegmentDateTime(hr: 11));
+
     model = HomeViewModel(
         getCurrentOrDefaultSchedule: mockGetCurrentOrDefaultSchedule,
         getCurrentTime: mockGetCurrentTime);
@@ -93,7 +95,6 @@ void main() {
     // arrange
     when(mockGetCurrentOrDefaultSchedule(any))
         .thenAnswer((_) async => Right(tSleepScheduleMultiple));
-    when(mockGetCurrentTime()).thenReturn(SegmentDateTime(hr: 1));
 
     // act
     model.onLoadSchedule();
@@ -101,5 +102,39 @@ void main() {
 
     // assert
     expect(model.currentSchedule.segments[1].isSelected, true);
+  });
+
+  test(
+      'selected segment should default to first segment after current time (test seg that goes over midnight)',
+      () async {
+    // arrange
+    when(mockGetCurrentOrDefaultSchedule(any))
+        .thenAnswer((_) async => Right(tSleepScheduleMultiple));
+    when(mockGetCurrentTime()).thenReturn(SegmentDateTime(hr: 13));
+
+    // act
+    model.onLoadSchedule();
+    await untilCalled(mockGetCurrentOrDefaultSchedule(any));
+
+    // assert
+    expect(model.currentSchedule.segments[0].isSelected, true);
+  });
+
+  test(
+      'selected segment should move forward one index when right button tapped',
+      () async {
+    // arrange
+    when(mockGetCurrentOrDefaultSchedule(any))
+        .thenAnswer((_) async => Right(tSleepScheduleMultiple));
+    model.onLoadSchedule();
+    await untilCalled(mockGetCurrentOrDefaultSchedule(any));
+    expect(model.currentSchedule.segments[1].isSelected, true);
+
+    // act
+    model.onRightNapArrowTapped();
+
+    // assert
+    expect(model.currentSchedule.segments[0].isSelected, true);
+    expect(model.currentSchedule.segments[1].isSelected, false);
   });
 }

@@ -23,7 +23,8 @@ class SegmentPainter extends CustomPainter {
     var radius = min(size.width, size.height) / 2.2 - 2;
     var segmentWidth = radius / 2;
 
-    var paint = Paint()..color = this.isSelected ? Colors.blue : Colors.red;
+    var paint = Paint()
+      ..color = this.segment.isSelected ? Colors.blue : Colors.red;
     canvas.drawArc(
         Rect.fromCircle(center: centerPoint, radius: radius),
         angleCalculator.getStartAngle(),
