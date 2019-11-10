@@ -54,7 +54,13 @@ class HomeViewModel implements ViewModelBase {
     });
   }
 
-  void onRightNapArrowTapped() {}
+  void onRightNapArrowTapped() {
+    currentScheduleSubject.add(_setNextScheduleAsSelected());
+  }
+
+  void onLeftNapArrowTapped() {
+    currentScheduleSubject.add(_setPreviousSegmentAsSelected());
+  }
 
   // ---- End event handlers
 
@@ -98,18 +104,76 @@ class HomeViewModel implements ViewModelBase {
   }
 
   SleepSchedule _setNextScheduleAsSelected() {
-    int selectedIndex = -1;
     final schedule = this.currentSchedule;
+    final nextIdx = getNextSelectedIdx();
+    if (nextIdx != -1) {
+      final newSegs = schedule.segments
+          .asMap()
+          .map((index, seg) {
+            return MapEntry(
+                index,
+                SleepSegment(
+                    startTime: seg.startTime,
+                    endTime: seg.endTime,
+                    name: seg.name,
+                    isSelected: index == nextIdx));
+          })
+          .values
+          .toList();
+      return SleepSchedule(
+          segments: newSegs,
+          difficulty: schedule.difficulty,
+          name: schedule.name);
+    }
+    return schedule;
+  }
 
-    final newSegs = [];
-    int nextIdx = -1;
+  SleepSchedule _setPreviousSegmentAsSelected() {
+    final schedule = this.currentSchedule;
+    final prevIdx = _getPrevSelectedIdx();
+    if (prevIdx != -1) {
+      final newSegs = schedule.segments
+          .asMap()
+          .map((index, seg) {
+            return MapEntry(
+                index,
+                SleepSegment(
+                    startTime: seg.startTime,
+                    endTime: seg.endTime,
+                    name: seg.name,
+                    isSelected: index == prevIdx));
+          })
+          .values
+          .toList();
+      return SleepSchedule(
+          segments: newSegs,
+          difficulty: schedule.difficulty,
+          name: schedule.name);
+    }
+    return schedule;
+  }
+
+  int getNextSelectedIdx() {
+    final schedule = this.currentSchedule;
     for (int i = 0; i < schedule.segments.length; i++) {
       final seg = schedule.segments[i];
       if (seg.isSelected) {
-        // set next idx as selected
-      } else if (i == nextIdx) {}
+        return (i + 1) % schedule.segments.length;
+      }
     }
-    return schedule;
+    return -1;
+  }
+
+  int _getPrevSelectedIdx() {
+    final schedule = this.currentSchedule;
+    for (int i = 0; i < schedule.segments.length; i++) {
+      final seg = schedule.segments[i];
+      if (seg.isSelected) {
+        final res = i - 1;
+        return (res < 0) ? schedule.segments.length - 1 : res;
+      }
+    }
+    return -1;
   }
 
   //! Calculated getters

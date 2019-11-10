@@ -153,7 +153,9 @@ class _MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         IconButton(
           icon: Icon(Icons.arrow_back_ios, size: 10.0),
-          onPressed: () {},
+          onPressed: () {
+            _bloc.onLeftNapArrowTapped();
+          },
         ),
         Expanded(
           child: Column(
@@ -175,7 +177,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         IconButton(
           icon: Icon(Icons.arrow_forward_ios, size: 10.0),
-          onPressed: () {},
+          onPressed: () {
+            _bloc.onRightNapArrowTapped();
+          },
         )
       ],
     );

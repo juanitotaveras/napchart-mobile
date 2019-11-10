@@ -137,4 +137,21 @@ void main() {
     expect(model.currentSchedule.segments[0].isSelected, true);
     expect(model.currentSchedule.segments[1].isSelected, false);
   });
+
+  test('selected segment should move back one index when left button tapped',
+      () async {
+    // arrange
+    when(mockGetCurrentOrDefaultSchedule(any))
+        .thenAnswer((_) async => Right(tSleepScheduleMultiple));
+    model.onLoadSchedule();
+    await untilCalled(mockGetCurrentOrDefaultSchedule(any));
+    expect(model.currentSchedule.segments[1].isSelected, true);
+
+    // act
+    model.onLeftNapArrowTapped();
+
+    // assert
+    expect(model.currentSchedule.segments[0].isSelected, true);
+    expect(model.currentSchedule.segments[1].isSelected, false);
+  });
 }
