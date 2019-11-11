@@ -11,7 +11,8 @@ class SleepSchedule extends Equatable {
       : super([segments, name]);
 
   int get totalSleepMinutes {
-    List<int> segMinutes = segments.map((seg) => seg.getDurationMinutes());
+    List<int> segMinutes =
+        segments.map((seg) => seg.getDurationMinutes()).toList();
     return segMinutes.reduce((segA, segB) => segA + segB);
   }
 

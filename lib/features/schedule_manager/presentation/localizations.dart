@@ -53,6 +53,9 @@ class AppLocalizations {
 
   String get chooseScheduleButtonText =>
       Intl.message('Choose Schedule', name: 'chooseSchedule');
+
+  String get chooseTemplatePageHeader =>
+      Intl.message('Choose a template', name: 'chooseTemplate');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

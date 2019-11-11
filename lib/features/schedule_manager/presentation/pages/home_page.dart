@@ -7,14 +7,12 @@ import '../localizations.dart';
 import 'schedule_editor.dart';
 import '../widgets/base_schedule.dart';
 import '../widgets/current_schedule_graphic.dart';
-import 'package:polysleep/features/schedule_manager/domain/entities/time.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/home_view_model.dart';
 import '../../../../injection_container.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
-  // TODO: Get current schedule from repository when we get here
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -108,81 +106,48 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget nextNapCard(context) {
     final model = _bloc; //ViewModelProvider.of<HomeViewModel>(context);
-    return Card(
-        child: Padding(
-            padding: const EdgeInsets.only(top: 16.0),
-            child: Column(
-              // mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                nextNapCardCentralSection(_bloc.shouldShowNapNavigationArrows),
-                ButtonTheme.bar(
-                    child: ButtonBar(children: <Widget>[
-                  FlatButton(
-                    child: Text('START NAP'),
-                    onPressed: () {
-                      /* */
-                    },
-                  )
-                ]))
-              ],
-            )));
-  }
-
-  Widget nextNapCardCentralSection(bool multipleNaps) {
-    if (!multipleNaps) {
-      return Column(
+    if (_bloc.shouldShowNapNavigationArrows) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          ListTile(
-            title: Text('Nap will last 5h20m'),
-            subtitle: Text('22:00-6:00'),
+          IconButton(
+            icon: Icon(Icons.arrow_back_ios, size: 10.0),
+            onPressed: () {
+              _bloc.onLeftNapArrowTapped();
+            },
           ),
-          ListTile(
-            title: Text('Alarm'),
-            leading: Icon(Icons.alarm_on),
-            subtitle: Text('Set for 5:00am'),
-          ),
-          ListTile(
-              title: Text('Notifications'),
-              leading: Icon(Icons.notifications_active)),
+          Expanded(child: nextNapCardCentralSection()),
+          IconButton(
+            icon: Icon(Icons.arrow_forward_ios, size: 10.0),
+            onPressed: () {
+              _bloc.onRightNapArrowTapped();
+            },
+          )
         ],
       );
+    } else {
+      return nextNapCardCentralSection();
     }
+  }
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+  Widget nextNapCardCentralSection() {
+    return Card(
+        child: Column(
       children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.arrow_back_ios, size: 10.0),
-          onPressed: () {
-            _bloc.onLeftNapArrowTapped();
-          },
+        ListTile(
+          title: Text('Nap will last 5h20m'),
+          subtitle: Text('22:00-6:00'),
         ),
-        Expanded(
-          child: Column(
-            children: <Widget>[
-              ListTile(
-                title: Text('Nap will last 5h20m'),
-                subtitle: Text('22:00-6:00'),
-              ),
-              ListTile(
-                title: Text('Alarm'),
-                leading: Icon(Icons.alarm_on),
-                subtitle: Text('Set for 5:00am'),
-              ),
-              ListTile(
-                  title: Text('Notifications'),
-                  leading: Icon(Icons.notifications_active)),
-            ],
-          ),
+        ListTile(
+          title: Text('Alarm'),
+          leading: Icon(Icons.alarm_on),
+          subtitle: Text('Set for 5:00am'),
         ),
-        IconButton(
-          icon: Icon(Icons.arrow_forward_ios, size: 10.0),
-          onPressed: () {
-            _bloc.onRightNapArrowTapped();
-          },
-        )
+        ListTile(
+            title: Text('Notifications'),
+            leading: Icon(Icons.notifications_active)),
       ],
-    );
+    ));
   }
 
   Widget polysleepInfoCard() {

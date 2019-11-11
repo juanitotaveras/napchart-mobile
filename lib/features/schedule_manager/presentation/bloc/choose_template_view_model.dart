@@ -26,11 +26,12 @@ class ChooseTemplateViewModel extends ViewModelBase {
 
   final schedules = BehaviorSubject<LoadedSchedulesState>();
   final selectedScheduleSubject = BehaviorSubject<SleepSchedule>();
+  get selectedSchedule => selectedScheduleSubject.value;
 
   void loadTemplates() async {
     final resp = await this.loadScheduleTemplates(NoParams());
     resp.fold((failure) async {
-      print('SOME ERROR');
+      print('SOME ERROR ');
     }, (templates) async {
       schedules.add(LoadedSchedulesState(schedules: templates));
     });

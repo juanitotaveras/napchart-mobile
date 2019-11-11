@@ -15,7 +15,6 @@ import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:rxdart/rxdart.dart';
-import './bloc.dart';
 
 class ScheduleEditorBloc implements ViewModelBase {
   final GetCurrentOrDefaultSchedule getCurrentOrDefaultSchedule;
@@ -40,6 +39,8 @@ class ScheduleEditorBloc implements ViewModelBase {
   List<SleepSegment> get loadedSegments => loadedSegmentsSubject.value;
 
   var isDragging = false;
+  // Difference between start time of selected segment and
+  // the point at which we started dragging
   Duration startDragDiffTime;
 
   void dispose() {
@@ -68,7 +69,6 @@ class ScheduleEditorBloc implements ViewModelBase {
     final t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 15);
     this.startDragDiffTime = this.selectedSegment.startTime.difference(t).abs();
-    print('start drag diff FOR START-  SECTION ${startDragDiffTime.inHours}');
   }
 
   onSelectedSegmentEndSectionStartDrag(Offset touchCoord, double hourSpacing) {
@@ -91,7 +91,6 @@ class ScheduleEditorBloc implements ViewModelBase {
     final t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 15);
     final newStartTime = t.subtract(startDragDiffTime);
-    // if (newStartTime )
     final newSeg = SleepSegment(
         startTime: newStartTime,
         endTime: newStartTime

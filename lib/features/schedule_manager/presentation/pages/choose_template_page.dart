@@ -6,6 +6,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/presentation/bloc/bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/choose_template_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/localizations.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/current_schedule_graphic.dart';
 import 'package:polysleep/injection_container.dart';
 
@@ -13,17 +14,28 @@ class ChooseTemplatePresenter {
   final _context;
   final ChooseTemplateViewModel _viewModel;
   ChooseTemplatePresenter(this._context, this._viewModel);
+
+  String get pageHeader =>
+      AppLocalizations.of(_context).chooseTemplatePageHeader;
+
+  String formatSleepTime(int sleepMin) {
+    int h = sleepMin ~/ 60;
+    int m = sleepMin % 60;
+    return '${h}h ${m}m';
+  }
 }
 
 class ChooseTemplatePage extends StatelessWidget {
   ChooseTemplatePage(this._seBloc);
   final ScheduleEditorBloc _seBloc;
   final _viewModel = sl<ChooseTemplateViewModel>();
+  ChooseTemplatePresenter presenter;
   @override
   Widget build(BuildContext context) {
+    presenter = ChooseTemplatePresenter(context, _viewModel);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Choose a template'),
+        title: Text(presenter.pageHeader),
         actions: <Widget>[
           FlatButton(
             textColor: Colors.white,
@@ -42,13 +54,11 @@ class ChooseTemplatePage extends StatelessWidget {
     );
   }
 
-  Widget templateChooserRow(
-      String name, int sleepMin, int wakeMin, String difficulty, int index,
+  Widget templateChooserRow(SleepSchedule schedule, int index,
       {isSelected = false}) {
     return InkWell(
         onTap: () {
           print('tapped!');
-          print('le name: $name index: $index');
           _viewModel.setIsSelected(index);
         },
         child: Container(
@@ -64,7 +74,7 @@ class ChooseTemplatePage extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    name,
+                    schedule.name,
                     style: TextStyle(fontWeight: FontWeight.w300),
                   ),
                 ),
@@ -73,49 +83,19 @@ class ChooseTemplatePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('8h 2m'),
+                        Text(presenter
+                            .formatSleepTime(schedule.totalSleepMinutes)),
                       ],
                     )),
-                Expanded(child: Text(difficulty)),
+                Expanded(child: Text(schedule.difficulty)),
                 Expanded(child: Icon(Icons.info))
               ],
             )));
   }
 
-  Widget dataTable(List<SleepSchedule> schedules) {
-    final rows = schedules
-        .map((sched) => DataRow(cells: [
-              DataCell(Text(sched.name)),
-              DataCell(Text('14')),
-              DataCell(Row(
-                  children: [Text('15'), Expanded(child: Icon(Icons.info))])),
-            ]))
-        .toList();
-    return ListView(children: [
-      DataTable(
-        columns: [
-          DataColumn(label: Text('Name')),
-          DataColumn(label: Text('hours')),
-          DataColumn(label: Text('difficulty')),
-          // DataColumn(label: Text('')),
-        ],
-        rows: rows,
-      )
-    ]);
-  }
-
-  Widget scheduleList(List<Widget> templateRows) {
-    return ListView(
-      children: templateRows,
-    );
-    // return ListView.separated(
-    //   separatorBuilder: (context, index) => Divider(
-    //     color: Colors.white,
-    //   ),
-    //   itemCount: templateRows.length,
-    //   itemBuilder: (context, index) => templateRows[index],
-    // );
-  }
+  Widget scheduleList(List<Widget> templateRows) => ListView(
+        children: templateRows,
+      );
 
   Widget scheduleGraphic() {
     return StreamBuilder<SleepSchedule>(
@@ -139,11 +119,16 @@ class ChooseTemplatePage extends StatelessWidget {
           if (schedules != null) {
             var idx = 0;
             schedules.forEach((SleepSchedule sched) {
-              templateRows.add(templateChooserRow(
-                  sched.name, 100, 200, sched.difficulty, idx,
+              templateRows.add(templateChooserRow(sched, idx,
                   isSelected: loadedStream.data.selectedIndex == idx));
               idx++;
             });
+          }
+          // TODO: Only show schedule graphic if one element is selected
+          if (_viewModel.selectedSchedule == null) {
+            return Container(
+                padding: EdgeInsets.only(top: 10),
+                child: scheduleList(templateRows));
           }
           return Column(
             children: <Widget>[

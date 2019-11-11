@@ -60,9 +60,8 @@ class TemporarySegmentWidget extends StatelessWidget {
     return [
       GestureDetector(
           onVerticalDragUpdate: (DragUpdateDetails details) {
-            RenderBox box = context.findRenderObject();
-            var relativeTapPos = box.globalToLocal(details.globalPosition);
-            bloc.onSelectedSleepSegmentDragged(relativeTapPos, hourSpacing);
+            bloc.onSelectedSleepSegmentDragged(
+                details.localPosition, hourSpacing);
           },
           onVerticalDragEnd: (DragEndDetails details) {
             bloc.onSelectedSleepSegmentEndDrag();
@@ -96,7 +95,6 @@ class TemporarySegmentWidget extends StatelessWidget {
           onVerticalDragUpdate: (DragUpdateDetails details) {
             RenderBox box = context.findRenderObject();
             var relativeTapPos = box.globalToLocal(details.globalPosition);
-
             bloc.onSelectedSleepSegmentDragged(relativeTapPos, hourSpacing);
           },
           onVerticalDragEnd: (DragEndDetails details) {
@@ -105,8 +103,8 @@ class TemporarySegmentWidget extends StatelessWidget {
           onVerticalDragStart: (DragStartDetails details) {
             RenderBox box = context.findRenderObject();
             var relativeTapPos = box.globalToLocal(details.globalPosition);
-
-            bloc.onSelectedSegmentStartDrag(relativeTapPos, hourSpacing);
+            bloc.onSelectedSegmentEndSectionStartDrag(
+                relativeTapPos, hourSpacing);
           },
           child: Container(
               key: Key('tempPiece'),

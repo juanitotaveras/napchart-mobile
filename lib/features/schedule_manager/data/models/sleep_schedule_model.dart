@@ -14,7 +14,7 @@ class SleepScheduleModel extends SleepSchedule {
 
   factory SleepScheduleModel.fromJson(Map<String, dynamic> json) {
     final jsonSegments = json['segments'];
-    final segments = jsonSegments
+    final List<SleepSegment> segments = jsonSegments
         .map<SleepSegmentModel>(
             (jsonSeg) => SleepSegmentModel.fromJson(jsonSeg))
         .toList();
