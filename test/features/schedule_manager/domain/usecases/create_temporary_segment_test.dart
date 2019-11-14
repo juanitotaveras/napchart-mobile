@@ -14,7 +14,7 @@ void main() {
 
   setUp(() {
     mockScheduleEditorRepository = MockScheduleEditorRepository();
-    usecase = CreateTemporarySleepSegment(mockScheduleEditorRepository);
+    usecase = CreateTemporarySleepSegment();
   });
   final tSegment =
       SleepSegment(startTime: DateTime(2020), endTime: DateTime(2021));
@@ -24,7 +24,8 @@ void main() {
         .thenAnswer((_) async => Right(tSegment));
 
     // act
-    final result = await usecase(Params(segment: tSegment));
+    final result =
+        usecase(null, DateTime.now()); // need current state and start time
 
     expect(result, Right(tSegment));
 

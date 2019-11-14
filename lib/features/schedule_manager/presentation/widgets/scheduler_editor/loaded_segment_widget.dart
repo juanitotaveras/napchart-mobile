@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 
@@ -20,7 +20,7 @@ class LoadedSegmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = ViewModelProvider.of<ScheduleEditorBloc>(context);
+    final bloc = ViewModelProvider.of<ScheduleEditorViewModel>(context);
     final List<Widget> segments = [];
     if (!segment.startAndEndsOnSameDay()) {
       // must create two segments
@@ -42,7 +42,7 @@ class LoadedSegmentWidget extends StatelessWidget {
     return Stack(children: segments);
   }
 
-  Widget startSegment(BuildContext context, ScheduleEditorBloc bloc,
+  Widget startSegment(BuildContext context, ScheduleEditorViewModel bloc,
       double height, double margin) {
     final borderSide = BorderSide(color: Colors.white, width: 3);
 
@@ -61,7 +61,7 @@ class LoadedSegmentWidget extends StatelessWidget {
                     BorderRadius.only(topLeft: corner, topRight: corner))));
   }
 
-  Widget endSegment(BuildContext context, ScheduleEditorBloc bloc,
+  Widget endSegment(BuildContext context, ScheduleEditorViewModel bloc,
       double height, double margin) {
     return GestureDetector(
         onTapUp: (details) {
@@ -78,7 +78,7 @@ class LoadedSegmentWidget extends StatelessWidget {
                     bottomLeft: corner, bottomRight: corner))));
   }
 
-  Widget wholeWidget(BuildContext context, ScheduleEditorBloc bloc,
+  Widget wholeWidget(BuildContext context, ScheduleEditorViewModel bloc,
       double height, double margin) {
     return GestureDetector(
         onTapUp: (details) {

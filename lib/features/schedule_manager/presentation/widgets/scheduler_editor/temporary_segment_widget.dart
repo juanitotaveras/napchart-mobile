@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
@@ -21,7 +21,7 @@ class TemporarySegmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _bloc = ViewModelProvider.of<ScheduleEditorBloc>(context);
+    _bloc = ViewModelProvider.of<ScheduleEditorViewModel>(context);
     return StreamBuilder<SleepSegment>(
         stream: _bloc.selectedSegmentStream,
         initialData: null,
@@ -55,7 +55,7 @@ class TemporarySegmentWidget extends StatelessWidget {
         });
   }
 
-  List<Widget> startSegment(BuildContext context, ScheduleEditorBloc bloc,
+  List<Widget> startSegment(BuildContext context, ScheduleEditorViewModel bloc,
       double height, double margin) {
     return [
       GestureDetector(
@@ -88,7 +88,7 @@ class TemporarySegmentWidget extends StatelessWidget {
     ];
   }
 
-  List<Widget> endSegment(BuildContext context, ScheduleEditorBloc bloc,
+  List<Widget> endSegment(BuildContext context, ScheduleEditorViewModel bloc,
       double height, double margin) {
     return [
       GestureDetector(
@@ -122,7 +122,7 @@ class TemporarySegmentWidget extends StatelessWidget {
     ];
   }
 
-  List<Widget> wholeWidget(BuildContext context, ScheduleEditorBloc bloc,
+  List<Widget> wholeWidget(BuildContext context, ScheduleEditorViewModel bloc,
       double height, double margin) {
     return [
       GestureDetector(
@@ -166,7 +166,7 @@ class TemporarySegmentWidget extends StatelessWidget {
             onVerticalDragUpdate: (DragUpdateDetails details) {
               RenderBox box = context.findRenderObject();
               var relativeTapPos = box.globalToLocal(details.globalPosition);
-              ViewModelProvider.of<ScheduleEditorBloc>(context)
+              ViewModelProvider.of<ScheduleEditorViewModel>(context)
                   .onSelectedSegmentStartTimeDragged(
                       relativeTapPos, hourSpacing);
             },
@@ -182,7 +182,7 @@ class TemporarySegmentWidget extends StatelessWidget {
             onVerticalDragUpdate: (DragUpdateDetails details) {
               RenderBox box = context.findRenderObject();
               var relativeTapPos = box.globalToLocal(details.globalPosition);
-              ViewModelProvider.of<ScheduleEditorBloc>(context)
+              ViewModelProvider.of<ScheduleEditorViewModel>(context)
                   .onSelectedSegmentEndTimeDragged(relativeTapPos, hourSpacing);
             },
             child: renderDragCircleGraphic()));

@@ -16,11 +16,11 @@ import 'package:polysleep/features/schedule_manager/domain/usecases/save_current
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
-class ScheduleEditorBloc implements ViewModelBase {
+class ScheduleEditorViewModel implements ViewModelBase {
   final GetCurrentOrDefaultSchedule getCurrentOrDefaultSchedule;
   final SaveCurrentSchedule saveCurrentSchedule;
 
-  ScheduleEditorBloc(
+  ScheduleEditorViewModel(
       {@required this.getCurrentOrDefaultSchedule,
       @required this.saveCurrentSchedule}) {
     assert(getCurrentOrDefaultSchedule != null);

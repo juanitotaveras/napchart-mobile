@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
 
 void main() {
   group('grid tap', () {

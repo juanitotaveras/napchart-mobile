@@ -14,7 +14,7 @@ import 'features/schedule_manager/domain/usecases/get_current_schedule.dart';
 import 'features/schedule_manager/domain/usecases/get_current_time.dart';
 import 'features/schedule_manager/domain/usecases/load_schedule_templates.dart';
 import 'features/schedule_manager/presentation/bloc/home_view_model.dart';
-import 'features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
+import 'features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
 
 // sl stands for Service Locator
 final sl = GetIt.instance;
@@ -22,7 +22,7 @@ final sl = GetIt.instance;
 Future<void> init() async {
   //! Features - Schedule Editor
   // Bloc
-  sl.registerFactory(() => ScheduleEditorBloc(
+  sl.registerFactory(() => ScheduleEditorViewModel(
         getCurrentOrDefaultSchedule: sl(),
         saveCurrentSchedule: sl(),
       ));

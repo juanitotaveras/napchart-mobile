@@ -11,7 +11,7 @@ import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/bloc.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
 
 class MockGetCurrentOrDefaultSchedule extends Mock
     implements GetCurrentOrDefaultSchedule {}
@@ -21,14 +21,14 @@ class MockGetDefaultSchedule extends Mock implements GetDefaultSchedule {}
 class MockSaveCurrentSchedule extends Mock implements SaveCurrentSchedule {}
 
 void main() {
-  ScheduleEditorBloc bloc;
+  ScheduleEditorViewModel bloc;
   MockGetCurrentOrDefaultSchedule mockGetCurrentOrDefaultSchedule;
   MockSaveCurrentSchedule mockSaveCurrentSchedule;
 
   setUp(() {
     mockGetCurrentOrDefaultSchedule = MockGetCurrentOrDefaultSchedule();
     mockSaveCurrentSchedule = MockSaveCurrentSchedule();
-    bloc = ScheduleEditorBloc(
+    bloc = ScheduleEditorViewModel(
         getCurrentOrDefaultSchedule: mockGetCurrentOrDefaultSchedule,
         saveCurrentSchedule: mockSaveCurrentSchedule);
   });

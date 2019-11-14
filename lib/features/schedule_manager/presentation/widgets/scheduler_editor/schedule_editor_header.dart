@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/localizations.dart';
 import 'package:polysleep/features/schedule_manager/presentation/pages/choose_template_page.dart';
 
 class ScheduleEditorHeaderPresenter {
   final _context;
-  final ScheduleEditorBloc _viewModel;
+  final ScheduleEditorViewModel _viewModel;
   ScheduleEditorHeaderPresenter(this._context, this._viewModel);
 
   int get _sleepMins =>
@@ -42,7 +42,8 @@ class ScheduleEditorHeaderPresenter {
 }
 
 class ScheduleEditorHeader extends StatelessWidget {
-  void _goToChooseTemplatePage(_context, ScheduleEditorBloc _viewModel) async {
+  void _goToChooseTemplatePage(
+      _context, ScheduleEditorViewModel _viewModel) async {
     await Navigator.push(
         _context,
         MaterialPageRoute(
@@ -53,7 +54,7 @@ class ScheduleEditorHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _viewModel = ViewModelProvider.of<ScheduleEditorBloc>(context);
+    final _viewModel = ViewModelProvider.of<ScheduleEditorViewModel>(context);
     final presenter = ScheduleEditorHeaderPresenter(context, _viewModel);
     return StreamBuilder(
         stream: _viewModel.loadedSegmentsStream,

@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
@@ -10,11 +10,11 @@ import 'package:polysleep/features/schedule_manager/presentation/widgets/schedul
 import 'package:mockito/mockito.dart';
 import 'package:flutter/material.dart';
 
-class MockBloc extends Mock implements ScheduleEditorBloc {}
+class MockBloc extends Mock implements ScheduleEditorViewModel {}
 
 void main() {
   group('loaded segments widget', () {
-    ScheduleEditorBloc bloc;
+    ScheduleEditorViewModel bloc;
     setUp(() {
       bloc = MockBloc();
     });
@@ -31,7 +31,7 @@ void main() {
               endTime: SegmentDateTime(hr: 2, min: 0)),
           index: index);
       final w = ViewModelProvider(
-          builder: (context) => bloc,
+          bloc: (context) => bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
       await tester.pumpWidget(w);
 
@@ -39,7 +39,7 @@ void main() {
       await tester.tap(find.byWidget(widgetUnderTest));
 
       // assert
-      verify(bloc.dispatch(LoadedSegmentTapped(index)));
+      verify(bloc.onLoadedSegmentTapped(index));
     });
 
     testWidgets('Should only have one block if segments is in one day',
@@ -54,7 +54,7 @@ void main() {
               endTime: SegmentDateTime(hr: 2, min: 0)),
           index: index);
       final w = ViewModelProvider(
-          builder: (context) => bloc,
+          bloc: (context) => bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
       await tester.pumpWidget(w);
 
@@ -77,7 +77,7 @@ void main() {
           segment: SleepSegment(startTime: startTime, endTime: endTime),
           index: 0);
       final w = ViewModelProvider(
-          builder: (context) => bloc,
+          bloc: (context) => bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
       await tester.pumpWidget(w);
 

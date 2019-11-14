@@ -27,7 +27,7 @@ class ChooseTemplatePresenter {
 
 class ChooseTemplatePage extends StatelessWidget {
   ChooseTemplatePage(this._seBloc);
-  final ScheduleEditorBloc _seBloc;
+  final ScheduleEditorViewModel _seBloc;
   final _viewModel = sl<ChooseTemplateViewModel>();
   ChooseTemplatePresenter presenter;
   @override
