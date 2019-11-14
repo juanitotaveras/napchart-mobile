@@ -1,7 +1,10 @@
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/home_event.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/time_formatter.dart';
 import '../widgets/navigation_drawer.dart';
 import '../localizations.dart';
 import 'schedule_editor.dart';
@@ -9,12 +12,33 @@ import '../widgets/base_schedule.dart';
 import '../widgets/current_schedule_graphic.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/home_view_model.dart';
 import '../../../../injection_container.dart';
+import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
   @override
   _MyHomePageState createState() => _MyHomePageState();
+}
+
+class BasicTimeField extends StatelessWidget {
+  final format = DateFormat("HH:mm");
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: <Widget>[
+      Text('Basic time field (${format.pattern})'),
+      DateTimeField(
+        format: format,
+        onShowPicker: (context, currentValue) async {
+          final time = await showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+          );
+          return DateTimeField.convert(time);
+        },
+      ),
+    ]);
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -69,7 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: CurrentScheduleGraphic(
                   currentTime: currentTimeStream.data,
                   currentSchedule: currentScheduleStream.data,
-                  selectedSegmentIndex: _bloc.selectedSegment,
                 ));
               });
         });
@@ -105,44 +128,88 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget nextNapCard(context) {
-    final model = _bloc; //ViewModelProvider.of<HomeViewModel>(context);
-    if (_bloc.shouldShowNapNavigationArrows) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.arrow_back_ios, size: 10.0),
-            onPressed: () {
-              _bloc.onLeftNapArrowTapped();
-            },
-          ),
-          Expanded(child: nextNapCardCentralSection()),
-          IconButton(
-            icon: Icon(Icons.arrow_forward_ios, size: 10.0),
-            onPressed: () {
-              _bloc.onRightNapArrowTapped();
-            },
-          )
-        ],
-      );
-    } else {
-      return nextNapCardCentralSection();
-    }
+    return StreamBuilder<SleepSchedule>(
+        stream: _bloc.currentScheduleStream,
+        builder: (context, currentScheduleStream) {
+          final model = _bloc; //ViewModelProvider.of<HomeViewModel>(context);
+          if (_bloc.shouldShowNapNavigationArrows) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.arrow_back_ios, size: 10.0),
+                  onPressed: () {
+                    _bloc.onLeftNapArrowTapped();
+                  },
+                ),
+                Expanded(child: nextNapCardCentralSection()),
+                IconButton(
+                  icon: Icon(Icons.arrow_forward_ios, size: 10.0),
+                  onPressed: () {
+                    _bloc.onRightNapArrowTapped();
+                  },
+                )
+              ],
+            );
+          } else {
+            return nextNapCardCentralSection();
+          }
+        });
   }
 
   Widget nextNapCardCentralSection() {
+    SleepSegment selectedSegment = _bloc.currentSchedule.getSelectedSegment();
+    TimeFormatter tf = TimeFormatter();
     return Card(
         child: Column(
       children: <Widget>[
-        ListTile(
-          title: Text('Nap will last 5h20m'),
-          subtitle: Text('22:00-6:00'),
-        ),
+        // ListTile(
+        //   title: Text('Nap will last 5h20m'),
+        //   subtitle: Text('22:00-6:00'),
+        // ),
+        Padding(
+            padding: EdgeInsets.only(top: 20.0),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                    child: Column(
+                  children: <Widget>[
+                    Text('Start'),
+                    Text(tf.getMilitaryTime(selectedSegment.startTime))
+                  ],
+                )),
+                Expanded(
+                    child: Column(
+                  children: <Widget>[
+                    Text('End'),
+                    Text(tf.getMilitaryTime(selectedSegment.endTime))
+                  ],
+                )),
+                Expanded(
+                    child: Column(
+                  children: <Widget>[
+                    Text('Duration'),
+                    Text(tf
+                        .formatSleepTime(selectedSegment.getDurationMinutes()))
+                  ],
+                )),
+              ],
+            )),
         ListTile(
           title: Text('Alarm'),
           leading: Icon(Icons.alarm_on),
           subtitle: Text('Set for 5:00am'),
+          onTap: () async {
+            print('el chapo');
+            Scaffold.of(context).showBottomSheet((context) => Container(
+                  color: Colors.red,
+                ));
+            // await showTimePicker(
+            //     context: context,
+            //     initialTime: TimeOfDay.fromDateTime(DateTime.now()));
+          },
         ),
+        // BasicTimeField(),
         ListTile(
             title: Text('Notifications'),
             leading: Icon(Icons.notifications_active)),

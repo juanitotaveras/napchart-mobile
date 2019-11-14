@@ -27,7 +27,7 @@ dependencies:
   flutter_bloc: ^0.21.0
 
   # TODO: Delete this later
-  charts_flutter: ^0.6.0
+  datetime_picker_formfield: ^0.4.3
 
   # Value equality
   equatable: ^0.4.0

@@ -10,11 +10,7 @@ import '../time_formatter.dart';
 class SegmentPainter extends CustomPainter {
   final SleepSegment segment;
   final DateTime currentTime;
-  final bool isSelected;
-  SegmentPainter(
-      {@required this.segment,
-      @required this.currentTime,
-      @required this.isSelected});
+  SegmentPainter({@required this.segment, @required this.currentTime});
   @override
   void paint(Canvas canvas, Size size) {
     var angleCalculator = AngleCalculator(currentTime, segment);
@@ -52,10 +48,10 @@ class SegmentPainter extends CustomPainter {
 
     rotateCanvasAroundCenter(canvas, size, angleCalculator.getStartTextAngle());
 
-    TimeFormatter tf = TimeFormatter(this.segment.startTime);
+    TimeFormatter tf = TimeFormatter();
     TextSpan span = new TextSpan(
         style: new TextStyle(color: Colors.white),
-        text: '${tf.getMilitaryTime()}');
+        text: '${tf.getMilitaryTime(this.segment.startTime)}');
     TextPainter tp = new TextPainter(
         text: span,
         textAlign: TextAlign.left,
@@ -72,10 +68,10 @@ class SegmentPainter extends CustomPainter {
     // perform rotation of canvas around center
     rotateCanvasAroundCenter(canvas, size, angleCalculator.getEndTextAngle());
 
-    TimeFormatter tf = TimeFormatter(this.segment.endTime);
+    TimeFormatter tf = TimeFormatter();
     TextSpan span = new TextSpan(
         style: new TextStyle(color: Colors.white),
-        text: '${tf.getMilitaryTime()}');
+        text: '${tf.getMilitaryTime(this.segment.endTime)}');
     TextPainter tp = new TextPainter(
         text: span,
         textAlign: TextAlign.left,

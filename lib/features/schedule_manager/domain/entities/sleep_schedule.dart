@@ -17,4 +17,9 @@ class SleepSchedule extends Equatable {
   }
 
   int get totalAwakeMinutes => MINUTES_PER_DAY - totalSleepMinutes;
+
+  SleepSegment getSelectedSegment() {
+    final List<SleepSegment> selected = segments.where((seg) => seg.isSelected).toList();
+    return (selected.length == 0) ? null : selected[0];
+  }
 }

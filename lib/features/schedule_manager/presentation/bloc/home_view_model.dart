@@ -27,10 +27,6 @@ class HomeViewModel implements ViewModelBase {
       currentScheduleSubject.stream;
   SleepSchedule get currentSchedule => currentScheduleSubject.value;
 
-  final selectedSegmentSubject = BehaviorSubject<int>.seeded(-1);
-  Stream<int> get seletedSegmentStream => selectedSegmentSubject.stream;
-  int get selectedSegment => selectedSegmentSubject.value;
-
   /* We want the current time to be output as a stream every second (or minute),
  so that our UI can update accordingly */
   final _currentTimeStateController = StreamController<DateTime>();
@@ -185,6 +181,5 @@ class HomeViewModel implements ViewModelBase {
   void dispose() {
     _currentTimeStateController.close();
     currentScheduleSubject.close();
-    selectedSegmentSubject.close();
   }
 }

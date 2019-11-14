@@ -81,17 +81,19 @@ class AngleCalculator {
   }
 
   double getStartTextAngle() {
+    final offset = segment.getDurationMinutes() <= 60 ? 0.07 : 0;
     if (_isInRightSideOfCircle(getStartTimeRadians())) {
-      return -getStartTimeRadians();
+      return -getStartTimeRadians() + offset;
     }
-    return -getStartTimeRadians() + pi;
+    return -getStartTimeRadians() + pi + offset;
   }
 
   double getEndTextAngle() {
+    final offset = segment.getDurationMinutes() < 60 ? -0.07 : 0;
     if (_isInRightSideOfCircle(getEndTimeRadians())) {
-      return -getEndTimeRadians();
+      return -getEndTimeRadians() + offset;
     }
-    return -getEndTimeRadians() + pi;
+    return -getEndTimeRadians() + pi + offset;
   }
 
   bool _isInRightSideOfCircle(double angle) {

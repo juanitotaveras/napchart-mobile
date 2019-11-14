@@ -1,14 +1,17 @@
 import 'package:intl/intl.dart';
 
 class TimeFormatter {
-  final DateTime dt;
-  TimeFormatter(this.dt);
-
 // Note: We will later need to check preferences to see
 // if user wants military time or American time
-  String getMilitaryTime() {
+  String getMilitaryTime(DateTime dt) {
     var formatter = new DateFormat('Hm');
     String formatted = formatter.format(dt);
     return formatted;
+  }
+
+  String formatSleepTime(int sleepMin) {
+    int h = sleepMin ~/ 60;
+    int m = sleepMin % 60;
+    return '${h}h ${m}m';
   }
 }
