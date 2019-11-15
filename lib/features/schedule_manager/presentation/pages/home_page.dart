@@ -14,35 +14,36 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/home_view_
 import '../../../../injection_container.dart';
 import 'package:intl/intl.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
+// class MyHomePage extends StatefulWidget {
+//   MyHomePage({Key key, this.title}) : super(key: key);
+//   final String title;
+//   @override
+//   _MyHomePageState createState() => _MyHomePageState();
+// }
 
-class BasicTimeField extends StatelessWidget {
-  final format = DateFormat("HH:mm");
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      Text('Basic time field (${format.pattern})'),
-      DateTimeField(
-        format: format,
-        onShowPicker: (context, currentValue) async {
-          final time = await showTimePicker(
-            context: context,
-            initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-          );
-          return DateTimeField.convert(time);
-        },
-      ),
-    ]);
-  }
-}
+// class BasicTimeField extends StatelessWidget {
+//   final format = DateFormat("HH:mm");
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(children: <Widget>[
+//       Text('Basic time field (${format.pattern})'),
+//       DateTimeField(
+//         format: format,
+//         onShowPicker: (context, currentValue) async {
+//           final time = await showTimePicker(
+//             context: context,
+//             initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+//           );
+//           return DateTimeField.convert(time);
+//         },
+//       ),
+//     ]);
+//   }
+// }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePage extends StatelessWidget {
   final _bloc = sl<HomeViewModel>();
+  BuildContext _ctxt;
   void _goToSleepScheduleCreator(context) async {
     await Navigator.push(
       context,
@@ -100,6 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    this._ctxt = context;
     bool isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
     return ViewModelProvider(
@@ -108,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
+          title: Text('My Schedule'),
           actions: <Widget>[
             FlatButton(
               textColor: Colors.white,
@@ -127,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget nextNapCard(context) {
+  Widget nextNapCard(ctxt) {
     return StreamBuilder<SleepSchedule>(
         stream: _bloc.currentScheduleStream,
         builder: (context, currentScheduleStream) {
@@ -142,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     _bloc.onLeftNapArrowTapped();
                   },
                 ),
-                Expanded(child: nextNapCardCentralSection()),
+                Expanded(child: nextNapCardCentralSection(ctxt)),
                 IconButton(
                   icon: Icon(Icons.arrow_forward_ios, size: 10.0),
                   onPressed: () {
@@ -152,12 +154,12 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             );
           } else {
-            return nextNapCardCentralSection();
+            return nextNapCardCentralSection(ctxt);
           }
         });
   }
 
-  Widget nextNapCardCentralSection() {
+  Widget nextNapCardCentralSection(BuildContext ctxt) {
     SleepSegment selectedSegment = _bloc.currentSchedule.getSelectedSegment();
     TimeFormatter tf = TimeFormatter();
     return Card(
@@ -201,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
           subtitle: Text('Set for 5:00am'),
           onTap: () async {
             print('el chapo');
-            Scaffold.of(context).showBottomSheet((context) => Container(
+            Scaffold.of(ctxt).showBottomSheet((context) => Container(
                   color: Colors.red,
                 ));
             // await showTimePicker(
@@ -223,7 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
       padding: const EdgeInsets.only(top: 16.0),
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         ListTile(
-          title: Text(AppLocalizations.of(context).shortPolysleepDescTitle),
+          title: Text(AppLocalizations.of(_ctxt).shortPolysleepDescTitle),
           subtitle: Text(
               'Polyphasic sleep is the practice of sleeping more than once in a 24 hour period.'
               '\nIf you take naps, you\'re sleeping polyphasically.'),
@@ -231,7 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ButtonTheme.bar(
             child: ButtonBar(children: <Widget>[
           FlatButton(
-            child: Text(AppLocalizations.of(context).dismissCaps),
+            child: Text(AppLocalizations.of(_ctxt).dismissCaps),
             onPressed: () {
               /* */
             },

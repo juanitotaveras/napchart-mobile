@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         accentColor: Colors.redAccent,
       ),
-      home: MyHomePage(title: 'My Schedule'),
+      home: MyHomePage(),
     );
   }
 }
