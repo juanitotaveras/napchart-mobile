@@ -81,24 +81,6 @@ void main() {
     verify(mockGetCurrentOrDefaultSchedule(NoParams()));
   });
 
-  test(
-      'Should yield segments loaded with current segments current schedule case successful',
-      () async {
-    // arrange
-    when(mockGetCurrentOrDefaultSchedule(any))
-        .thenAnswer((_) async => Right(tSleepSchedule));
-
-    // assert later
-    final expected = [
-      Init(),
-      SegmentsLoaded(loadedSegments: tSleepSchedule.segments)
-    ];
-    // expectLater(bloc.state, emitsInOrder(expected));
-
-    // act
-    bloc.onLoadSchedule();
-  });
-
   test('Should call GetDefaultSchedule if we fail to get currentSchedule',
       () async {
     // arrange
@@ -110,7 +92,6 @@ void main() {
     await untilCalled(mockGetCurrentOrDefaultSchedule(any));
 
     // assert
-    verify(mockGetCurrentOrDefaultSchedule(NoParams()));
     verify(mockGetCurrentOrDefaultSchedule(NoParams()));
   });
 

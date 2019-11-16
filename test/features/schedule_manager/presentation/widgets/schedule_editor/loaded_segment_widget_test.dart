@@ -31,7 +31,7 @@ void main() {
               endTime: SegmentDateTime(hr: 2, min: 0)),
           index: index);
       final w = ViewModelProvider(
-          bloc: (context) => bloc,
+          bloc: bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
       await tester.pumpWidget(w);
 
@@ -54,7 +54,7 @@ void main() {
               endTime: SegmentDateTime(hr: 2, min: 0)),
           index: index);
       final w = ViewModelProvider(
-          bloc: (context) => bloc,
+          bloc: bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
       await tester.pumpWidget(w);
 
@@ -77,7 +77,7 @@ void main() {
           segment: SleepSegment(startTime: startTime, endTime: endTime),
           index: 0);
       final w = ViewModelProvider(
-          bloc: (context) => bloc,
+          bloc: bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
       await tester.pumpWidget(w);
 
