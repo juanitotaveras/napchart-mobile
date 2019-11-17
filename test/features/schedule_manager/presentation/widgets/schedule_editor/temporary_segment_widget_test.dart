@@ -62,6 +62,8 @@ void main() {
       final mockStream = BehaviorSubject<SleepSegment>.seeded(tSegments[0]);
       // mockStream.add(tSegments[0]);
       when(bloc.selectedSegmentStream).thenAnswer((_) => mockStream);
+      when(bloc.selectedSegment).thenReturn(SleepSegment(
+          startTime: SegmentDateTime(hr: 1), endTime: SegmentDateTime(hr: 3)));
       final widgetUnderTest =
           TemporarySegmentWidget(marginRight: 5, hourSpacing: 60);
       final w = ViewModelProvider(
@@ -73,7 +75,7 @@ void main() {
 
       // assert
       final widgets = find.byKey(Key('tempPiece'));
-      // expect(widgets, findsOneWidget);
+      expect(widgets, findsOneWidget);
       // TODO: Figure out why snapshot.data is null...
 
       mockStream.close();
@@ -83,6 +85,7 @@ void main() {
         (WidgetTester tester) async {
       final widgetUnderTest =
           TemporarySegmentWidget(marginRight: 5, hourSpacing: 60);
+      when(bloc.selectedSegment).thenReturn(tSegments[0]);
       final w = ViewModelProvider(
           bloc: bloc,
           child: MaterialApp(home: Scaffold(body: widgetUnderTest)));
@@ -91,7 +94,7 @@ void main() {
       // act
       final widgets = find.byKey(Key('tempPiece'));
 
-      // expect(widgets, findsNWidgets(2));
+      expect(widgets, findsNWidgets(2));
     });
   });
 }

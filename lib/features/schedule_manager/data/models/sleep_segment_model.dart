@@ -1,11 +1,15 @@
 import 'package:meta/meta.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 
 import '../../domain/entities/sleep_segment.dart';
 
 class SleepSegmentModel extends SleepSegment {
-  SleepSegmentModel({@required DateTime startTime, @required DateTime endTime})
-      : super(startTime: startTime, endTime: endTime);
+  SleepSegmentModel(
+      {@required DateTime startTime,
+      @required DateTime endTime,
+      AlarmInfo alarmInfo})
+      : super(startTime: startTime, endTime: endTime, alarmInfo: alarmInfo);
 
   factory SleepSegmentModel.fromJson(Map<String, dynamic> json) {
     final start =

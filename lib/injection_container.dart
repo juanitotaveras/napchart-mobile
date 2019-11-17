@@ -7,6 +7,7 @@ import 'package:polysleep/features/schedule_manager/domain/repositories/schedule
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/choose_template_view_model.dart';
+import 'package:polysleep/features/schedule_manager/presentation/bloc/edit_alarm_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
@@ -29,6 +30,7 @@ Future<void> init() async {
   sl.registerFactory(() =>
       HomeViewModel(getCurrentOrDefaultSchedule: sl(), getCurrentTime: sl()));
   sl.registerFactory(() => ChooseTemplateViewModel(sl(), sl()));
+  sl.registerFactory(() => EditAlarmViewModel());
 
   // Use cases
   sl.registerLazySingleton(() => GetCurrentSchedule(sl()));

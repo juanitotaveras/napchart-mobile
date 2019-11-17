@@ -44,16 +44,16 @@ void main() {
         'should return SleepScheduleModel from SharedPreferences when value is present',
         () async {
       // arrange
-      // final String scheduleFromFixture = fixture('test_schedule.json');
-      // when(mockSharedPreferences.getString(any))
-      //     .thenReturn(scheduleFromFixture);
+      final String scheduleFromFixture = fixture('test_schedule.json');
+      when(mockSharedPreferences.getString(any))
+          .thenReturn(scheduleFromFixture);
 
       // act
-      // final result = await dataSource.getCurrentSchedule();
+      final result = await dataSource.getCurrentSchedule();
 
       // assert
-      // verify(mockSharedPreferences.getString(CURRENT_SCHEDULE));
-      // expect(result, equals(tSleepScheduleModel));
+      verify(mockSharedPreferences.getString(CURRENT_SCHEDULE));
+      expect(result, equals(tSleepScheduleModel));
     });
   });
 }

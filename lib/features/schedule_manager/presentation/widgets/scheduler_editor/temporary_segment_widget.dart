@@ -16,7 +16,7 @@ const corner = Radius.circular(cornerRadius);
 class TemporarySegmentWidget extends StatelessWidget {
   final double marginRight;
   final double hourSpacing;
-  var _bloc;
+  ScheduleEditorViewModel _bloc;
   TemporarySegmentWidget({this.marginRight, this.hourSpacing});
 
   @override
@@ -26,7 +26,7 @@ class TemporarySegmentWidget extends StatelessWidget {
         stream: _bloc.selectedSegmentStream,
         initialData: null,
         builder: (context, snapshot) {
-          final s = snapshot.data;
+          final s = snapshot.data ?? _bloc.selectedSegment;
           if (s == null) {
             return Container();
           }
