@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/notification_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 
 class SleepSegment {
@@ -9,12 +10,14 @@ class SleepSegment {
   DateTime endTime;
   final String name;
   final bool isSelected;
-  AlarmInfo _alarmInfo;
+  final AlarmInfo alarmInfo;
+  final NotificationInfo notificationInfo;
 
   SleepSegment({
     @required this.startTime,
     @required this.endTime,
-    alarmInfo,
+    this.alarmInfo,
+    this.notificationInfo,
     this.name = "",
     this.isSelected = false,
   }) {
@@ -23,12 +26,6 @@ class SleepSegment {
           SegmentDateTime(hr: startTime.hour, min: startTime.minute, day: 0);
       this.endTime =
           SegmentDateTime(hr: endTime.hour, min: endTime.minute, day: 1);
-    }
-
-    if (alarmInfo != null) {
-      this._alarmInfo = alarmInfo;
-    } else {
-      this._alarmInfo = AlarmInfo.createDefaultUsingTime(this.endTime);
     }
   }
 

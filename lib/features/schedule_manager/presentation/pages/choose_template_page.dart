@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
-import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/bloc.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/choose_template_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
@@ -103,7 +102,7 @@ class ChooseTemplatePage extends StatelessWidget {
       initialData: null,
       builder: (context, selectedScheduleStream) {
         return CurrentScheduleGraphic(
-            currentTime: DateTime.now(),
+            currentTime: SegmentDateTime(hr: 0),
             currentSchedule: selectedScheduleStream.data);
       },
     );
@@ -124,7 +123,6 @@ class ChooseTemplatePage extends StatelessWidget {
               idx++;
             });
           }
-          // TODO: Only show schedule graphic if one element is selected
           if (_viewModel.selectedSchedule == null) {
             return Container(
                 padding: EdgeInsets.only(top: 10),

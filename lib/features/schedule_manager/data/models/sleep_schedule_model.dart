@@ -12,22 +12,26 @@ class SleepScheduleModel extends SleepSchedule {
       String difficulty = ""})
       : super(segments: segments, name: name, difficulty: difficulty);
 
+  static String segmentsKey = 'segments';
+  static String difficultyKey = 'difficulty';
+  static String nameKey = 'name';
+
   factory SleepScheduleModel.fromJson(Map<String, dynamic> json) {
-    final jsonSegments = json['segments'];
+    final jsonSegments = json[segmentsKey];
     final List<SleepSegment> segments = jsonSegments
         .map<SleepSegmentModel>(
             (jsonSeg) => SleepSegmentModel.fromJson(jsonSeg))
         .toList();
     return SleepScheduleModel(
-        name: json['name'],
+        name: json[nameKey],
         segments: segments,
-        difficulty: json['difficulty'] ?? 'Easy');
+        difficulty: json[difficultyKey] ?? 'Easy');
   }
   Map<String, dynamic> toJson() {
     final segmentModels = this.segments.map((seg) => seg as SleepSegmentModel);
     return {
-      'name': this.name,
-      'segments': segmentModels
+      nameKey: this.name,
+      segmentsKey: segmentModels
           .map<Map<String, dynamic>>((seg) => seg.toJson())
           .toList()
     };

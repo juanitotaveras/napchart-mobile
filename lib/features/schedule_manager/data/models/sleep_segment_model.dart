@@ -1,35 +1,68 @@
 import 'package:meta/meta.dart';
+import 'package:polysleep/features/schedule_manager/data/models/notification_info_model.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/notification_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 
 import '../../domain/entities/sleep_segment.dart';
+import 'alarm_info_model.dart';
 
 class SleepSegmentModel extends SleepSegment {
   SleepSegmentModel(
       {@required DateTime startTime,
       @required DateTime endTime,
-      AlarmInfo alarmInfo})
-      : super(startTime: startTime, endTime: endTime, alarmInfo: alarmInfo);
+      AlarmInfo alarmInfo,
+      NotificationInfo notificationInfo})
+      : super(
+            startTime: startTime,
+            endTime: endTime,
+            alarmInfo: alarmInfo,
+            notificationInfo: notificationInfo);
+
+  static String startKey = 'start';
+  static String endKey = 'end';
+  static String alarmInfoKey = 'alarmInfo';
+  static String notificationInfoKey = 'notificationInfo';
 
   factory SleepSegmentModel.fromJson(Map<String, dynamic> json) {
     final start =
-        json['start'].split(':').map<int>((elem) => int.parse(elem)).toList();
+        json[startKey].split(':').map<int>((elem) => int.parse(elem)).toList();
     final end =
-        json['end'].split(':').map<int>((elem) => int.parse(elem)).toList();
+        json[endKey].split(':').map<int>((elem) => int.parse(elem)).toList();
+    final startTime = SegmentDateTime(hr: start[0], min: start[1]);
+    final endTime = SegmentDateTime(hr: end[0], min: end[1]);
+    final alarmInfo = (json.containsKey(alarmInfoKey))
+        ? AlarmInfoModel.fromJson(json[alarmInfoKey])
+        : AlarmInfo.createDefaultUsingTime(endTime);
+    final notificationInfo = (json.containsKey(notificationInfoKey))
+        ? NotificationInfoModel.fromJson(json[notificationInfoKey])
+        : NotificationInfo.createDefaultUsingTime(startTime);
     return SleepSegmentModel(
-        startTime: SegmentDateTime(hr: start[0], min: start[1]),
-        endTime: SegmentDateTime(hr: end[0], min: end[1]));
+        startTime: startTime,
+        endTime: endTime,
+        alarmInfo: alarmInfo,
+        notificationInfo: notificationInfo);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'start': [
+    final Map<String, Object> res = {
+      startKey: [
         _setZeroes(this.startTime.hour),
         _setZeroes(this.startTime.minute)
       ].join(':'),
-      'end': [_setZeroes(this.endTime.hour), _setZeroes(this.endTime.minute)]
-          .join(':')
+      endKey: [_setZeroes(this.endTime.hour), _setZeroes(this.endTime.minute)]
+          .join(':'),
     };
+
+    if (this.alarmInfo != null) {
+      res[alarmInfoKey] = (this.alarmInfo as AlarmInfoModel).toJson();
+    }
+
+    if (this.notificationInfo != null) {
+      res[notificationInfoKey] =
+          (this.notificationInfo as NotificationInfoModel).toJson();
+    }
+    return res;
   }
 
   String _setZeroes(int time) {

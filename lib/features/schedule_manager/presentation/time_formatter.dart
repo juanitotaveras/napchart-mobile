@@ -14,4 +14,11 @@ class TimeFormatter {
     int m = sleepMin % 60;
     return '${h}h ${m}m';
   }
+
+  String formatNapCountdown(int sleepSec) {
+    int h = sleepSec ~/ (60 * 60);
+    int m = (sleepSec - h * 60 * 60) ~/ (60);
+    int s = (sleepSec - m * 60) % (60 * 60);
+    return '$h:$m:$s';
+  }
 }

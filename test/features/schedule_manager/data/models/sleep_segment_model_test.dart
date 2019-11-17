@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:polysleep/features/schedule_manager/data/models/alarm_info_model.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_segment_model.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
@@ -10,8 +11,12 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../../fixtures/fixtures_reader.dart';
 
 void main() {
+  final tAlarmModel = AlarmInfoModel(
+      soundOn: false, vibrationOn: false, ringTime: SegmentDateTime(hr: 22));
   final tSegmentModel = SleepSegmentModel(
-      startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6));
+      startTime: SegmentDateTime(hr: 22),
+      endTime: SegmentDateTime(hr: 6),
+      alarmInfo: tAlarmModel);
   final tEndtime = SegmentDateTime(hr: 6);
   final tSegmentModelWithAlarm = SleepSegmentModel(
       startTime: SegmentDateTime(hr: 22),
@@ -53,7 +58,15 @@ void main() {
       // arrange and act
       final result = tSegmentModel.toJson();
       // assert
-      final expectedMap = {'start': '22:00', 'end': '06:00'};
+      final expectedMap = {
+        'start': '22:00',
+        'end': '06:00',
+        'alarmInfo': {
+          'soundOn': false,
+          'vibrationOn': false,
+          'ringTime': '22:00'
+        }
+      };
       expect(result, expectedMap);
     });
   });

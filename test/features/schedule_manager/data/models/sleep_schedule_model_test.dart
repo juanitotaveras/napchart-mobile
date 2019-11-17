@@ -42,8 +42,8 @@ void main() {
         final result = tSleepScheduleModel.toJson();
         // assert
         final expectedMap = {
-          "name": "Monophasic",
-          "segments": [
+          SleepScheduleModel.nameKey: "Monophasic",
+          SleepScheduleModel.segmentsKey: [
             {"start": "22:00", "end": "06:00"}
           ]
         };

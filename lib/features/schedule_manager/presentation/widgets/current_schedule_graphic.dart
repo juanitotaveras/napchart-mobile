@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+import 'package:polysleep/features/schedule_manager/presentation/time_formatter.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/sun_times_painter.dart';
 import 'schedule_number_painter.dart';
 import 'segment_painter.dart';
@@ -19,7 +21,6 @@ class CurrentScheduleGraphic extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> segmentWidgets = [];
     if (this.currentSchedule != null) {
-      var idx = 0;
       this
           .currentSchedule
           .segments
@@ -30,9 +31,22 @@ class CurrentScheduleGraphic extends StatelessWidget {
                 painter: SegmentPainter(segment: seg, currentTime: currentTime),
               ))));
     }
-    final DateTime _startSun = DateTime(2019, 1, 1, 6);
-    final DateTime _endSun = DateTime(2019, 1, 1, 18);
+
+    // TOODO: Calculate sun according to location
+    final DateTime _startSun = SegmentDateTime(hr: 6);
+    final DateTime _endSun = SegmentDateTime(hr: 18);
     final sunSegment = SleepSegment(startTime: _startSun, endTime: _endSun);
+
+    final howLongUntilNextNap = (currentSchedule == null)
+        ? -1
+        : currentSchedule?.getSecondsUntilNextNap(currentTime);
+    String sleepInText = "";
+    TimeFormatter tf = TimeFormatter();
+    if (howLongUntilNextNap > 0) {
+      sleepInText = "Sleep in \n ${tf.formatNapCountdown(howLongUntilNextNap)}";
+    } else if (howLongUntilNextNap == 0) {
+      sleepInText = "Sleep now";
+    }
     return Padding(
         padding: const EdgeInsets.all(10.0),
         child: Stack(
@@ -82,7 +96,13 @@ class CurrentScheduleGraphic extends StatelessWidget {
                 height: double.infinity,
                 child: CustomPaint(
                   painter: ClockHandPainter(),
-                ))
+                )),
+            Container(
+                width: double.infinity,
+                // height: double.infinity,
+                child: Center(
+                    child: Text(sleepInText,
+                        style: Theme.of(context).textTheme.body2))),
           ],
         ));
   }

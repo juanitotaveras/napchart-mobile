@@ -87,6 +87,8 @@ class HomeViewModel implements ViewModelBase {
                     startTime: seg.startTime,
                     endTime: seg.endTime,
                     name: seg.name,
+                    alarmInfo: seg.alarmInfo,
+                    notificationInfo: seg.notificationInfo,
                     isSelected: index == minIdx));
           })
           .values
@@ -112,7 +114,9 @@ class HomeViewModel implements ViewModelBase {
                     startTime: seg.startTime,
                     endTime: seg.endTime,
                     name: seg.name,
-                    isSelected: index == nextIdx));
+                    isSelected: index == nextIdx,
+                    alarmInfo: seg.alarmInfo,
+                    notificationInfo: seg.notificationInfo));
           })
           .values
           .toList();
@@ -137,7 +141,9 @@ class HomeViewModel implements ViewModelBase {
                     startTime: seg.startTime,
                     endTime: seg.endTime,
                     name: seg.name,
-                    isSelected: index == prevIdx));
+                    isSelected: index == prevIdx,
+                    alarmInfo: seg.alarmInfo,
+                    notificationInfo: seg.notificationInfo));
           })
           .values
           .toList();
