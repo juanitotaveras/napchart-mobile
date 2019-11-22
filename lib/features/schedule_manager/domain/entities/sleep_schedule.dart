@@ -40,6 +40,9 @@ class SleepSchedule extends Equatable {
         selectedSegment.endTime.difference(cur).inSeconds > 0) {
       // we are in current nap
       return 0;
+    } else if (diff.inSeconds < 0) {
+      // nap is next day
+      return (MINUTES_PER_DAY * 60) + diff.inSeconds;
     }
     return -1;
   }

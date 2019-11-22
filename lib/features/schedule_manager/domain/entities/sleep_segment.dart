@@ -9,7 +9,7 @@ class SleepSegment {
   DateTime startTime;
   DateTime endTime;
   final String name;
-  final bool isSelected;
+  bool isSelected;
   final AlarmInfo alarmInfo;
   final NotificationInfo notificationInfo;
 
@@ -70,6 +70,10 @@ class SleepSegment {
 
     return ms ~/ 60000;
   }
+
+  void setStartTime(DateTime time) => this.startTime = time;
+
+  void setIsSelected(bool isSelected) => this.isSelected = isSelected;
 
   static int getTotalSleepMinutes(List<SleepSegment> segs) =>
       MINUTES_PER_DAY - getTotalAwakeMinutes(segs);
