@@ -186,13 +186,26 @@ void main() {
         name: seg.name,
         isSelected: true);
 
-    // TODO: Need to simulate start time being changed
-
     // expectLater(bloc.state, emitsInOrder(expected));
 
     // act
     bloc.onLoadSchedule();
     await untilCalled(mockGetCurrentOrDefaultSchedule(any));
     bloc.onLoadedSegmentTapped(0);
+  });
+
+  test('should show unsaved changes exist if we make a change', () async {
+    // arrange
+    when(mockGetCurrentOrDefaultSchedule(any))
+        .thenAnswer((_) async => Right(tSleepSchedule));
+
+    //act
+    bloc.onLoadSchedule();
+    await untilCalled(mockGetCurrentOrDefaultSchedule(any));
+    final touchCoord = Offset(125, 93);
+    bloc.onTemporarySegmentCreated(touchCoord, 60);
+
+    // assertLater
+    expectLater(bloc.unsavedChangesExistStream, emitsInOrder([false, true]));
   });
 }

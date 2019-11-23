@@ -62,7 +62,8 @@ class ScheduleEditorViewModel implements ViewModelBase {
       }
 
       // append to our selectedSegmentStream
-      if (this.selectedSegment != this.loadedSchedule.getSelectedSegment()) {
+      if (this.loadedSchedule != null &&
+          this.selectedSegment != this.loadedSchedule.getSelectedSegment()) {
         this
             .selectedSegmentSubject
             .add(this.loadedSchedule.getSelectedSegment());
