@@ -46,4 +46,19 @@ class SleepSchedule extends Equatable {
     }
     return -1;
   }
+
+  bool hasDifferentSegments(SleepSchedule other) {
+    if (this.segments.length != other.segments.length) return true;
+    for (int i = 0; i < this.segments.length; i++) {
+      if (segments[i] != other.segments[i]) return true;
+    }
+    return false;
+  }
+
+  SleepSchedule.clone(SleepSchedule schedule,
+      {List<SleepSegment> segments, String name, String difficulty})
+      : this(
+            segments: segments ?? schedule.segments,
+            name: name ?? schedule.name,
+            difficulty: difficulty ?? schedule.difficulty);
 }

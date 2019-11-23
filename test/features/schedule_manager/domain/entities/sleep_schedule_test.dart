@@ -63,4 +63,20 @@ void main() {
       6000,
     );
   });
+
+  test('should pass equality test', () {
+    final s1 = SleepScheduleModel.fromJson(
+        json.decode(fixture('test_everyman_1.json')));
+    final s2 = SleepScheduleModel.fromJson(
+        json.decode(fixture('test_everyman_1.json')));
+    expect(true, s1 == s2);
+  });
+
+  test('should fail equality test', () {
+    final s1 = SleepScheduleModel.fromJson(
+        json.decode(fixture('test_everyman_1.json')));
+    final s2 =
+        SleepScheduleModel.fromJson(json.decode(fixture('test_schedule.json')));
+    expect(false, s1 == s2);
+  });
 }

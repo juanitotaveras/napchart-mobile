@@ -11,8 +11,8 @@ class ScheduleEditorHeaderPresenter {
   final ScheduleEditorViewModel _viewModel;
   ScheduleEditorHeaderPresenter(this._context, this._viewModel);
 
-  int get _sleepMins =>
-      SleepSegment.getTotalSleepMinutes(this._viewModel.loadedSegments);
+  int get _sleepMins => SleepSegment.getTotalSleepMinutes(
+      this._viewModel.loadedSchedule.segments);
   int get _sleepH => _sleepMins ~/ 60;
   int get _sleepM => _sleepMins - (_sleepMins ~/ 60) * 60;
   String get asleepTime {
@@ -23,8 +23,8 @@ class ScheduleEditorHeaderPresenter {
         " mins";
   }
 
-  int get _awakeMins =>
-      SleepSegment.getTotalAwakeMinutes(this._viewModel.loadedSegments);
+  int get _awakeMins => SleepSegment.getTotalAwakeMinutes(
+      this._viewModel.loadedSchedule.segments);
   int get _awakeH => _awakeMins ~/ 60;
   int get _awakeM => _awakeMins - (_awakeMins ~/ 60) * 60;
   String get awakeTime {
@@ -57,7 +57,7 @@ class ScheduleEditorHeader extends StatelessWidget {
     final _viewModel = ViewModelProvider.of<ScheduleEditorViewModel>(context);
     final presenter = ScheduleEditorHeaderPresenter(context, _viewModel);
     return StreamBuilder(
-        stream: _viewModel.loadedSegmentsStream,
+        stream: _viewModel.loadedScheduleStream,
         builder: (context, loadedSegmentsStream) {
           return Container(
             height: 60,

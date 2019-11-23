@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polysleep/core/utils.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
@@ -20,11 +21,11 @@ class CalendarGrid extends StatelessWidget {
     final ScheduleEditorViewModel bloc =
         ViewModelProvider.of<ScheduleEditorViewModel>(context);
     final calendarHeight = 1440.0;
-    return StreamBuilder<List<SleepSegment>>(
-        stream: bloc.loadedSegmentsStream,
+    return StreamBuilder<SleepSchedule>(
+        stream: bloc.loadedScheduleStream,
         initialData: null,
         builder: (context, snapshot) {
-          List<SleepSegment> loadedSegments = snapshot.data;
+          List<SleepSegment> loadedSegments = snapshot.data.segments;
 
           List<Widget> loadedSegmentWidgets = [];
           if (loadedSegments != null) {

@@ -20,43 +20,69 @@ class ScheduleEditorViewModel implements ViewModelBase {
   final GetCurrentOrDefaultSchedule getCurrentOrDefaultSchedule;
   final SaveCurrentSchedule saveCurrentSchedule;
 
-  ScheduleEditorViewModel(
-      {@required this.getCurrentOrDefaultSchedule,
-      @required this.saveCurrentSchedule}) {
-    assert(getCurrentOrDefaultSchedule != null);
-    assert(saveCurrentSchedule != null);
-  }
-
 //! streams
+
   final selectedSegmentSubject = BehaviorSubject<SleepSegment>();
   Stream<SleepSegment> get selectedSegmentStream =>
       selectedSegmentSubject.stream;
   SleepSegment get selectedSegment => selectedSegmentSubject.value;
 
-  final loadedSegmentsSubject = BehaviorSubject<List<SleepSegment>>();
-  Stream<List<SleepSegment>> get loadedSegmentsStream =>
-      loadedSegmentsSubject.stream;
-  List<SleepSegment> get loadedSegments => loadedSegmentsSubject.value;
+  final loadedScheduleSubject = BehaviorSubject<SleepSchedule>();
+  Stream<SleepSchedule> get loadedScheduleStream =>
+      loadedScheduleSubject.stream;
+  SleepSchedule get loadedSchedule => loadedScheduleSubject.value;
+
+  final _unsavedChangesExistStreamController =
+      StreamController<bool>.broadcast();
+  Stream<bool> get unsavedChangesExistStream =>
+      _unsavedChangesExistStreamController.stream.distinct();
 
   var isDragging = false;
   // Difference between start time of selected segment and
   // the point at which we started dragging
   Duration startDragDiffTime;
 
+  // This is used to revert our state if we have created a new segment
+  // but then cancelled
+  SleepSegment previousSelectedSegment;
+
   SleepSchedule initialSchedule;
+
+  ScheduleEditorViewModel(
+      {@required this.getCurrentOrDefaultSchedule,
+      @required this.saveCurrentSchedule}) {
+    assert(getCurrentOrDefaultSchedule != null);
+    assert(saveCurrentSchedule != null);
+
+    loadedScheduleStream.listen((SleepSchedule data) {
+      if (this.initialSchedule != null) {
+        // Only add to stream if vals are different
+        final areDifferent = this.initialSchedule.hasDifferentSegments(data);
+        _unsavedChangesExistStreamController.sink.add(areDifferent);
+      }
+
+      // append to our selectedSegmentStream
+      if (this.selectedSegment != this.loadedSchedule.getSelectedSegment()) {
+        this
+            .selectedSegmentSubject
+            .add(this.loadedSchedule.getSelectedSegment());
+      }
+    });
+  }
 
   void dispose() {
     selectedSegmentSubject.close();
-    loadedSegmentsSubject.close();
+    loadedScheduleSubject.close();
+    _unsavedChangesExistStreamController.close();
   }
 
   /// ---------------   START EVENT HANDLERS
   onLoadSchedule() async {
     final resp = await getCurrentOrDefaultSchedule(NoParams());
     resp.fold((failure) async {
-      loadedSegmentsSubject.add([]);
+      loadedScheduleSubject.add(null);
     }, (schedule) async {
-      loadedSegmentsSubject.add(schedule.segments);
+      loadedScheduleSubject.add(schedule);
       initialSchedule = schedule;
     });
   }
@@ -65,7 +91,12 @@ class ScheduleEditorViewModel implements ViewModelBase {
     DateTime t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourPixels, 30);
     DateTime endTime = t.add(Duration(minutes: 60));
-    selectedSegmentSubject.add(SleepSegment(startTime: t, endTime: endTime));
+    final prevSegments = loadedSchedule.segments
+        .map((seg) => SleepSegment.clone(seg, isSelected: false));
+    final tempSegment =
+        SleepSegment(startTime: t, endTime: endTime, isSelected: true);
+    loadedScheduleSubject.add(SleepSchedule.clone(loadedSchedule,
+        segments: [...prevSegments, tempSegment]));
   }
 
   onSelectedSegmentStartDrag(Offset touchCoord, double hourSpacing) {
@@ -94,11 +125,15 @@ class ScheduleEditorViewModel implements ViewModelBase {
     final t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 15);
     final newStartTime = t.subtract(startDragDiffTime);
-    final newSeg = SleepSegment(
-        startTime: newStartTime,
-        endTime: newStartTime
-            .add(Duration(minutes: selectedSegment.getDurationMinutes())));
-    selectedSegmentSubject.add(newSeg);
+    final newEndTime = newStartTime
+        .add(Duration(minutes: selectedSegment.getDurationMinutes()));
+    final newSegments = loadedSchedule.segments.map((seg) {
+      if (!seg.isSelected) return seg;
+      return SleepSegment.clone(seg,
+          startTime: newStartTime, endTime: newEndTime);
+    }).toList();
+    loadedScheduleSubject
+        .add(SleepSchedule.clone(loadedSchedule, segments: newSegments));
   }
 
   onSelectedSleepSegmentEndDrag() {
@@ -108,11 +143,15 @@ class ScheduleEditorViewModel implements ViewModelBase {
   onSelectedSegmentStartTimeDragged(Offset touchCoord, double hourSpacing) {
     final t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 5);
-    SleepSegment currentSegment = selectedSegment;
+    SleepSegment currentSegment = loadedSchedule.getSelectedSegment();
     if (t.compareTo(currentSegment.startTime) != 0) {
-      final newSeg =
-          SleepSegment(startTime: t, endTime: currentSegment.endTime);
-      selectedSegmentSubject.add(newSeg);
+      final newSeg = SleepSegment.clone(currentSegment,
+          startTime: t, endTime: currentSegment.endTime);
+      final newSegments = loadedSchedule.segments
+          .map((seg) => (!seg.isSelected) ? seg : newSeg)
+          .toList();
+      loadedScheduleSubject
+          .add(SleepSchedule.clone(loadedSchedule, segments: newSegments));
     }
   }
 
@@ -123,13 +162,17 @@ class ScheduleEditorViewModel implements ViewModelBase {
     if (t.compareTo(currentSegment.startTime) != 0) {
       final newSeg = SleepSegment.clone(currentSegment,
           startTime: currentSegment.startTime, endTime: t);
-      selectedSegmentSubject.add(newSeg);
+      final newSegments = loadedSchedule.segments
+          .map((seg) => (!seg.isSelected) ? seg : newSeg)
+          .toList();
+      loadedScheduleSubject
+          .add(SleepSchedule.clone(loadedSchedule, segments: newSegments));
     }
   }
 
   onSaveChangesPressed() async {
-    SleepSchedule schedule = SleepSchedule(segments: loadedSegments);
-    final resp = await saveCurrentSchedule(Params(schedule: schedule));
+    final resp =
+        await saveCurrentSchedule(Params(schedule: this.loadedSchedule));
     resp.fold((failure) async {
       // print('there has been an error');
       // show error state
@@ -141,85 +184,54 @@ class ScheduleEditorViewModel implements ViewModelBase {
   }
 
   onSelectedSegmentCancelled() async {
-    final lSegments = loadedSegments;
-    final currentlyEditing = lSegments.where((seg) => seg.isSelected).toList();
-    if (currentlyEditing.length == 0) {
-      loadedSegmentsSubject.add([...lSegments]);
-      selectedSegmentSubject.add(null);
+    if (this.previousSelectedSegment == null) {
+      final newSegs =
+          loadedSchedule.segments.where((seg) => !seg.isSelected).toList();
+      loadedScheduleSubject
+          .add(SleepSchedule.clone(loadedSchedule, segments: newSegs));
     } else {
-      final segs = lSegments
-          .map((seg) => SleepSegment.clone(seg, isSelected: false))
+      final newSegs = loadedSchedule.segments
+          .map((seg) => seg.isSelected ? this.previousSelectedSegment : seg)
           .toList();
-      loadedSegmentsSubject.add(segs);
-      selectedSegmentSubject.add(null);
+      loadedScheduleSubject
+          .add(SleepSchedule.clone(loadedSchedule, segments: newSegs));
+      this.previousSelectedSegment = null;
     }
   }
 
   onLoadedSegmentTapped(int index) async {
-    final segs = loadedSegments
+    this.previousSelectedSegment = loadedSchedule.segments[index];
+    final segs = loadedSchedule.segments
         .asMap()
-        .map((idx, seg) {
-          return MapEntry(
-              idx,
-              SleepSegment(
-                  startTime: seg.startTime,
-                  endTime: seg.endTime,
-                  name: seg.name,
-                  isSelected: idx == index));
-        })
+        .map((idx, seg) =>
+           MapEntry(
+              idx, SleepSegment.clone(seg, isSelected: idx == index));
+        )
         .values
         .toList();
-    final selectedSegment = segs.where((seg) => seg.isSelected).toList()[0];
-    loadedSegmentsSubject.add(segs);
-    selectedSegmentSubject.add(selectedSegment);
+    loadedScheduleSubject
+        .add(SleepSchedule.clone(loadedSchedule, segments: segs));
   }
 
   onSelectedSegmentSaved() {
-    final lSegments = loadedSegments;
-    final sSegment = selectedSegment;
-    final currentlyEdited = lSegments.where((seg) => seg.isSelected).toList();
-    if (currentlyEdited.length == 0) {
-      // this is a new segment
-      loadedSegmentsSubject.add([...lSegments, sSegment]);
-      selectedSegmentSubject.add(null);
-    } else {
-      final segs = lSegments.map((seg) {
-        if (seg.isSelected) {
-          final sel = sSegment;
-          return SleepSegment(
-              startTime: sel.startTime,
-              endTime: sel.endTime,
-              name: sel.name,
-              isSelected: false);
-        }
-        return SleepSegment(
-            startTime: seg.startTime,
-            endTime: seg.endTime,
-            name: seg.name,
-            isSelected: false);
-      }).toList();
-      loadedSegmentsSubject.add(segs);
-      selectedSegmentSubject.add(null);
-    }
+    final newSegs = loadedSchedule.segments.map((seg) =>
+        !seg.isSelected ? seg : SleepSegment.clone(seg, isSelected: false));
+    loadedScheduleSubject
+        .add(SleepSchedule.clone(loadedSchedule, segments: newSegs));
   }
 
   onDeleteSelectedSegmentPressed() {
     final remainingSegments =
-        loadedSegments.where((seg) => !seg.isSelected).toList();
-    loadedSegmentsSubject.add(remainingSegments);
-    selectedSegmentSubject.add(null);
+        loadedSchedule.segments.where((seg) => !seg.isSelected).toList();
+    loadedScheduleSubject
+        .add(SleepSchedule.clone(loadedSchedule, segments: remainingSegments));
   }
 
   onTemplateScheduleSet(SleepSchedule schedule) {
-    loadedSegmentsSubject.add(schedule.segments);
-    selectedSegmentSubject.add(null);
+    loadedScheduleSubject.add(schedule);
   }
 
   /// ---------------   END EVENT HANDLERS
-  ///
-  bool unsavedChangesExist() {
-    return false;
-  }
 }
 
 // TODO: Put these into an EventMapper class

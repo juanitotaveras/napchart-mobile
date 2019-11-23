@@ -65,7 +65,7 @@ void main() {
     await bloc.onDeleteSelectedSegmentPressed();
 
     // assert
-    List<SleepSegment> segments = bloc.loadedSegments;
+    List<SleepSegment> segments = bloc.loadedSchedule.segments;
     expect(segments.length, tSleepSchedule.segments.length - 1);
   });
 

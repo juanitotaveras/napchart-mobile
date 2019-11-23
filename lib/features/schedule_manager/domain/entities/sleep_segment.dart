@@ -46,12 +46,10 @@ class SleepSegment {
       other is SleepSegment &&
           runtimeType == other.runtimeType &&
           startTime.isAtSameMomentAs(other.startTime) &&
-          endTime.isAtSameMomentAs(other.endTime) &&
-          isSelected == other.isSelected;
+          endTime.isAtSameMomentAs(other.endTime);
 
   @override
-  int get hashCode =>
-      startTime.hashCode + endTime.hashCode + isSelected.hashCode;
+  int get hashCode => startTime.hashCode + endTime.hashCode;
 
   SleepSegment clone() {
     return SleepSegment(

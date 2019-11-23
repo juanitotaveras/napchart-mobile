@@ -26,9 +26,10 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
       bloc.onLoadSchedule();
       initCalled = true;
     }
-    return StreamBuilder(
-        stream: this.bloc.loadedSegmentsStream,
-        builder: (context, loadedSegmentsStream) {
+    return StreamBuilder<bool>(
+        stream: this.bloc.unsavedChangesExistStream,
+        initialData: false,
+        builder: (context, unsavedChangesExistStream) {
           return Scaffold(
               appBar: AppBar(
                   // Here we take the value from the MyHomePage object that was created by
@@ -42,7 +43,7 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
                       onPressed: () {
                         Navigator.pop(context, 'test function');
                       }),
-                  actions: actionsList(loadedSegmentsStream.data)),
+                  actions: actionsList(unsavedChangesExistStream.data)),
               //drawer: NavigationDrawer(),
 
               body: ViewModelProvider(
@@ -67,8 +68,8 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
         });
   }
 
-  List<Widget> actionsList(List<SleepSegment> segments) {
-    return this.bloc.unsavedChangesExist() ? [saveButton()] : [];
+  List<Widget> actionsList(bool unsavedChangesExist) {
+    return unsavedChangesExist ? [saveButton()] : [];
   }
 
   Widget saveButton() {
