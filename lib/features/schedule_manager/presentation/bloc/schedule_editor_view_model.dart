@@ -177,9 +177,8 @@ class ScheduleEditorViewModel implements ViewModelBase {
       // print('there has been an error');
       // show error state
     }, (updatedSchedule) async {
-      // print(' great success!');
-      print(updatedSchedule);
-      // currentScheduleSubject.add(schedule);
+      this.initialSchedule = updatedSchedule;
+      this.loadedScheduleSubject.add(updatedSchedule);
     });
   }
 
@@ -204,9 +203,7 @@ class ScheduleEditorViewModel implements ViewModelBase {
     final segs = loadedSchedule.segments
         .asMap()
         .map((idx, seg) =>
-           MapEntry(
-              idx, SleepSegment.clone(seg, isSelected: idx == index));
-        )
+            MapEntry(idx, SleepSegment.clone(seg, isSelected: idx == index)))
         .values
         .toList();
     loadedScheduleSubject
@@ -214,8 +211,10 @@ class ScheduleEditorViewModel implements ViewModelBase {
   }
 
   onSelectedSegmentSaved() {
-    final newSegs = loadedSchedule.segments.map((seg) =>
-        !seg.isSelected ? seg : SleepSegment.clone(seg, isSelected: false));
+    final newSegs = loadedSchedule.segments
+        .map((seg) =>
+            !seg.isSelected ? seg : SleepSegment.clone(seg, isSelected: false))
+        .toList();
     loadedScheduleSubject
         .add(SleepSchedule.clone(loadedSchedule, segments: newSegs));
   }

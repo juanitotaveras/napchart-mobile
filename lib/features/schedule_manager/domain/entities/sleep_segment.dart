@@ -40,11 +40,13 @@ class SleepSegment {
             isSelected: isSelected ?? segment.isSelected);
 
   // equality overrides
+  // TODO: We are commenting out other.runtimeType
+  // because when we compare SleepSegment with SleepSegmentModel,
+  // equality fails.
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SleepSegment &&
-          runtimeType == other.runtimeType &&
           startTime.isAtSameMomentAs(other.startTime) &&
           endTime.isAtSameMomentAs(other.endTime);
 
