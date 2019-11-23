@@ -43,6 +43,8 @@ class ScheduleEditorViewModel implements ViewModelBase {
   // the point at which we started dragging
   Duration startDragDiffTime;
 
+  SleepSchedule initialSchedule;
+
   void dispose() {
     selectedSegmentSubject.close();
     loadedSegmentsSubject.close();
@@ -55,6 +57,7 @@ class ScheduleEditorViewModel implements ViewModelBase {
       loadedSegmentsSubject.add([]);
     }, (schedule) async {
       loadedSegmentsSubject.add(schedule.segments);
+      initialSchedule = schedule;
     });
   }
 
@@ -118,8 +121,8 @@ class ScheduleEditorViewModel implements ViewModelBase {
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 5);
     SleepSegment currentSegment = selectedSegment;
     if (t.compareTo(currentSegment.startTime) != 0) {
-      final newSeg =
-          SleepSegment(startTime: currentSegment.startTime, endTime: t);
+      final newSeg = SleepSegment.clone(currentSegment,
+          startTime: currentSegment.startTime, endTime: t);
       selectedSegmentSubject.add(newSeg);
     }
   }
@@ -145,11 +148,7 @@ class ScheduleEditorViewModel implements ViewModelBase {
       selectedSegmentSubject.add(null);
     } else {
       final segs = lSegments
-          .map((seg) => SleepSegment(
-              startTime: seg.startTime,
-              endTime: seg.endTime,
-              isSelected: false,
-              name: seg.name))
+          .map((seg) => SleepSegment.clone(seg, isSelected: false))
           .toList();
       loadedSegmentsSubject.add(segs);
       selectedSegmentSubject.add(null);
@@ -217,6 +216,10 @@ class ScheduleEditorViewModel implements ViewModelBase {
   }
 
   /// ---------------   END EVENT HANDLERS
+  ///
+  bool unsavedChangesExist() {
+    return false;
+  }
 }
 
 // TODO: Put these into an EventMapper class

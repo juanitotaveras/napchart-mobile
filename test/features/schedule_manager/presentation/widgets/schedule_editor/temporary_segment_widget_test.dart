@@ -7,8 +7,6 @@ import 'package:polysleep/features/schedule_manager/domain/entities/segment_date
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/loaded_segment_widget.dart';
 import 'package:mockito/mockito.dart';
@@ -29,11 +27,7 @@ void main() {
         SleepSchedule(name: "Monophasic", segments: tSegments);
     setUp(() {
       bloc = MockBloc();
-      final state = SegmentsLoaded(
-          loadedSegments: <SleepSegment>[],
-          selectedSegment: SleepSegment(
-              startTime: SegmentDateTime(hr: 22),
-              endTime: SegmentDateTime(hr: 6)));
+
       // when().thenAnswer((_) => state);
     });
     /*testWidgets('Widget dispatches event when tapped',

@@ -29,6 +29,16 @@ class SleepSegment {
     }
   }
 
+  SleepSegment.clone(SleepSegment segment,
+      {DateTime startTime, DateTime endTime, bool isSelected})
+      : this(
+            startTime: startTime ?? segment.startTime,
+            endTime: endTime ?? segment.endTime,
+            notificationInfo: segment.notificationInfo,
+            alarmInfo: segment.alarmInfo,
+            name: segment.name,
+            isSelected: isSelected ?? segment.isSelected);
+
   // equality overrides
   @override
   bool operator ==(Object other) =>

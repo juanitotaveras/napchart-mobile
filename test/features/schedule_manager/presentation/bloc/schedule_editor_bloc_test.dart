@@ -105,10 +105,7 @@ void main() {
         .thenAnswer((_) async => Right(tSleepSchedule));
 
     // assert later
-    final expected = [
-      Init(),
-      SegmentsLoaded(loadedSegments: tSleepSchedule.segments)
-    ];
+
     // expectLater(bloc.state, emitsInOrder(expected));
 
     // act
@@ -157,13 +154,7 @@ void main() {
         endTime: seg.endTime,
         name: seg.name,
         isSelected: true);
-    final expected = [
-      Init(),
-      SegmentsLoaded(loadedSegments: tSleepSchedule.segments),
-      SegmentsLoaded(
-          loadedSegments: tModifiedSchedule.segments,
-          selectedSegment: tModifiedSegment)
-    ];
+
     // expectLater(bloc.state, emitsInOrder(expected));
 
     // act
@@ -196,15 +187,7 @@ void main() {
         isSelected: true);
 
     // TODO: Need to simulate start time being changed
-    final expected = [
-      Init(),
-      SegmentsLoaded(loadedSegments: tSleepSchedule.segments),
-      SegmentsLoaded(
-          loadedSegments: tModifiedSchedule.segments,
-          selectedSegment: tModifiedSegment),
-      SegmentsLoaded(
-          loadedSegments: tSleepSchedule.segments, selectedSegment: null)
-    ];
+
     // expectLater(bloc.state, emitsInOrder(expected));
 
     // act

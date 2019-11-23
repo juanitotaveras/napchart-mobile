@@ -4,8 +4,6 @@ import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_event.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_state.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/pages/schedule_editor.dart';
 import '../../../../../injection_container.dart';
