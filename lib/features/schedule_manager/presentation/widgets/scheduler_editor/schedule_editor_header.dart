@@ -5,6 +5,7 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_e
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/localizations.dart';
 import 'package:polysleep/features/schedule_manager/presentation/pages/choose_template_page.dart';
+import 'package:polysleep/features/schedule_manager/presentation/time_formatter.dart';
 
 class ScheduleEditorHeaderPresenter {
   final _context;
@@ -13,26 +14,15 @@ class ScheduleEditorHeaderPresenter {
 
   int get _sleepMins => SleepSegment.getTotalSleepMinutes(
       this._viewModel.loadedSchedule.segments);
-  int get _sleepH => _sleepMins ~/ 60;
-  int get _sleepM => _sleepMins - (_sleepMins ~/ 60) * 60;
   String get asleepTime {
     return AppLocalizations.of(_context).awakeStart +
-        _sleepH.toString() +
-        " hrs " +
-        _sleepM.toString() +
-        " mins";
+        TimeFormatter.formatSleepTime(_sleepMins);
   }
 
   int get _awakeMins => SleepSegment.getTotalAwakeMinutes(
       this._viewModel.loadedSchedule.segments);
-  int get _awakeH => _awakeMins ~/ 60;
-  int get _awakeM => _awakeMins - (_awakeMins ~/ 60) * 60;
   String get awakeTime {
-    return asleepText +
-        _awakeH.toString() +
-        " hrs " +
-        _awakeM.toString() +
-        " mins";
+    return asleepText + TimeFormatter.formatSleepTime(_awakeMins);
   }
 
   String get chooseScheduleButtonText =>

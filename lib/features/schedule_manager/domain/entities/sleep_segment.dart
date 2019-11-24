@@ -6,38 +6,44 @@ import 'package:polysleep/features/schedule_manager/domain/entities/notification
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 
 class SleepSegment {
-  DateTime startTime;
-  DateTime endTime;
+  DateTime _startTime;
+  DateTime _endTime;
   final String name;
   bool isSelected;
   final AlarmInfo alarmInfo;
   final NotificationInfo notificationInfo;
 
+  DateTime get startTime => _startTime;
+  DateTime get endTime => _endTime;
+
   SleepSegment({
-    @required this.startTime,
-    @required this.endTime,
+    @required startTime,
+    @required endTime,
     this.alarmInfo,
     this.notificationInfo,
     this.name = "",
     this.isSelected = false,
   }) {
     if (startTime.isAfter(endTime)) {
-      this.startTime =
+      this._startTime =
           SegmentDateTime(hr: startTime.hour, min: startTime.minute, day: 0);
-      this.endTime =
+      this._endTime =
           SegmentDateTime(hr: endTime.hour, min: endTime.minute, day: 1);
+    } else {
+      this._startTime = startTime;
+      this._endTime = endTime;
     }
   }
 
-  SleepSegment.clone(SleepSegment segment,
-      {DateTime startTime, DateTime endTime, bool isSelected})
-      : this(
-            startTime: startTime ?? segment.startTime,
-            endTime: endTime ?? segment.endTime,
-            notificationInfo: segment.notificationInfo,
-            alarmInfo: segment.alarmInfo,
-            name: segment.name,
-            isSelected: isSelected ?? segment.isSelected);
+  SleepSegment clone({DateTime startTime, DateTime endTime, bool isSelected}) {
+    return SleepSegment(
+        startTime: startTime ?? this._startTime,
+        endTime: endTime ?? this._endTime,
+        notificationInfo: this.notificationInfo,
+        alarmInfo: this.alarmInfo,
+        name: this.name,
+        isSelected: isSelected ?? this.isSelected);
+  }
 
   // equality overrides
   // TODO: We are commenting out other.runtimeType
@@ -47,43 +53,31 @@ class SleepSegment {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SleepSegment &&
-          startTime.isAtSameMomentAs(other.startTime) &&
-          endTime.isAtSameMomentAs(other.endTime);
+          _startTime.isAtSameMomentAs(other._startTime) &&
+          _endTime.isAtSameMomentAs(other._endTime);
 
   @override
-  int get hashCode => startTime.hashCode + endTime.hashCode;
-
-  SleepSegment clone() {
-    return SleepSegment(
-        startTime: this.startTime,
-        endTime: this.endTime,
-        name: this.name,
-        isSelected: this.isSelected);
-  }
+  int get hashCode => _startTime.hashCode + _endTime.hashCode;
 
   int getStartMinutesFromMidnight() {
-    return startTime.hour * 60 + startTime.minute;
+    return _startTime.hour * 60 + _startTime.minute;
   }
 
   int getEndMinutesFromMidnight() {
-    return endTime.hour * 60 + endTime.minute;
+    return _endTime.hour * 60 + _endTime.minute;
   }
 
   bool startAndEndsOnSameDay() {
-    return startTime.day == endTime.day;
+    return _startTime.day == _endTime.day;
   }
 
   int getDurationMinutes() {
     // one minutes is 60,000 ms
     final ms =
-        endTime.millisecondsSinceEpoch - startTime.millisecondsSinceEpoch;
+        _endTime.millisecondsSinceEpoch - _startTime.millisecondsSinceEpoch;
 
     return ms ~/ 60000;
   }
-
-  void setStartTime(DateTime time) => this.startTime = time;
-
-  void setIsSelected(bool isSelected) => this.isSelected = isSelected;
 
   static int getTotalSleepMinutes(List<SleepSegment> segs) =>
       MINUTES_PER_DAY - getTotalAwakeMinutes(segs);

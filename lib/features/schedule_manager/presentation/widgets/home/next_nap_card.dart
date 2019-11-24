@@ -30,7 +30,7 @@ class NextNapInfoPresenter {
 
   String get currentNapDuration => (selectedSegment == null)
       ? ""
-      : tf.formatSleepTime(selectedSegment.getDurationMinutes());
+      : TimeFormatter.formatSleepTime(selectedSegment.getDurationMinutes());
 
   bool get currentNapAlarmOn =>
       (selectedSegment == null) ? false : selectedSegment.alarmInfo.isOn;

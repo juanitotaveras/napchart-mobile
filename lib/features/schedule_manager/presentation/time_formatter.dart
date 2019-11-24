@@ -9,10 +9,16 @@ class TimeFormatter {
     return formatted;
   }
 
-  String formatSleepTime(int sleepMin) {
+  static String formatSleepTime(int sleepMin) {
     int h = sleepMin ~/ 60;
     int m = sleepMin % 60;
-    return '${h}h ${m}m';
+    String res = '';
+    if (h > 0) res += '${h}h';
+    if (m > 0) {
+      if (res.length > 0) res += ' ';
+      res += '${m}m';
+    }
+    return res;
   }
 
   String formatNapCountdown(int sleepSec) {

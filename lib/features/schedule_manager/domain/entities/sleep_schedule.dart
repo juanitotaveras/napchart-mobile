@@ -55,10 +55,11 @@ class SleepSchedule extends Equatable {
     return false;
   }
 
-  SleepSchedule.clone(SleepSchedule schedule,
-      {List<SleepSegment> segments, String name, String difficulty})
-      : this(
-            segments: segments ?? schedule.segments,
-            name: name ?? schedule.name,
-            difficulty: difficulty ?? schedule.difficulty);
+  SleepSchedule clone(
+      {List<SleepSegment> segments, String name, String difficulty}) {
+    return SleepSchedule(
+        segments: segments ?? this.segments,
+        name: name ?? this.name,
+        difficulty: difficulty ?? this.difficulty);
+  }
 }

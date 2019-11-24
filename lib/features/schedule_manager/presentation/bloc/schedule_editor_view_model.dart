@@ -92,12 +92,12 @@ class ScheduleEditorViewModel implements ViewModelBase {
     DateTime t =
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourPixels, 30);
     DateTime endTime = t.add(Duration(minutes: 60));
-    final prevSegments = loadedSchedule.segments
-        .map((seg) => SleepSegment.clone(seg, isSelected: false));
+    final prevSegments =
+        loadedSchedule.segments.map((seg) => seg.clone(isSelected: false));
     final tempSegment =
         SleepSegment(startTime: t, endTime: endTime, isSelected: true);
-    loadedScheduleSubject.add(SleepSchedule.clone(loadedSchedule,
-        segments: [...prevSegments, tempSegment]));
+    loadedScheduleSubject
+        .add(loadedSchedule.clone(segments: [...prevSegments, tempSegment]));
   }
 
   onSelectedSegmentStartDrag(Offset touchCoord, double hourSpacing) {
@@ -130,11 +130,9 @@ class ScheduleEditorViewModel implements ViewModelBase {
         .add(Duration(minutes: selectedSegment.getDurationMinutes()));
     final newSegments = loadedSchedule.segments.map((seg) {
       if (!seg.isSelected) return seg;
-      return SleepSegment.clone(seg,
-          startTime: newStartTime, endTime: newEndTime);
+      return seg.clone(startTime: newStartTime, endTime: newEndTime);
     }).toList();
-    loadedScheduleSubject
-        .add(SleepSchedule.clone(loadedSchedule, segments: newSegments));
+    loadedScheduleSubject.add(loadedSchedule.clone(segments: newSegments));
   }
 
   onSelectedSleepSegmentEndDrag() {
@@ -146,13 +144,12 @@ class ScheduleEditorViewModel implements ViewModelBase {
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 5);
     SleepSegment currentSegment = loadedSchedule.getSelectedSegment();
     if (t.compareTo(currentSegment.startTime) != 0) {
-      final newSeg = SleepSegment.clone(currentSegment,
-          startTime: t, endTime: currentSegment.endTime);
+      final newSeg =
+          currentSegment.clone(startTime: t, endTime: currentSegment.endTime);
       final newSegments = loadedSchedule.segments
           .map((seg) => (!seg.isSelected) ? seg : newSeg)
           .toList();
-      loadedScheduleSubject
-          .add(SleepSchedule.clone(loadedSchedule, segments: newSegments));
+      loadedScheduleSubject.add(loadedSchedule.clone(segments: newSegments));
     }
   }
 
@@ -161,13 +158,12 @@ class ScheduleEditorViewModel implements ViewModelBase {
         GridTapToTimeConverter.touchInputToTime(touchCoord, hourSpacing, 5);
     SleepSegment currentSegment = selectedSegment;
     if (t.compareTo(currentSegment.startTime) != 0) {
-      final newSeg = SleepSegment.clone(currentSegment,
-          startTime: currentSegment.startTime, endTime: t);
+      final newSeg =
+          currentSegment.clone(startTime: currentSegment.startTime, endTime: t);
       final newSegments = loadedSchedule.segments
           .map((seg) => (!seg.isSelected) ? seg : newSeg)
           .toList();
-      loadedScheduleSubject
-          .add(SleepSchedule.clone(loadedSchedule, segments: newSegments));
+      loadedScheduleSubject.add(loadedSchedule.clone(segments: newSegments));
     }
   }
 
@@ -187,14 +183,12 @@ class ScheduleEditorViewModel implements ViewModelBase {
     if (this.previousSelectedSegment == null) {
       final newSegs =
           loadedSchedule.segments.where((seg) => !seg.isSelected).toList();
-      loadedScheduleSubject
-          .add(SleepSchedule.clone(loadedSchedule, segments: newSegs));
+      loadedScheduleSubject.add(loadedSchedule.clone(segments: newSegs));
     } else {
       final newSegs = loadedSchedule.segments
           .map((seg) => seg.isSelected ? this.previousSelectedSegment : seg)
           .toList();
-      loadedScheduleSubject
-          .add(SleepSchedule.clone(loadedSchedule, segments: newSegs));
+      loadedScheduleSubject.add(loadedSchedule.clone(segments: newSegs));
       this.previousSelectedSegment = null;
     }
   }
@@ -203,28 +197,24 @@ class ScheduleEditorViewModel implements ViewModelBase {
     this.previousSelectedSegment = loadedSchedule.segments[index];
     final segs = loadedSchedule.segments
         .asMap()
-        .map((idx, seg) =>
-            MapEntry(idx, SleepSegment.clone(seg, isSelected: idx == index)))
+        .map((idx, seg) => MapEntry(idx, seg.clone(isSelected: idx == index)))
         .values
         .toList();
-    loadedScheduleSubject
-        .add(SleepSchedule.clone(loadedSchedule, segments: segs));
+    loadedScheduleSubject.add(loadedSchedule.clone(segments: segs));
   }
 
   onSelectedSegmentSaved() {
     final newSegs = loadedSchedule.segments
-        .map((seg) =>
-            !seg.isSelected ? seg : SleepSegment.clone(seg, isSelected: false))
+        .map((seg) => !seg.isSelected ? seg : seg.clone(isSelected: false))
         .toList();
-    loadedScheduleSubject
-        .add(SleepSchedule.clone(loadedSchedule, segments: newSegs));
+    loadedScheduleSubject.add(loadedSchedule.clone(segments: newSegs));
   }
 
   onDeleteSelectedSegmentPressed() {
     final remainingSegments =
         loadedSchedule.segments.where((seg) => !seg.isSelected).toList();
     loadedScheduleSubject
-        .add(SleepSchedule.clone(loadedSchedule, segments: remainingSegments));
+        .add(loadedSchedule.clone(segments: remainingSegments));
   }
 
   onTemplateScheduleSet(SleepSchedule schedule) {

@@ -32,14 +32,12 @@ void main() {
   test('should get seconds until next nap if nap is next day', () {
     final everymanSchedule = SleepScheduleModel.fromJson(
         json.decode(fixture('test_everyman_1.json')));
-    final core = everymanSchedule.segments[0];
-    final nap = everymanSchedule.segments[1];
+    final core = everymanSchedule.segments[0].clone(isSelected: false);
+    final nap = everymanSchedule.segments[1].clone(isSelected: true);
 
-    core.setIsSelected(false);
-    nap.setIsSelected(true);
-
+    final schedule = everymanSchedule.clone(segments: [core, nap]);
     final testTime = DateTime(2019, 11, 22, 21, 20);
-    int howLong = everymanSchedule.getSecondsUntilNextNap(testTime);
+    int howLong = schedule.getSecondsUntilNextNap(testTime);
 
     // assert
     expect(howLong, 56400);
@@ -48,14 +46,12 @@ void main() {
   test('should get seconds until next nap if nap is on same day', () {
     final everymanSchedule = SleepScheduleModel.fromJson(
         json.decode(fixture('test_everyman_1.json')));
-    final core = everymanSchedule.segments[0];
-    final nap = everymanSchedule.segments[1];
+    final core = everymanSchedule.segments[0].clone(isSelected: true);
+    final nap = everymanSchedule.segments[1].clone(isSelected: false);
 
-    core.setIsSelected(true);
-    nap.setIsSelected(false);
-
+    final schedule = everymanSchedule.clone(segments: [core, nap]);
     final testTime = DateTime(2019, 11, 22, 21, 20);
-    int howLong = everymanSchedule.getSecondsUntilNextNap(testTime);
+    int howLong = schedule.getSecondsUntilNextNap(testTime);
 
     // assert
     expect(

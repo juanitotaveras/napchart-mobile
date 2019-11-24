@@ -6,6 +6,7 @@ import 'package:polysleep/features/schedule_manager/presentation/bloc/bloc.dart'
 import 'package:polysleep/features/schedule_manager/presentation/bloc/choose_template_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/localizations.dart';
+import 'package:polysleep/features/schedule_manager/presentation/time_formatter.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/current_schedule_graphic.dart';
 import 'package:polysleep/injection_container.dart';
 
@@ -16,12 +17,6 @@ class ChooseTemplatePresenter {
 
   String get pageHeader =>
       AppLocalizations.of(_context).chooseTemplatePageHeader;
-
-  String formatSleepTime(int sleepMin) {
-    int h = sleepMin ~/ 60;
-    int m = sleepMin % 60;
-    return '${h}h ${m}m';
-  }
 }
 
 class ChooseTemplatePage extends StatelessWidget {
@@ -82,8 +77,8 @@ class ChooseTemplatePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(presenter
-                            .formatSleepTime(schedule.totalSleepMinutes)),
+                        Text(TimeFormatter.formatSleepTime(
+                            schedule.totalSleepMinutes)),
                       ],
                     )),
                 Expanded(child: Text(schedule.difficulty)),
