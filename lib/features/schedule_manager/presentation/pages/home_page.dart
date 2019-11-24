@@ -2,16 +2,14 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/home_event.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/time_formatter.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/home/next_nap_card.dart';
 import '../widgets/navigation_drawer.dart';
 import '../localizations.dart';
 import 'schedule_editor.dart';
-import '../widgets/base_schedule.dart';
 import '../widgets/current_schedule_graphic.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/home_view_model.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/home_view_model.dart';
 import '../../../../injection_container.dart';
 import 'package:intl/intl.dart';
 
@@ -87,11 +85,6 @@ class MyHomePage extends StatelessWidget {
             FlatButton(
               textColor: Colors.white,
               onPressed: () {
-                // showBottomSheet(
-                //     context: context,
-                //     builder: (context) => Container(
-                //           height: 400,
-                //         ));
                 _goToSleepScheduleCreator(context);
               },
               child: Text("EDIT"),

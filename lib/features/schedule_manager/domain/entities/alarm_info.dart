@@ -23,4 +23,11 @@ class AlarmInfo extends Equatable {
   }
 
   bool get isOn => this.soundOn && this.vibrationOn;
+
+  AlarmInfo clone({DateTime ringTime, bool vibrationOn, bool soundOn}) {
+    return AlarmInfo(
+        ringTime: ringTime ?? this.ringTime,
+        vibrationOn: vibrationOn ?? this.vibrationOn,
+        soundOn: soundOn ?? this.soundOn);
+  }
 }

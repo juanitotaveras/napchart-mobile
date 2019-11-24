@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/bloc.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/choose_template_view_model.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/choose_template_view_model.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/localizations.dart';
 import 'package:polysleep/features/schedule_manager/presentation/time_formatter.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/current_schedule_graphic.dart';
+import 'package:polysleep/features/schedule_manager/presentation/widgets/template_schedule_graphic.dart';
 import 'package:polysleep/injection_container.dart';
 
 class ChooseTemplatePresenter {
@@ -96,9 +97,7 @@ class ChooseTemplatePage extends StatelessWidget {
       stream: _viewModel.selectedScheduleSubject.stream,
       initialData: null,
       builder: (context, selectedScheduleStream) {
-        return CurrentScheduleGraphic(
-            currentTime: SegmentDateTime(hr: 0),
-            currentSchedule: selectedScheduleStream.data);
+        return TemplateScheduleGraphic(schedule: selectedScheduleStream.data);
       },
     );
   }

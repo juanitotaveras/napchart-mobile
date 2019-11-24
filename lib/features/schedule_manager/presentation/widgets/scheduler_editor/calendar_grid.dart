@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/schedule_editor_view_model.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/widgets/scheduler_editor/temporary_segment_widget.dart';
 import 'package:polysleep/injection_container.dart';
 

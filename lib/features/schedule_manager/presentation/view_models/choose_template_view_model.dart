@@ -2,7 +2,7 @@ import 'package:polysleep/core/usecases/usecase.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/load_schedule_templates.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:meta/meta.dart';
 

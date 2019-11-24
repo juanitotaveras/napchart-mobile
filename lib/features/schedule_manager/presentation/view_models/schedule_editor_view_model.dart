@@ -13,7 +13,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 // import 'package:polysleep/features/schedule_manager/domain/usecases/create_temporary_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ScheduleEditorViewModel implements ViewModelBase {

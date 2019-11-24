@@ -56,6 +56,11 @@ class AppLocalizations {
 
   String get chooseTemplatePageHeader =>
       Intl.message('Choose a template', name: 'chooseTemplate');
+
+  String get resetDefault =>
+      Intl.message('Reset default', name: 'resetDefault');
+
+  String get saveText => Intl.message('SAVE', name: 'save');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

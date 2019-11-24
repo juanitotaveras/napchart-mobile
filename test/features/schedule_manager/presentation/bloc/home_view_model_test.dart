@@ -8,7 +8,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_time.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/home_view_model.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/home_view_model.dart';
 
 class MockGetCurrentOrDefaultSchedule extends Mock
     implements GetCurrentOrDefaultSchedule {}

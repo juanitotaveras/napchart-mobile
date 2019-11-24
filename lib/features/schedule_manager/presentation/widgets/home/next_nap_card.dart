@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/edit_alarm_view_model.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/edit_alarm_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/time_formatter.dart';
 import '../../localizations.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/home_view_model.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/home_view_model.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import '../../../../../injection_container.dart';
+import 'edit_alarm_modal.dart';
 
 class NextNapInfoPresenter {
   final BuildContext _context;
@@ -142,115 +143,5 @@ class NextNapCard extends StatelessWidget {
             subtitle: Text(presenter.currentNapNotificationInfoText))
       ],
     ));
-  }
-}
-
-class EditAlarmModalPresenter {
-  final BuildContext _context;
-  final EditAlarmViewModel _editAlarmViewModel;
-  final HomeViewModel _homeViewModel;
-  // AlarmInfo currentAlarm;
-  SleepSegment selectedSegment;
-  TimeFormatter tf = TimeFormatter();
-  EditAlarmModalPresenter(
-      this._context, this._editAlarmViewModel, this._homeViewModel) {
-    // currentAlarm = _editAlarmViewModel.currentAlarm;
-    selectedSegment = _homeViewModel.currentSchedule?.getSelectedSegment();
-  }
-
-  String get alarmHeaderText {
-    if (_editAlarmViewModel.currentAlarm == null || selectedSegment == null)
-      return "";
-    return "Alarm for ${tf.getMilitaryTime(selectedSegment.startTime)} - ${tf.getMilitaryTime(selectedSegment.endTime)} nap";
-  }
-
-  String get alarmOnText {
-    if (_editAlarmViewModel.currentAlarm == null || selectedSegment == null)
-      return "";
-    return (_editAlarmViewModel.currentAlarm.soundOn) ? "On" : "Off";
-  }
-}
-
-class EditAlarmModal extends StatelessWidget {
-  final HomeViewModel vm;
-  final editAlarmViewModel = sl<EditAlarmViewModel>();
-  EditAlarmModal(this.vm) {
-    final AlarmInfo ai = vm.currentSchedule.getSelectedSegment().alarmInfo;
-    if (ai != null) {
-      editAlarmViewModel.setCurrentAlarm(ai);
-    }
-  }
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    final mediaQueryData = MediaQuery.of(context);
-
-    // return container;
-    final presenter = EditAlarmModalPresenter(context, editAlarmViewModel, vm);
-    return StreamBuilder<AlarmInfo>(
-      stream: editAlarmViewModel.currentAlarmStream,
-      builder: (context, stream) {
-        final currentAlarm = editAlarmViewModel.currentAlarm;
-        final container = Container(
-          // height: mediaQueryData.size.height - 150,
-          color: Theme.of(context).cardColor,
-          padding: EdgeInsets.only(left: 13),
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.cancel),
-                    onPressed: () {},
-                  ),
-                  Expanded(
-                    child: Container(),
-                  ),
-                  FlatButton(
-                    child: Text('Save'),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Icon(Icons.alarm),
-                  Expanded(child: Text(presenter.alarmHeaderText))
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Text(presenter.alarmOnText),
-                  Switch(
-                    value: currentAlarm?.soundOn ?? false,
-                    onChanged: (bool res) =>
-                        editAlarmViewModel.switchAlarmOnValue(res),
-                  )
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: FlatButton(
-                      child: Text(
-                        "22:00",
-                        style: Theme.of(context).textTheme.display1,
-                      ),
-                      onPressed: () async {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.fromDateTime(DateTime.now()),
-                        );
-                      },
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-        );
-        return container;
-      },
-    );
   }
 }

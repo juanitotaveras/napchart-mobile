@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../localizations.dart';
 
+class NavigationDrawerPresenter {}
+
 class NavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -18,30 +20,9 @@ class NavigationDrawer extends StatelessWidget {
           title: Text(AppLocalizations.of(context).home),
           onTap: () {}),
       ListTile(
-        leading: Icon(Icons.create),
-        title: Text('Schedule creator'),
-        onTap: () {
-          // update app status
-        },
-      ),
-      ListTile(
-        title: Text('Alarm settings'),
-        onTap: () {},
-      ),
-      ListTile(title: Text('Sleep diary'), onTap: () {}),
-      ListTile(
         title: Text(AppLocalizations.of(context).information),
         onTap: () {},
       ),
-      ListTile(
-        title: Text('Adaptation help'),
-        onTap: () {},
-      ),
-      ListTile(
-        title: Text('Community'),
-        onTap: () {},
-      ),
-      ListTile(title: Text('Get premium'), onTap: () {}),
       ListTile(
         title: Text(AppLocalizations.of(context).settings),
         onTap: () {},

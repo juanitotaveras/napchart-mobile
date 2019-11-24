@@ -66,34 +66,37 @@ class AngleCalculator {
   Offset getStartTextOffset(Offset centerPoint, double radius) {
     // this is for translating the canvas when placing text
     if (_isInRightSideOfCircle(getStartTimeRadians())) {
-      return Offset(centerPoint.dx + (radius / 1.5), centerPoint.dy);
+      // Should increase offset if segment less than 30 min
+      final denom = (this.segment.getDurationMinutes() <= 30) ? 1.09 : 1;
+      return Offset(centerPoint.dx + (radius / 1.5), centerPoint.dy / denom);
     }
+    final denom = (this.segment.getDurationMinutes() <= 30) ? 60 : 10;
     return Offset(
-        centerPoint.dx - (radius / 1.1), centerPoint.dy - (radius / 10));
+        centerPoint.dx - (radius / 1.1), centerPoint.dy - (radius / denom));
   }
 
   Offset getEndTextOffset(Offset centerPoint, double radius) {
     if (_isInRightSideOfCircle(getEndTimeRadians())) {
+      final denom = (this.segment.getDurationMinutes() <= 30) ? 60 : 10;
       return Offset(
-          centerPoint.dx + (radius / 1.5), centerPoint.dy - (radius / 10));
+          centerPoint.dx + (radius / 1.5), centerPoint.dy - (radius / denom));
     }
-    return Offset(centerPoint.dx - (radius / 1.1), centerPoint.dy);
+    final denom = (this.segment.getDurationMinutes() <= 30) ? 1.09 : 1;
+    return Offset(centerPoint.dx - (radius / 1.1), centerPoint.dy / denom);
   }
 
   double getStartTextAngle() {
-    final offset = segment.getDurationMinutes() <= 60 ? 0.07 : 0;
     if (_isInRightSideOfCircle(getStartTimeRadians())) {
-      return -getStartTimeRadians() + offset;
+      return -getStartTimeRadians();
     }
-    return -getStartTimeRadians() + pi + offset;
+    return -getStartTimeRadians() + pi;
   }
 
   double getEndTextAngle() {
-    final offset = segment.getDurationMinutes() < 60 ? -0.07 : 0;
     if (_isInRightSideOfCircle(getEndTimeRadians())) {
-      return -getEndTimeRadians() + offset;
+      return -getEndTimeRadians();
     }
-    return -getEndTimeRadians() + pi + offset;
+    return -getEndTimeRadians() + pi;
   }
 
   bool _isInRightSideOfCircle(double angle) {

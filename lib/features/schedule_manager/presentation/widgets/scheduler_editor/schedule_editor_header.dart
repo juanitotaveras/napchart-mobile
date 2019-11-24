@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/schedule_editor_view_model.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/schedule_editor_view_model.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/localizations.dart';
 import 'package:polysleep/features/schedule_manager/presentation/pages/choose_template_page.dart';
 import 'package:polysleep/features/schedule_manager/presentation/time_formatter.dart';

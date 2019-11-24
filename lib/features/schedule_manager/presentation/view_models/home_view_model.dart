@@ -6,7 +6,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedu
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_or_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_time.dart';
-import 'package:polysleep/features/schedule_manager/presentation/bloc/view_model_provider.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model_provider.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:meta/meta.dart';
 
