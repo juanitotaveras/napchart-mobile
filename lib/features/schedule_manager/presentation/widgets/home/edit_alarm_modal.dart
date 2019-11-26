@@ -14,10 +14,7 @@ class EditAlarmModal extends StatelessWidget {
   final HomeViewModel homeVM;
   final editAlarmVM = sl<EditAlarmViewModel>();
   EditAlarmModal(this.homeVM) {
-    final AlarmInfo ai = homeVM.currentSchedule.getSelectedSegment().alarmInfo;
-    if (ai != null) {
-      editAlarmVM.setCurrentAlarm(ai);
-    }
+    editAlarmVM.setHomeViewModel(homeVM);
   }
   @override
   Widget build(BuildContext context) {

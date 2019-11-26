@@ -3,6 +3,7 @@ import 'package:polysleep/core/error/exceptions.dart';
 import 'package:polysleep/core/error/failure.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/android_platform_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/assets_data_source.dart';
+import 'package:polysleep/features/schedule_manager/data/datasources/ios_platform_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_schedule_model.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_segment_model.dart';
@@ -11,16 +12,19 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedu
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
 import 'package:meta/meta.dart';
+import 'dart:io' show Platform;
 
 class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
   final PreferencesDataSource preferencesDataSource;
   final AssetsDataSource assetsDataSource;
-  final AndroidPlatformSource androidPlatformSource;
+  final AndroidPlatformSourceImpl androidPlatformSource;
+  final IOSPlatformSourceImpl iOSPlatformSource;
 
   ScheduleEditorRepositoryImpl(
       {@required this.preferencesDataSource,
       @required this.assetsDataSource,
-      @required this.androidPlatformSource});
+      @required this.androidPlatformSource,
+      @required this.iOSPlatformSource});
   // temporary
   getSegments() async {
     final segments = [
@@ -82,11 +86,30 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
 
   @override
   Future<Either<Failure, bool>> setAlarm(DateTime ringTime) async {
-    try {
-      final success = await androidPlatformSource.setAlarm(ringTime);
-      return (success) ? Right(true) : Left(AndroidFailure());
-    } on AndroidException {
-      return Left(AndroidFailure());
+    // TODO: Here we call each method based on what platform we are using
+    if (Platform.isAndroid) {
+      try {
+        // TODO: Call to platform should return the alarm's time, and make
+        // sure that it equals the ringtime we sent.
+
+        // Let's try to return an AlarmInfoModel
+        final success = await androidPlatformSource.setAlarm(ringTime);
+
+        // Save this alarm to DB
+
+        return (success) ? Right(true) : Left(AndroidFailure());
+      } on AndroidException {
+        return Left(AndroidFailure());
+      }
+    } else {
+      try {
+        // TODO: Call to platform should return the alarm's time, and make
+        // sure that it equals the ringtime we sent.
+        final success = await iOSPlatformSource.setAlarm(ringTime);
+        return (success) ? Right(true) : Left(IOSFailure());
+      } on IOSException {
+        return Left(IOSFailure());
+      }
     }
   }
 }

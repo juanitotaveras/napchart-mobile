@@ -12,4 +12,6 @@ class AssetsFailure extends Failure {}
 
 class AndroidFailure extends Failure {}
 
+class IOSFailure extends Failure {}
+
 class GeneralFailure extends Failure {}

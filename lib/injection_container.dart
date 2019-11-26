@@ -2,6 +2,7 @@ import 'package:flutter/services.dart' as prefix0;
 import 'package:get_it/get_it.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/android_platform_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/assets_data_source.dart';
+import 'package:polysleep/features/schedule_manager/data/datasources/ios_platform_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/repositories/schedule_editor_repository_impl.dart';
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
@@ -48,15 +49,18 @@ Future<void> init() async {
       ScheduleEditorRepositoryImpl(
           preferencesDataSource: sl(),
           assetsDataSource: sl(),
-          androidPlatformSource: sl()));
+          androidPlatformSource: sl(),
+          iOSPlatformSource: sl()));
 
   // Data sources
   sl.registerLazySingleton<PreferencesDataSource>(
       () => PreferencesDataSourceImpl(sharedPreferences: sl()));
   sl.registerLazySingleton<AssetsDataSource>(
       () => AssetsDataSourceImpl(rootBundle: sl()));
-  sl.registerLazySingleton<AndroidPlatformSource>(
+  sl.registerLazySingleton<AndroidPlatformSourceImpl>(
       () => AndroidPlatformSourceImpl());
+  sl.registerLazySingleton<IOSPlatformSourceImpl>(
+      () => IOSPlatformSourceImpl());
 
   //! Core
 
