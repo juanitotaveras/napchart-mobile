@@ -29,5 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <service android:name="net.polyphasic.polysleep.AlarmService" />
+        <receiver android:name="net.polyphasic.polysleep.AlarmReceiver" />
     </application>
 </manifest>

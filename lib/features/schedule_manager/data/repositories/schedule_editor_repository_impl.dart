@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:polysleep/core/error/exceptions.dart';
 import 'package:polysleep/core/error/failure.dart';
+import 'package:polysleep/features/schedule_manager/data/datasources/android_platform_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/assets_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_schedule_model.dart';
@@ -14,9 +15,12 @@ import 'package:meta/meta.dart';
 class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
   final PreferencesDataSource preferencesDataSource;
   final AssetsDataSource assetsDataSource;
+  final AndroidPlatformSource androidPlatformSource;
 
   ScheduleEditorRepositoryImpl(
-      {@required this.preferencesDataSource, @required this.assetsDataSource});
+      {@required this.preferencesDataSource,
+      @required this.assetsDataSource,
+      @required this.androidPlatformSource});
   // temporary
   getSegments() async {
     final segments = [
@@ -35,14 +39,6 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
     } on PreferencesException {
       return Left(PreferencesFailure());
     }
-  }
-
-  @override
-  Future<Either<Failure, SleepSegment>> putTemporarySleepSegment(
-      SleepSegment segment) {
-    // TODO: implement putTemporarySleepSegment
-
-    return null;
   }
 
   @override
@@ -84,6 +80,13 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
     }
   }
 
-  // We will need to return a list of all our schedule at some point.
-  // How about a
+  @override
+  Future<Either<Failure, bool>> setAlarm(DateTime ringTime) async {
+    try {
+      final success = await androidPlatformSource.setAlarm(ringTime);
+      return (success) ? Right(true) : Left(AndroidFailure());
+    } on AndroidException {
+      return Left(AndroidFailure());
+    }
+  }
 }

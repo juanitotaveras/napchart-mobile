@@ -10,4 +10,6 @@ class PreferencesFailure extends Failure {}
 
 class AssetsFailure extends Failure {}
 
+class AndroidFailure extends Failure {}
+
 class GeneralFailure extends Failure {}

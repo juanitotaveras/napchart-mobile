@@ -5,9 +5,6 @@ import '../../../../core/error/failure.dart';
 import '../entities/sleep_segment.dart';
 
 abstract class ScheduleEditorRepository {
-  Future<Either<Failure, SleepSegment>> putTemporarySleepSegment(
-      SleepSegment segment);
-
   // If no current schedule found, return the monophasic schedule as default.
   Future<Either<Failure, SleepSchedule>> getCurrentSchedule();
 
@@ -17,4 +14,6 @@ abstract class ScheduleEditorRepository {
       SleepSchedule schedule);
 
   Future<Either<Failure, List<SleepSchedule>>> getScheduleTemplates();
+
+  Future<Either<Failure, bool>> setAlarm(DateTime ringTime);
 }
