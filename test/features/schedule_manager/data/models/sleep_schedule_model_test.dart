@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:polysleep/features/schedule_manager/data/models/alarm_info_model.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_schedule_model.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_segment_model.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 
@@ -10,7 +12,10 @@ import '../../../../fixtures/fixtures_reader.dart';
 void main() {
   final tSleepSegments = [
     SleepSegmentModel(
-        startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6))
+        startTime: SegmentDateTime(hr: 22),
+        endTime: SegmentDateTime(hr: 6),
+        alarmInfo:
+            AlarmInfoModel.createDefaultUsingTime(SegmentDateTime(hr: 22)))
   ];
   final tSleepScheduleModel =
       SleepScheduleModel(name: "Monophasic", segments: tSleepSegments);
@@ -44,8 +49,17 @@ void main() {
         final expectedMap = {
           SleepScheduleModel.nameKey: "Monophasic",
           SleepScheduleModel.segmentsKey: [
-            {"start": "22:00", "end": "06:00"}
-          ]
+            {
+              "start": "22:00",
+              "end": "06:00",
+              SleepSegmentModel.alarmInfoKey: {
+                'soundOn': false,
+                'vibrationOn': false,
+                'ringTime': '22:00',
+                'alarmCode': null
+              }
+            }
+          ],
         };
         expect(result, expectedMap);
       },

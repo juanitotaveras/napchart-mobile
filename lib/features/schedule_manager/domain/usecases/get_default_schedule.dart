@@ -5,7 +5,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedu
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
 
 class GetDefaultSchedule extends UseCase<SleepSchedule, NoParams> {
-  final ScheduleEditorRepository repository;
+  final ScheduleRepository repository;
 
   GetDefaultSchedule(this.repository);
 

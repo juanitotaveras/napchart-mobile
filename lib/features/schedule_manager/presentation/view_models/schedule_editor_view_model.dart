@@ -93,12 +93,14 @@ class ScheduleEditorViewModel implements ViewModelBase {
     DateTime endTime = t.add(Duration(minutes: 60));
     final prevSegments =
         loadedSchedule.segments.map((seg) => seg.clone(isSelected: false));
+    final id = _getUniqueId(this.loadedSchedule.segments, 0);
     final tempSegment = SleepSegment(
         startTime: t,
         endTime: endTime,
         isSelected: true,
         alarmInfo: AlarmInfo.createDefaultUsingTime(endTime),
-        notificationInfo: NotificationInfo.createDefaultUsingTime(t));
+        notificationInfo: NotificationInfo.createDefaultUsingTime(t),
+        id: id);
     loadedScheduleSubject
         .add(loadedSchedule.clone(segments: [...prevSegments, tempSegment]));
   }
@@ -175,10 +177,10 @@ class ScheduleEditorViewModel implements ViewModelBase {
       onSelectedSegmentSaved();
     }
     final scheduleToSave = this.loadedSchedule;
-    final result =
-        await saveCurrentSchedule(Params(newSchedule: scheduleToSave));
+    final result = await saveCurrentSchedule(Params(
+        newSchedule: scheduleToSave, previousSchedule: this.initialSchedule));
     result.fold((failure) async {
-      print('failure saving schedule.');
+      print('Failure saving schedule.');
     }, (_) async {
       this.initialSchedule = scheduleToSave;
       this.loadedScheduleSubject.add(scheduleToSave);
@@ -224,10 +226,27 @@ class ScheduleEditorViewModel implements ViewModelBase {
   }
 
   onTemplateScheduleSet(SleepSchedule schedule) {
-    loadedScheduleSubject.add(schedule);
+    // give unique ID to each segment
+    int id = 0;
+    final segments = schedule.segments.map((seg) {
+      id = _getUniqueId(this.initialSchedule.segments, id);
+      return seg.clone(id: id);
+    }).toList();
+    final scheduleWithUniqueIds = schedule.clone(segments: segments);
+    loadedScheduleSubject.add(scheduleWithUniqueIds);
   }
 
   /// ---------------   END EVENT HANDLERS
+  ///
+  int _getUniqueId(List<SleepSegment> segments, int start) {
+    final Set<int> numberSet = Set();
+    int id = start;
+    segments.forEach((seg) {
+      if (seg.id != null) numberSet.add(seg.id);
+      while (numberSet.contains(id)) ++id;
+      return id;
+    });
+  }
 }
 
 // TODO: Put these into an EventMapper class

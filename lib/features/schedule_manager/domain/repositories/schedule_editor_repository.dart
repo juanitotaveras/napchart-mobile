@@ -4,7 +4,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedu
 import '../../../../core/error/failure.dart';
 import '../entities/sleep_segment.dart';
 
-abstract class ScheduleEditorRepository {
+abstract class ScheduleRepository {
   // If no current schedule found, return the monophasic schedule as default.
   Future<Either<Failure, SleepSchedule>> getCurrentSchedule();
 

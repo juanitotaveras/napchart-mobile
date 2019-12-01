@@ -61,10 +61,11 @@ class SleepSegmentModel extends SleepSegment {
       ].join(':'),
       endKey: [_setZeroes(this.endTime.hour), _setZeroes(this.endTime.minute)]
           .join(':'),
+      alarmInfoKey: AlarmInfoModel.fromEntity(alarmInfo).toJson()
     };
 
     if (this.alarmInfo != null) {
-      res[alarmInfoKey] = (this.alarmInfo as AlarmInfoModel).toJson();
+      res[alarmInfoKey] = (AlarmInfoModel.fromEntity(this.alarmInfo)).toJson();
     }
 
     if (this.notificationInfo != null) {

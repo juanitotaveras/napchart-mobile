@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 import '../repositories/schedule_editor_repository.dart';
 
 class GetCurrentSchedule extends UseCase<SleepSchedule, NoParams> {
-  final ScheduleEditorRepository repository;
+  final ScheduleRepository repository;
 
   GetCurrentSchedule(this.repository);
 

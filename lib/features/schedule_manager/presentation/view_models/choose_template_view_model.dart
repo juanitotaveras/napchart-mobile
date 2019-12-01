@@ -38,16 +38,9 @@ class ChooseTemplateViewModel extends ViewModelBase {
   }
 
   void setIsSelected(int index) async {
-    print('setting $index');
     schedules.add(LoadedSchedulesState(
         schedules: schedules.value.schedules, selectedIndex: index));
     selectedScheduleSubject.add(schedules.value.schedules[index]);
-  }
-
-  void onSaveSchedulePressed() async {
-    final result = await saveCurrentSchedule(Params(
-        newSchedule: schedules.value.schedules[schedules.value.selectedIndex]));
-    result.fold((failure) {}, (_) {});
   }
 
   @override

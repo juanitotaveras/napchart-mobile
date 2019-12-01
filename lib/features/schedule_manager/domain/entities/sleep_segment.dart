@@ -12,18 +12,19 @@ class SleepSegment {
   bool isSelected;
   final AlarmInfo alarmInfo;
   final NotificationInfo notificationInfo;
+  final id;
 
   DateTime get startTime => _startTime;
   DateTime get endTime => _endTime;
 
-  SleepSegment({
-    @required startTime,
-    @required endTime,
-    this.alarmInfo,
-    this.notificationInfo,
-    this.name = "",
-    this.isSelected = false,
-  }) {
+  SleepSegment(
+      {@required startTime,
+      @required endTime,
+      this.alarmInfo,
+      this.notificationInfo,
+      this.name = "",
+      this.isSelected = false,
+      this.id}) {
     if (startTime.isAfter(endTime)) {
       this._startTime =
           SegmentDateTime(hr: startTime.hour, min: startTime.minute, day: 0);
@@ -40,14 +41,16 @@ class SleepSegment {
       DateTime endTime,
       bool isSelected,
       AlarmInfo alarmInfo,
-      NotificationInfo notificationInfo}) {
+      NotificationInfo notificationInfo,
+      int id}) {
     return SleepSegment(
         startTime: startTime ?? this._startTime,
         endTime: endTime ?? this._endTime,
         notificationInfo: notificationInfo ?? this.notificationInfo,
         alarmInfo: alarmInfo ?? this.alarmInfo,
         name: this.name,
-        isSelected: isSelected ?? this.isSelected);
+        isSelected: isSelected ?? this.isSelected,
+        id: id ?? this.id);
   }
 
   // equality overrides

@@ -8,7 +8,7 @@ import 'get_current_schedule.dart';
 import 'get_default_schedule.dart';
 
 class GetCurrentOrDefaultSchedule extends UseCase<SleepSchedule, NoParams> {
-  final ScheduleEditorRepository repository;
+  final ScheduleRepository repository;
   final GetCurrentSchedule getCurrentSchedule;
   final GetDefaultSchedule getDefaultSchedule;
 

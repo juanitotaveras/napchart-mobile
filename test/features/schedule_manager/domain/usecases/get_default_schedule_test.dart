@@ -9,8 +9,7 @@ import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import 'package:mockito/mockito.dart';
 
-class MockScheduleEditorRepository extends Mock
-    implements ScheduleEditorRepository {}
+class MockScheduleEditorRepository extends Mock implements ScheduleRepository {}
 
 void main() {
   GetDefaultSchedule usecase;

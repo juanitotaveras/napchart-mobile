@@ -47,9 +47,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SetAlarm(sl(), sl()));
 
   // Repository
-  sl.registerLazySingleton<ScheduleEditorRepository>(() =>
-      ScheduleEditorRepositoryImpl(
-          preferencesDataSource: sl(), assetsDataSource: sl()));
+  sl.registerLazySingleton<ScheduleRepository>(() => ScheduleRepositoryImpl(
+      preferencesDataSource: sl(), assetsDataSource: sl()));
   sl.registerLazySingleton<PlatformRepository>(() => PlatformRepositoryImpl(
       androidPlatformSource: sl(), iOSPlatformSource: sl()));
 

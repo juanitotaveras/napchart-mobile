@@ -16,11 +16,11 @@ import 'package:polysleep/features/schedule_manager/domain/repositories/schedule
 import 'package:meta/meta.dart';
 import 'dart:io' show Platform;
 
-class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
+class ScheduleRepositoryImpl implements ScheduleRepository {
   final PreferencesDataSource preferencesDataSource;
   final AssetsDataSource assetsDataSource;
 
-  ScheduleEditorRepositoryImpl(
+  ScheduleRepositoryImpl(
       {@required this.preferencesDataSource, @required this.assetsDataSource});
   // temporary
   getSegments() async {

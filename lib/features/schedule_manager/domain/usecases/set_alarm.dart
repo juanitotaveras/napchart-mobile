@@ -9,7 +9,7 @@ import 'package:polysleep/features/schedule_manager/domain/repositories/schedule
 import 'package:meta/meta.dart';
 
 class SetAlarm extends UseCase<void, Params> {
-  final ScheduleEditorRepository repository;
+  final ScheduleRepository repository;
   final PlatformRepository platformRepository;
   SetAlarm(this.repository, this.platformRepository);
 
@@ -17,20 +17,19 @@ class SetAlarm extends UseCase<void, Params> {
   Future<Either<Failure, void>> call(Params params) async {
     AlarmInfo alarmInfo = params.alarmInfo;
     Failure fail;
-    if (params.alarmInfo.alarmCode == null) {
-      // Generate a new alarmCode if this is a totally new alarm
-      final newCode = _getNewAlarmCode(alarmInfo, params.schedule);
-      alarmInfo = params.alarmInfo.clone(alarmCode: newCode);
-    } else {
-      // We are altering a current alarm. This means we must delete it
-      // before re-creating
+    if (!params.alarmInfo.isOn) {
+      // delete alarm if it is off.
       final Either<Failure, void> result =
           await platformRepository.deleteAlarm(alarmInfo);
       result.fold((failure) {
         fail = failure;
       }, (_) {});
-
       if (fail != null) return Left(fail);
+    }
+    if (params.alarmInfo.alarmCode == null) {
+      // Generate a new alarmCode if this is a totally new alarm
+      final newCode = _getNewAlarmCode(alarmInfo, params.schedule);
+      alarmInfo = params.alarmInfo.clone(alarmCode: newCode);
     }
 
     final newSchedule = _createNewSchedule(alarmInfo, params.schedule);

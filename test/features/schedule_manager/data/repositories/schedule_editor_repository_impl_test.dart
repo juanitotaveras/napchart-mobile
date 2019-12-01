@@ -21,13 +21,13 @@ class MockPreferencesDataSource extends Mock implements PreferencesDataSource {}
 class MockAssetsDataSource extends Mock implements AssetsDataSource {}
 
 void main() {
-  ScheduleEditorRepository repository;
+  ScheduleRepository repository;
   PreferencesDataSource preferencesDataSource;
   AssetsDataSource assetsDataSource;
   setUp(() {
     preferencesDataSource = MockPreferencesDataSource();
     assetsDataSource = MockAssetsDataSource();
-    repository = ScheduleEditorRepositoryImpl(
+    repository = ScheduleRepositoryImpl(
         preferencesDataSource: preferencesDataSource,
         assetsDataSource: assetsDataSource);
   });

@@ -9,7 +9,7 @@ import 'package:polysleep/core/error/failure.dart';
 import 'package:polysleep/core/usecases/usecase.dart';
 
 class SaveCurrentSchedule extends UseCase<void, Params> {
-  final ScheduleEditorRepository repository;
+  final ScheduleRepository repository;
 
   SaveCurrentSchedule(this.repository);
 
@@ -23,5 +23,7 @@ class SaveCurrentSchedule extends UseCase<void, Params> {
 
 class Params extends Equatable {
   final SleepSchedule newSchedule;
-  Params({@required this.newSchedule}) : super([newSchedule]);
+  final SleepSchedule previousSchedule;
+  Params({@required this.newSchedule, @required this.previousSchedule})
+      : super([newSchedule, previousSchedule]);
 }

@@ -8,8 +8,7 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
 
-class MockScheduleEditorRepository extends Mock
-    implements ScheduleEditorRepository {}
+class MockScheduleEditorRepository extends Mock implements ScheduleRepository {}
 
 void main() {
   GetCurrentSchedule usecase;
