@@ -40,7 +40,7 @@ Future<void> init() async {
   // Use cases
   sl.registerLazySingleton(() => GetCurrentSchedule(sl()));
   sl.registerLazySingleton(() => GetDefaultSchedule(sl()));
-  sl.registerLazySingleton(() => SaveCurrentSchedule(sl()));
+  sl.registerLazySingleton(() => SaveCurrentSchedule(sl(), sl()));
   sl.registerLazySingleton(() => GetCurrentOrDefaultSchedule(sl(), sl(), sl()));
   sl.registerLazySingleton(() => LoadScheduleTemplates(sl()));
   sl.registerLazySingleton(() => GetCurrentTime());
