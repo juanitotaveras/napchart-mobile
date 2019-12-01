@@ -26,7 +26,7 @@ class SaveCurrentSchedule extends UseCase<void, Params> {
       if (newAlarmMap.containsKey(code.key)) {
         final prevAlarm = code.value;
         final newAlarm = newAlarmMap[code.key];
-        if (!newAlarm.isOn) {
+        if (prevAlarm.isOn && !newAlarm.isOn) {
           platformRepository.deleteAlarm(newAlarm);
         }
       } else {

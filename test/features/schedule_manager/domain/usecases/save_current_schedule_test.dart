@@ -87,4 +87,35 @@ void main() {
     verify(mockPlatformRepository.deleteAlarm(newAlarmInfo)).called(1);
     verify(mockScheduleRepository.putCurrentSchedule(newSchedule));
   });
+
+  test('alarms should all be cleared if template schedule chosen', () {
+    // this alarm is being cancelled
+    final newAlarmInfo = AlarmInfo(
+        ringTime: SegmentDateTime(hr: 4),
+        soundOn: false,
+        vibrationOn: false,
+        alarmCode: 2);
+    final newSegments = [
+      SleepSegment(
+          startTime: SegmentDateTime(hr: 22),
+          endTime: SegmentDateTime(hr: 4),
+          alarmInfo: newAlarmInfo),
+      SleepSegment(
+          startTime: SegmentDateTime(hr: 12),
+          endTime: SegmentDateTime(hr: 12, min: 30),
+          alarmInfo: AlarmInfoModel.createDefaultUsingTime(
+              SegmentDateTime(hr: 12, min: 30)),
+          isSelected: true)
+    ];
+    final newSchedule = SleepSchedule(segments: newSegments);
+    final params =
+        Params(newSchedule: newSchedule, previousSchedule: tSchedule);
+
+    // act
+    usecase(params);
+
+    // assert
+    verify(mockPlatformRepository.deleteAlarm(newAlarmInfo)).called(1);
+    verify(mockScheduleRepository.putCurrentSchedule(newSchedule));
+  });
 }
