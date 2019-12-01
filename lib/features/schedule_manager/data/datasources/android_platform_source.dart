@@ -47,7 +47,7 @@ class AndroidPlatformSourceImpl implements PlatformSource {
   }
 }
 
-void executeAlarm() async {
+void executeAlarm(int alarmCode) async {
   final int isolateId = Isolate.current.hashCode;
   /*
 Use this for a continuous alarm:
@@ -59,6 +59,8 @@ Stream.periodic(const Duration(milliseconds: 500))
     const waitTime = const Duration(milliseconds: 2000);
     vibrate(10, waitTime);
   }
+  // set next alarm now
+  // final bool success = await AndroidAlarmManager.oneShotAt
 }
 
 void vibrate(int count, Duration waitTime) {

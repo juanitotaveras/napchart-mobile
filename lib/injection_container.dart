@@ -4,9 +4,7 @@ import 'package:polysleep/features/schedule_manager/data/datasources/android_pla
 import 'package:polysleep/features/schedule_manager/data/datasources/assets_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/ios_platform_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
-import 'package:polysleep/features/schedule_manager/data/repositories/platform_repository_impl.dart';
 import 'package:polysleep/features/schedule_manager/data/repositories/schedule_editor_repository_impl.dart';
-import 'package:polysleep/features/schedule_manager/domain/repositories/platform_repository.dart';
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
@@ -40,17 +38,18 @@ Future<void> init() async {
   // Use cases
   sl.registerLazySingleton(() => GetCurrentSchedule(sl()));
   sl.registerLazySingleton(() => GetDefaultSchedule(sl()));
-  sl.registerLazySingleton(() => SaveCurrentSchedule(sl(), sl()));
+  sl.registerLazySingleton(() => SaveCurrentSchedule(sl()));
   sl.registerLazySingleton(() => GetCurrentOrDefaultSchedule(sl(), sl(), sl()));
   sl.registerLazySingleton(() => LoadScheduleTemplates(sl()));
   sl.registerLazySingleton(() => GetCurrentTime());
-  sl.registerLazySingleton(() => SetAlarm(sl(), sl()));
+  sl.registerLazySingleton(() => SetAlarm(sl()));
 
   // Repository
   sl.registerLazySingleton<ScheduleRepository>(() => ScheduleRepositoryImpl(
-      preferencesDataSource: sl(), assetsDataSource: sl()));
-  sl.registerLazySingleton<PlatformRepository>(() => PlatformRepositoryImpl(
-      androidPlatformSource: sl(), iOSPlatformSource: sl()));
+      preferencesDataSource: sl(),
+      assetsDataSource: sl(),
+      androidPlatformSource: sl(),
+      iOSPlatformSource: sl()));
 
   // Data sources
   sl.registerLazySingleton<PreferencesDataSource>(

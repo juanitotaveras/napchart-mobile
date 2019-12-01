@@ -5,19 +5,15 @@ import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.d
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/domain/repositories/platform_repository.dart';
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
-
-class MockPlatformRepository extends Mock implements PlatformRepository {}
 
 class MockScheduleRepository extends Mock implements ScheduleRepository {}
 
 void main() {
   SaveCurrentSchedule usecase;
   MockScheduleRepository mockScheduleRepository;
-  MockPlatformRepository mockPlatformRepository;
   final tAlarmInfo = AlarmInfo(
       ringTime: SegmentDateTime(hr: 4),
       soundOn: true,
@@ -38,9 +34,7 @@ void main() {
   final tSchedule = SleepSchedule(segments: tSegments);
   setUp(() {
     mockScheduleRepository = MockScheduleRepository();
-    mockPlatformRepository = MockPlatformRepository();
-    usecase =
-        SaveCurrentSchedule(mockScheduleRepository, mockPlatformRepository);
+    usecase = SaveCurrentSchedule(mockScheduleRepository);
   });
 
   test('saveCurrentSchedule should always call repository.putCurrentSchedule',
@@ -84,7 +78,7 @@ void main() {
     usecase(params);
 
     // assert
-    verify(mockPlatformRepository.deleteAlarm(newAlarmInfo)).called(1);
+    verify(mockScheduleRepository.deleteAlarm(newAlarmInfo)).called(1);
     verify(mockScheduleRepository.putCurrentSchedule(newSchedule));
   });
 
@@ -115,7 +109,7 @@ void main() {
     usecase(params);
 
     // assert
-    verify(mockPlatformRepository.deleteAlarm(newAlarmInfo)).called(1);
+    verify(mockScheduleRepository.deleteAlarm(newAlarmInfo)).called(1);
     verify(mockScheduleRepository.putCurrentSchedule(newSchedule));
   });
 }

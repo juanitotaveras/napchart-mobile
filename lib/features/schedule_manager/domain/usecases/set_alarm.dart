@@ -4,14 +4,12 @@ import 'package:polysleep/core/error/failure.dart';
 import 'package:polysleep/core/usecases/usecase.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
-import 'package:polysleep/features/schedule_manager/domain/repositories/platform_repository.dart';
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
 import 'package:meta/meta.dart';
 
 class SetAlarm extends UseCase<void, Params> {
   final ScheduleRepository repository;
-  final PlatformRepository platformRepository;
-  SetAlarm(this.repository, this.platformRepository);
+  SetAlarm(this.repository);
 
   @override
   Future<Either<Failure, void>> call(Params params) async {
@@ -20,7 +18,7 @@ class SetAlarm extends UseCase<void, Params> {
     if (!params.alarmInfo.isOn) {
       // delete alarm if it is off.
       final Either<Failure, void> result =
-          await platformRepository.deleteAlarm(alarmInfo);
+          await repository.deleteAlarm(alarmInfo);
       result.fold((failure) {
         fail = failure;
       }, (_) {});
@@ -35,7 +33,8 @@ class SetAlarm extends UseCase<void, Params> {
     final newSchedule = _createNewSchedule(alarmInfo, params.schedule);
     if (alarmInfo.soundOn || alarmInfo.vibrationOn) {
       // new alarm state should be "on"
-      final platformResult = await this.platformRepository.setAlarm(alarmInfo);
+      // This should also handle changing the alarm's time.
+      final platformResult = await this.repository.setAlarm(alarmInfo);
       platformResult.fold((failure) {
         fail = failure;
       }, (_) async {

@@ -10,7 +10,7 @@ class NavigationDrawer extends StatelessWidget {
     return Drawer(
         child: ListView(padding: EdgeInsets.zero, children: <Widget>[
       DrawerHeader(
-        child: Text('Drawer Header'),
+        child: Text('PolySleep'),
         decoration: BoxDecoration(
           color: Colors.blue,
         ),
@@ -19,14 +19,14 @@ class NavigationDrawer extends StatelessWidget {
           leading: Icon(Icons.home),
           title: Text(AppLocalizations.of(context).home),
           onTap: () {}),
-      ListTile(
-        title: Text(AppLocalizations.of(context).information),
-        onTap: () {},
-      ),
-      ListTile(
-        title: Text(AppLocalizations.of(context).settings),
-        onTap: () {},
-      )
+      // ListTile(
+      //   title: Text(AppLocalizations.of(context).information),
+      //   onTap: () {},
+      // ),
+      // ListTile(
+      //   title: Text(AppLocalizations.of(context).settings),
+      //   onTap: () {},
+      // )
     ]));
   }
 }

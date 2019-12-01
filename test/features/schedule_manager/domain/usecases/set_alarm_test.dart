@@ -5,19 +5,15 @@ import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.d
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
-import 'package:polysleep/features/schedule_manager/domain/repositories/platform_repository.dart';
 import 'package:polysleep/features/schedule_manager/domain/repositories/schedule_editor_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/set_alarm.dart';
-
-class MockPlatformRepository extends Mock implements PlatformRepository {}
 
 class MockScheduleRepository extends Mock implements ScheduleRepository {}
 
 void main() {
   SetAlarm usecase;
   MockScheduleRepository mockScheduleRepository;
-  MockPlatformRepository mockPlatformRepository;
 
   final tSegments = [
     SleepSegment(
@@ -36,11 +32,10 @@ void main() {
 
   setUp(() {
     mockScheduleRepository = MockScheduleRepository();
-    mockPlatformRepository = MockPlatformRepository();
-    usecase = SetAlarm(mockScheduleRepository, mockPlatformRepository);
-    when(mockPlatformRepository.setAlarm(any))
+    usecase = SetAlarm(mockScheduleRepository);
+    when(mockScheduleRepository.setAlarm(any))
         .thenAnswer((_) async => Right(null));
-    when(mockPlatformRepository.deleteAlarm(any))
+    when(mockScheduleRepository.deleteAlarm(any))
         .thenAnswer((_) async => Right(null));
   });
 
@@ -65,7 +60,7 @@ void main() {
     // assert
     await untilCalled(mockScheduleRepository.putCurrentSchedule(any));
 
-    verify(mockPlatformRepository.setAlarm(AlarmInfo(
+    verify(mockScheduleRepository.setAlarm(AlarmInfo(
         ringTime: ringTime, soundOn: true, vibrationOn: false, alarmCode: 0)));
   });
 
@@ -102,7 +97,7 @@ void main() {
 
     // assert
     await untilCalled(mockScheduleRepository.putCurrentSchedule(any));
-    verify(mockPlatformRepository.setAlarm((AlarmInfo(
+    verify(mockScheduleRepository.setAlarm((AlarmInfo(
         ringTime: ringTime, soundOn: true, vibrationOn: false, alarmCode: 1))));
   });
 
@@ -147,9 +142,9 @@ void main() {
 
     // assert
     await untilCalled(mockScheduleRepository.putCurrentSchedule(any));
-    verify(mockPlatformRepository.deleteAlarm(AlarmInfo(
+    verify(mockScheduleRepository.deleteAlarm(AlarmInfo(
         ringTime: ringTime, soundOn: true, vibrationOn: false, alarmCode: 1)));
-    verify(mockPlatformRepository.setAlarm(AlarmInfo(
+    verify(mockScheduleRepository.setAlarm(AlarmInfo(
         ringTime: ringTime, soundOn: true, vibrationOn: false, alarmCode: 1)));
   });
 
@@ -193,8 +188,9 @@ void main() {
 
     // assert
     await untilCalled(mockScheduleRepository.putCurrentSchedule(any));
-    verify(mockPlatformRepository.deleteAlarm(AlarmInfo(
+    verify(mockScheduleRepository.deleteAlarm(AlarmInfo(
         ringTime: ringTime, soundOn: false, vibrationOn: false, alarmCode: 1)));
-    verifyNoMoreInteractions(mockPlatformRepository);
+    verify(mockScheduleRepository.putCurrentSchedule(any));
+    verifyNoMoreInteractions(mockScheduleRepository);
   });
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
+import 'package:polysleep/features/schedule_manager/presentation/presenters/next_nap_info_presenter.dart';
 import 'package:polysleep/features/schedule_manager/presentation/view_models/edit_alarm_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/time_formatter.dart';
 import '../../localizations.dart';
@@ -11,48 +12,6 @@ import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import '../../../../../injection_container.dart';
 import 'edit_alarm_modal.dart';
-
-class NextNapInfoPresenter {
-  final BuildContext _context;
-  final HomeViewModel _viewModel;
-  SleepSegment selectedSegment;
-  TimeFormatter tf = TimeFormatter();
-  NextNapInfoPresenter(this._context, this._viewModel) {
-    selectedSegment = _viewModel.currentSchedule?.getSelectedSegment();
-  }
-
-  String get currentNapStartTime => (selectedSegment == null)
-      ? ""
-      : tf.getMilitaryTime(selectedSegment.startTime);
-
-  String get currentNapEndTime => (selectedSegment == null)
-      ? ""
-      : tf.getMilitaryTime(selectedSegment.endTime);
-
-  String get currentNapDuration => (selectedSegment == null)
-      ? ""
-      : TimeFormatter.formatSleepTime(selectedSegment.getDurationMinutes());
-
-  bool get currentNapAlarmOn =>
-      (selectedSegment == null) ? false : selectedSegment.alarmInfo.isOn;
-
-  String get currentNapAlarmInfoText {
-    if (selectedSegment == null || !selectedSegment.alarmInfo.isOn) {
-      return "Off";
-    }
-    return "Set for ${tf.getMilitaryTime(selectedSegment.alarmInfo.ringTime)}";
-  }
-
-  bool get currentNapNotificationOn =>
-      (selectedSegment == null) ? false : selectedSegment.notificationInfo.isOn;
-
-  String get currentNapNotificationInfoText {
-    if (selectedSegment == null || !selectedSegment.notificationInfo.isOn) {
-      return "Off";
-    }
-    return "Set for ${tf.getMilitaryTime(selectedSegment.notificationInfo.notifyTime)}";
-  }
-}
 
 class NextNapCard extends StatelessWidget {
   final HomeViewModel vm;
@@ -136,14 +95,14 @@ class NextNapCard extends StatelessWidget {
                 context: ctxt, builder: (context) => EditAlarmModal(vm));
           },
         ),
-        // BasicTimeField(),
+        /*
         ListTile(
             contentPadding: EdgeInsets.only(left: 30),
             title: Text('Notification'),
             leading: Icon(presenter.currentNapNotificationOn
                 ? Icons.notifications_active
                 : Icons.notifications_off),
-            subtitle: Text(presenter.currentNapNotificationInfoText))
+            subtitle: Text(presenter.currentNapNotificationInfoText))*/
       ],
     ));
   }

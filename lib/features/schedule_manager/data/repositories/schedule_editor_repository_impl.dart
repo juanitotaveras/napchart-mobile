@@ -8,7 +8,7 @@ import 'package:polysleep/features/schedule_manager/data/datasources/assets_data
 import 'package:polysleep/features/schedule_manager/data/datasources/ios_platform_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_schedule_model.dart';
-import 'package:polysleep/features/schedule_manager/data/models/sleep_segment_model.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
@@ -19,9 +19,14 @@ import 'dart:io' show Platform;
 class ScheduleRepositoryImpl implements ScheduleRepository {
   final PreferencesDataSource preferencesDataSource;
   final AssetsDataSource assetsDataSource;
+  final AndroidPlatformSourceImpl androidPlatformSource;
+  final IOSPlatformSourceImpl iOSPlatformSource;
 
   ScheduleRepositoryImpl(
-      {@required this.preferencesDataSource, @required this.assetsDataSource});
+      {@required this.preferencesDataSource,
+      @required this.assetsDataSource,
+      @required this.androidPlatformSource,
+      @required this.iOSPlatformSource});
   // temporary
   getSegments() async {
     final segments = [
@@ -73,5 +78,46 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
     } on AssetsException {
       return Left(AssetsFailure());
     }
+  }
+
+  @override
+  Future<Either<Failure, void>> setAlarm(AlarmInfo alarmInfo) async {
+    // TODO: Create an onAlarmExecute function
+    if (Platform.isAndroid) {
+      try {
+        await androidPlatformSource.setAlarm(alarmInfo);
+        return Right(null);
+      } on AndroidException {
+        return Left(AndroidFailure());
+      }
+    } else if (Platform.isIOS) {
+      try {
+        await iOSPlatformSource.setAlarm(alarmInfo);
+        return Right(null);
+      } on IOSException {
+        return Left(IOSFailure());
+      }
+    }
+    return Left(GeneralFailure());
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteAlarm(AlarmInfo alarmInfo) async {
+    if (Platform.isAndroid) {
+      try {
+        await androidPlatformSource.deleteAlarm(alarmInfo);
+        return Right(null);
+      } on AndroidException {
+        return Left(AndroidFailure());
+      }
+    } else if (Platform.isIOS) {
+      try {
+        await iOSPlatformSource.deleteAlarm(alarmInfo);
+        return Right(null);
+      } on IOSException {
+        return Left(IOSFailure());
+      }
+    }
+    return Left(GeneralFailure());
   }
 }
