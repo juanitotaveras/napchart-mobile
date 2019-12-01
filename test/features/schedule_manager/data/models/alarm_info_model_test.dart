@@ -12,7 +12,10 @@ import '../../../../fixtures/fixtures_reader.dart';
 
 void main() {
   final tAlarmInfoModel = AlarmInfoModel(
-      ringTime: SegmentDateTime(hr: 22), soundOn: true, vibrationOn: true);
+      ringTime: SegmentDateTime(hr: 22),
+      soundOn: true,
+      vibrationOn: true,
+      alarmCode: 32);
   test('should be subclass of AlarmInfo entity', () async {
     expect(tAlarmInfoModel, isA<AlarmInfo>());
   });
@@ -40,7 +43,8 @@ void main() {
       final expectedMap = {
         AlarmInfoModel.soundOnKey: true,
         AlarmInfoModel.vibrationOnKey: true,
-        AlarmInfoModel.ringTimeKey: '22:00'
+        AlarmInfoModel.ringTimeKey: '22:00',
+        AlarmInfoModel.alarmCodeKey: 32
       };
       expect(result, expectedMap);
     });

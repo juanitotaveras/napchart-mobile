@@ -36,4 +36,13 @@ class SleepScheduleModel extends SleepSchedule {
           .toList()
     };
   }
+
+  factory SleepScheduleModel.fromEntity(SleepSchedule schedule) {
+    return SleepScheduleModel(
+        segments: schedule.segments
+            .map((seg) => SleepSegmentModel.fromEntity(seg))
+            .toList(),
+        difficulty: schedule.difficulty,
+        name: schedule.name);
+  }
 }

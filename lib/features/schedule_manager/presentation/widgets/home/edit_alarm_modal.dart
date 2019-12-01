@@ -31,6 +31,7 @@ class EditAlarmModal extends StatelessWidget {
                   child: Text(presenter.saveText),
                   onPressed: () {
                     this.editAlarmVM.onSavePressed();
+                    Navigator.pop(context);
                   },
                 ),
               ]

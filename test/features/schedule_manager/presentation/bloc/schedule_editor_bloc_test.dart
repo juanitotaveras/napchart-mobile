@@ -10,7 +10,7 @@ import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_current_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/get_default_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/usecases/save_current_schedule.dart';
-import 'package:polysleep/features/schedule_manager/presentation/view_models/bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/view_models/schedule_editor_view_model.dart';
 
 class MockGetCurrentOrDefaultSchedule extends Mock

@@ -81,15 +81,7 @@ class HomeViewModel implements ViewModelBase {
       final newSegs = schedule.segments
           .asMap()
           .map((index, seg) {
-            return MapEntry(
-                index,
-                SleepSegment(
-                    startTime: seg.startTime,
-                    endTime: seg.endTime,
-                    name: seg.name,
-                    alarmInfo: seg.alarmInfo,
-                    notificationInfo: seg.notificationInfo,
-                    isSelected: index == minIdx));
+            return MapEntry(index, seg.clone(isSelected: index == minIdx));
           })
           .values
           .toList();
@@ -108,15 +100,7 @@ class HomeViewModel implements ViewModelBase {
       final newSegs = schedule.segments
           .asMap()
           .map((index, seg) {
-            return MapEntry(
-                index,
-                SleepSegment(
-                    startTime: seg.startTime,
-                    endTime: seg.endTime,
-                    name: seg.name,
-                    isSelected: index == nextIdx,
-                    alarmInfo: seg.alarmInfo,
-                    notificationInfo: seg.notificationInfo));
+            return MapEntry(index, seg.clone(isSelected: index == nextIdx));
           })
           .values
           .toList();
@@ -135,15 +119,7 @@ class HomeViewModel implements ViewModelBase {
       final newSegs = schedule.segments
           .asMap()
           .map((index, seg) {
-            return MapEntry(
-                index,
-                SleepSegment(
-                    startTime: seg.startTime,
-                    endTime: seg.endTime,
-                    name: seg.name,
-                    isSelected: index == prevIdx,
-                    alarmInfo: seg.alarmInfo,
-                    notificationInfo: seg.notificationInfo));
+            return MapEntry(index, seg.clone(isSelected: index == prevIdx));
           })
           .values
           .toList();

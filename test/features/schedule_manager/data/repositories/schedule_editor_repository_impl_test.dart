@@ -7,6 +7,8 @@ import 'package:polysleep/core/error/exceptions.dart';
 import 'package:polysleep/core/error/failure.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/assets_data_source.dart';
 import 'package:polysleep/features/schedule_manager/data/datasources/preferences_data_source.dart';
+import 'package:polysleep/features/schedule_manager/data/models/alarm_info_model.dart';
+import 'package:polysleep/features/schedule_manager/data/models/notification_info_model.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_schedule_model.dart';
 import 'package:polysleep/features/schedule_manager/data/models/sleep_segment_model.dart';
 import 'package:polysleep/features/schedule_manager/data/repositories/schedule_editor_repository_impl.dart';
@@ -97,7 +99,15 @@ void main() {
   group('put current schedule', () {
     final tSegments = [
       SleepSegmentModel(
-          startTime: SegmentDateTime(hr: 22), endTime: SegmentDateTime(hr: 6))
+          startTime: SegmentDateTime(hr: 22),
+          endTime: SegmentDateTime(hr: 6),
+          alarmInfo: AlarmInfoModel(
+              ringTime: SegmentDateTime(hr: 6),
+              alarmCode: 0,
+              vibrationOn: true,
+              soundOn: true),
+          notificationInfo: NotificationInfoModel(
+              isOn: true, notifyTime: SegmentDateTime(hr: 22)))
     ];
     final tSleepScheduleModel =
         SleepScheduleModel(name: "Monophasic", segments: tSegments);
@@ -112,8 +122,7 @@ void main() {
       expect(result, equals(Left(PreferencesFailure())));
     });
 
-    test(
-        'should store current schedule and return the updated one if successful',
+    test('should store current schedule and return nothing if successful',
         () async {
       when(preferencesDataSource.putCurrentSchedule(any))
           .thenAnswer((_) async => tSleepScheduleModel);
@@ -122,7 +131,7 @@ void main() {
       final result = await repository.putCurrentSchedule(tSleepScheduleModel);
 
       verify(preferencesDataSource.putCurrentSchedule(any));
-      expect(result, equals(Right(tSleepScheduleModel)));
+      expect(result, equals(Right(null)));
     });
   });
 }

@@ -31,14 +31,14 @@ class MainActivity: FlutterActivity() {
 //          Log.e("hi", call.arguments.toString())
           val msSinceEpochForNewAlarm = call.arguments as Long
           val mgr = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-          val i = Intent(this, AlarmReceiver::class.java)
-          val pendingIntent = PendingIntent.getBroadcast(applicationContext, 0,
-                  i, PendingIntent.FLAG_UPDATE_CURRENT)
-          val PERIOD = 8000
-          val ac = AlarmManager.AlarmClockInfo(msSinceEpochForNewAlarm, pendingIntent)
-          mgr.setAlarmClock(ac, pendingIntent)
-          Log.e("x", "setting the clock")
-          result.success("success")
+//          val i = Intent(this, AlarmReceiver::class.java)
+//          val pendingIntent = PendingIntent.getBroadcast(applicationContext, 0,
+//                  i, PendingIntent.FLAG_UPDATE_CURRENT)
+//          val PERIOD = 8000
+//          val ac = AlarmManager.AlarmClockInfo(msSinceEpochForNewAlarm, pendingIntent)
+//          mgr.setAlarmClock(ac, pendingIntent)
+//          Log.e("x", "setting the clock")
+//          result.success("success")
         }
       }
     }

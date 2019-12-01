@@ -49,6 +49,9 @@ class ScheduleEditorHeader extends StatelessWidget {
     return StreamBuilder(
         stream: _viewModel.loadedScheduleStream,
         builder: (context, loadedSegmentsStream) {
+          if (loadedSegmentsStream.data == null) {
+            return Container();
+          }
           return Container(
             height: 60,
             width: double.infinity,

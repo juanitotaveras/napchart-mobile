@@ -35,12 +35,17 @@ class SleepSegment {
     }
   }
 
-  SleepSegment clone({DateTime startTime, DateTime endTime, bool isSelected}) {
+  SleepSegment clone(
+      {DateTime startTime,
+      DateTime endTime,
+      bool isSelected,
+      AlarmInfo alarmInfo,
+      NotificationInfo notificationInfo}) {
     return SleepSegment(
         startTime: startTime ?? this._startTime,
         endTime: endTime ?? this._endTime,
-        notificationInfo: this.notificationInfo,
-        alarmInfo: this.alarmInfo,
+        notificationInfo: notificationInfo ?? this.notificationInfo,
+        alarmInfo: alarmInfo ?? this.alarmInfo,
         name: this.name,
         isSelected: isSelected ?? this.isSelected);
   }

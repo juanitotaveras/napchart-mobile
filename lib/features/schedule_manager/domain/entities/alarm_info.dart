@@ -5,42 +5,43 @@ import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segmen
 // By default, alarm should be off, and ringTime should be
 // same as segment end time
 class AlarmInfo extends Equatable {
-  // TODO: Make ringTime private
   final DateTime ringTime;
   final bool vibrationOn;
   final bool soundOn;
+  final int alarmCode; // Used for setting alarms in OS
+  // alarmCode will be null if it's an "unsaved" alarm
   AlarmInfo(
       {@required this.ringTime,
       @required this.vibrationOn,
-      @required this.soundOn});
+      @required this.soundOn,
+      this.alarmCode})
+      : super([ringTime, vibrationOn, soundOn, alarmCode]);
 
-  static AlarmInfo createDefault(SleepSegment segment) {
-    return AlarmInfo(
-        soundOn: false, ringTime: segment.endTime, vibrationOn: true);
-  }
+  static AlarmInfo createDefault(SleepSegment segment) =>
+      AlarmInfo(soundOn: false, ringTime: segment.endTime, vibrationOn: true);
 
-  static AlarmInfo createDefaultUsingTime(DateTime endTime) {
-    return AlarmInfo(soundOn: false, ringTime: endTime, vibrationOn: false);
-  }
+  static AlarmInfo createDefaultUsingTime(DateTime endTime) =>
+      AlarmInfo(soundOn: false, ringTime: endTime, vibrationOn: false);
 
-  DateTime getTodayRingTime() {
+  DateTime getTodayRingTime(DateTime currentTime) {
     // Ring can occur the next day, if current time is after today's ring
-    final cur = DateTime.now();
-    final dt =
-        DateTime(cur.year, cur.month, cur.day, ringTime.hour, ringTime.minute);
-    if (dt.isAfter(cur)) {
-      return DateTime(
-          cur.year, cur.month, cur.day + 1, ringTime.hour, ringTime.minute);
+    final normalizedRingTime = DateTime(currentTime.year, currentTime.month,
+        currentTime.day, ringTime.hour, ringTime.minute);
+    if (normalizedRingTime.isBefore(currentTime)) {
+      return DateTime(currentTime.year, currentTime.month, currentTime.day + 1,
+          ringTime.hour, ringTime.minute);
     }
-    return dt;
+    return normalizedRingTime;
   }
 
   bool get isOn => this.soundOn && this.vibrationOn;
 
-  AlarmInfo clone({DateTime ringTime, bool vibrationOn, bool soundOn}) {
+  AlarmInfo clone(
+      {DateTime ringTime, bool vibrationOn, bool soundOn, int alarmCode}) {
     return AlarmInfo(
         ringTime: ringTime ?? this.ringTime,
         vibrationOn: vibrationOn ?? this.vibrationOn,
-        soundOn: soundOn ?? this.soundOn);
+        soundOn: soundOn ?? this.soundOn,
+        alarmCode: alarmCode ?? this.alarmCode);
   }
 }

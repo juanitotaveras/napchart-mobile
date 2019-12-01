@@ -88,6 +88,9 @@ class NextNapCard extends StatelessWidget {
   }
 
   Widget nextNapCardCentralSection(BuildContext ctxt) {
+    if (vm.currentSchedule == null) {
+      return Container();
+    }
     SleepSegment selectedSegment = vm.currentSchedule.getSelectedSegment();
     TimeFormatter tf = TimeFormatter();
     final NextNapInfoPresenter presenter = NextNapInfoPresenter(ctxt, this.vm);
@@ -129,7 +132,7 @@ class NextNapCard extends StatelessWidget {
           subtitle: Text(presenter.currentNapAlarmInfoText),
           contentPadding: EdgeInsets.only(left: 30),
           onTap: () async {
-            showModalBottomSheet(
+            await showModalBottomSheet(
                 context: ctxt, builder: (context) => EditAlarmModal(vm));
           },
         ),

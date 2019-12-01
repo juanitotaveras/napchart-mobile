@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polysleep/core/utils.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
@@ -25,6 +24,9 @@ class CalendarGrid extends StatelessWidget {
         stream: bloc.loadedScheduleStream,
         initialData: null,
         builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            return Container();
+          }
           List<SleepSegment> loadedSegments = snapshot.data.segments;
 
           List<Widget> loadedSegmentWidgets = [];

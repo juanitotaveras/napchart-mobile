@@ -1,3 +1,6 @@
+import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
+
 abstract class PlatformSource {
-  Future<bool> setAlarm(DateTime ringTime);
+  Future<void> setAlarm(AlarmInfo ringTime);
+  Future<void> deleteAlarm(AlarmInfo alarmInfo);
 }

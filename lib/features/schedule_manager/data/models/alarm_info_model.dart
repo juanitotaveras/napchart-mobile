@@ -5,8 +5,14 @@ class AlarmInfoModel extends AlarmInfo {
   static String soundOnKey = 'soundOn';
   static String vibrationOnKey = 'vibrationOn';
   static String ringTimeKey = 'ringTime';
-  AlarmInfoModel({bool soundOn, DateTime ringTime, bool vibrationOn})
-      : super(soundOn: soundOn, ringTime: ringTime, vibrationOn: vibrationOn);
+  static String alarmCodeKey = 'alarmCode';
+  AlarmInfoModel(
+      {bool soundOn, DateTime ringTime, bool vibrationOn, int alarmCode})
+      : super(
+            soundOn: soundOn,
+            ringTime: ringTime,
+            vibrationOn: vibrationOn,
+            alarmCode: alarmCode);
 
   factory AlarmInfoModel.fromJson(Map<String, dynamic> json) {
     final soundOn = json[soundOnKey] as bool;
@@ -15,10 +21,21 @@ class AlarmInfoModel extends AlarmInfo {
         .split(':')
         .map<int>((elem) => int.parse(elem))
         .toList();
+    final alarmCode = json[alarmCodeKey];
     return AlarmInfoModel(
         soundOn: soundOn,
         vibrationOn: vibrationOn,
-        ringTime: SegmentDateTime(hr: ringTime[0], min: ringTime[1]));
+        ringTime: SegmentDateTime(hr: ringTime[0], min: ringTime[1]),
+        alarmCode: alarmCode);
+  }
+
+  factory AlarmInfoModel.fromEntity(AlarmInfo alarmInfo) {
+    if (alarmInfo == null) return null;
+    return AlarmInfoModel(
+        ringTime: alarmInfo.ringTime,
+        soundOn: alarmInfo.soundOn,
+        vibrationOn: alarmInfo.vibrationOn,
+        alarmCode: alarmInfo.alarmCode);
   }
 
   Map<String, dynamic> toJson() {
@@ -30,7 +47,12 @@ class AlarmInfoModel extends AlarmInfo {
       soundOnKey: this.soundOn,
       vibrationOnKey: this.vibrationOn,
       ringTimeKey: ringSt,
+      alarmCodeKey: this.alarmCode
     };
+  }
+
+  static AlarmInfo createDefaultUsingTime(DateTime endTime) {
+    return AlarmInfo(soundOn: false, ringTime: endTime, vibrationOn: false);
   }
 
   String _setZeroes(int time) {

@@ -10,10 +10,7 @@ abstract class ScheduleEditorRepository {
 
   Future<Either<Failure, SleepSchedule>> getDefaultSchedule();
 
-  Future<Either<Failure, SleepSchedule>> putCurrentSchedule(
-      SleepSchedule schedule);
+  Future<Either<Failure, void>> putCurrentSchedule(SleepSchedule schedule);
 
   Future<Either<Failure, List<SleepSchedule>>> getScheduleTemplates();
-
-  Future<Either<Failure, bool>> setAlarm(DateTime ringTime);
 }

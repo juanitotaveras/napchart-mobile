@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
-import 'package:polysleep/features/schedule_manager/presentation/view_models/bloc.dart';
+import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/view_models/choose_template_view_model.dart';
 import 'package:polysleep/features/schedule_manager/presentation/view_models/view_model_provider.dart';
 import 'package:polysleep/features/schedule_manager/presentation/localizations.dart';
@@ -108,6 +108,9 @@ class ChooseTemplatePage extends StatelessWidget {
         initialData: null,
         builder: (context, loadedStream) {
           final List<Widget> templateRows = [];
+          if (loadedStream.data == null) {
+            return Container();
+          }
           final schedules = loadedStream.data.schedules;
           if (schedules != null) {
             var idx = 0;

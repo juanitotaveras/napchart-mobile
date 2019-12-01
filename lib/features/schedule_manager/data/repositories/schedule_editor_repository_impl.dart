@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartz/dartz.dart';
 import 'package:polysleep/core/error/exceptions.dart';
 import 'package:polysleep/core/error/failure.dart';
@@ -17,14 +19,9 @@ import 'dart:io' show Platform;
 class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
   final PreferencesDataSource preferencesDataSource;
   final AssetsDataSource assetsDataSource;
-  final AndroidPlatformSourceImpl androidPlatformSource;
-  final IOSPlatformSourceImpl iOSPlatformSource;
 
   ScheduleEditorRepositoryImpl(
-      {@required this.preferencesDataSource,
-      @required this.assetsDataSource,
-      @required this.androidPlatformSource,
-      @required this.iOSPlatformSource});
+      {@required this.preferencesDataSource, @required this.assetsDataSource});
   // temporary
   getSegments() async {
     final segments = [
@@ -38,7 +35,8 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
   @override
   Future<Either<Failure, SleepSchedule>> getCurrentSchedule() async {
     try {
-      final currentSchedule = await preferencesDataSource.getCurrentSchedule();
+      final SleepScheduleModel currentSchedule =
+          await preferencesDataSource.getCurrentSchedule();
       return Right(currentSchedule);
     } on PreferencesException {
       return Left(PreferencesFailure());
@@ -56,19 +54,12 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
   }
 
   @override
-  Future<Either<Failure, SleepSchedule>> putCurrentSchedule(
+  Future<Either<Failure, void>> putCurrentSchedule(
       SleepSchedule schedule) async {
     try {
-      // TODO:
-      List<SleepSegmentModel> mSegments = schedule.segments
-          .map((f) =>
-              SleepSegmentModel(startTime: f.startTime, endTime: f.endTime))
-          .toList();
-      final model =
-          SleepScheduleModel(segments: mSegments, name: schedule.name);
-      final SleepSchedule updatedModel =
-          await preferencesDataSource.putCurrentSchedule(model);
-      return Right(updatedModel);
+      final model = SleepScheduleModel.fromEntity(schedule);
+      await preferencesDataSource.putCurrentSchedule(model);
+      return Right(null);
     } on PreferencesException {
       return Left(PreferencesFailure());
     }
@@ -81,35 +72,6 @@ class ScheduleEditorRepositoryImpl implements ScheduleEditorRepository {
       return Right(scheduleTemplates);
     } on AssetsException {
       return Left(AssetsFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, bool>> setAlarm(DateTime ringTime) async {
-    // TODO: Here we call each method based on what platform we are using
-    if (Platform.isAndroid) {
-      try {
-        // TODO: Call to platform should return the alarm's time, and make
-        // sure that it equals the ringtime we sent.
-
-        // Let's try to return an AlarmInfoModel
-        final success = await androidPlatformSource.setAlarm(ringTime);
-
-        // Save this alarm to DB
-
-        return (success) ? Right(true) : Left(AndroidFailure());
-      } on AndroidException {
-        return Left(AndroidFailure());
-      }
-    } else {
-      try {
-        // TODO: Call to platform should return the alarm's time, and make
-        // sure that it equals the ringtime we sent.
-        final success = await iOSPlatformSource.setAlarm(ringTime);
-        return (success) ? Right(true) : Left(IOSFailure());
-      } on IOSException {
-        return Left(IOSFailure());
-      }
     }
   }
 }

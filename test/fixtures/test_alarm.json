@@ -1,5 +1,6 @@
 {
   "soundOn": true,
   "vibrationOn": true,
-  "ringTime": "22:00"
+  "ringTime": "22:00",
+  "alarmCode": 32
 }

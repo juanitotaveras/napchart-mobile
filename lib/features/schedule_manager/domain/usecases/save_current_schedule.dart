@@ -8,19 +8,20 @@ import 'package:meta/meta.dart';
 import 'package:polysleep/core/error/failure.dart';
 import 'package:polysleep/core/usecases/usecase.dart';
 
-class SaveCurrentSchedule extends UseCase<SleepSchedule, Params> {
+class SaveCurrentSchedule extends UseCase<void, Params> {
   final ScheduleEditorRepository repository;
 
   SaveCurrentSchedule(this.repository);
 
   @override
-  Future<Either<Failure, SleepSchedule>> call(Params params) async {
-    final schedule = await repository.putCurrentSchedule(params.schedule);
-    return schedule;
+  Future<Either<Failure, void>> call(Params params) async {
+    // TODO: We should compare new schedule with initial schedule.
+    // If we delete alarms, they must be cleared from the platform.
+    return await repository.putCurrentSchedule(params.newSchedule);
   }
 }
 
 class Params extends Equatable {
-  final SleepSchedule schedule;
-  Params({@required this.schedule}) : super([schedule]);
+  final SleepSchedule newSchedule;
+  Params({@required this.newSchedule}) : super([newSchedule]);
 }

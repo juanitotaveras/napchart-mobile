@@ -33,7 +33,7 @@ class SleepSegmentModel extends SleepSegment {
     final endTime = SegmentDateTime(hr: end[0], min: end[1]);
     final alarmInfo = (json.containsKey(alarmInfoKey))
         ? AlarmInfoModel.fromJson(json[alarmInfoKey])
-        : AlarmInfo.createDefaultUsingTime(endTime);
+        : AlarmInfoModel.createDefaultUsingTime(endTime);
     final notificationInfo = (json.containsKey(notificationInfoKey))
         ? NotificationInfoModel.fromJson(json[notificationInfoKey])
         : NotificationInfo.createDefaultUsingTime(startTime);
@@ -42,6 +42,15 @@ class SleepSegmentModel extends SleepSegment {
         endTime: endTime,
         alarmInfo: alarmInfo,
         notificationInfo: notificationInfo);
+  }
+
+  factory SleepSegmentModel.fromEntity(SleepSegment segment) {
+    return SleepSegmentModel(
+        startTime: segment.startTime,
+        endTime: segment.endTime,
+        alarmInfo: AlarmInfoModel.fromEntity(segment.alarmInfo),
+        notificationInfo:
+            NotificationInfoModel.fromEntity(segment.notificationInfo));
   }
 
   Map<String, dynamic> toJson() {

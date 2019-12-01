@@ -45,17 +45,9 @@ class ChooseTemplateViewModel extends ViewModelBase {
   }
 
   void onSaveSchedulePressed() async {
-    // must call use case
-    final resp = await saveCurrentSchedule(Params(
-        schedule: schedules.value.schedules[schedules.value.selectedIndex]));
-    resp.fold((failure) async {
-      // print('there has been an error');
-      // show error state
-    }, (updatedSchedule) async {
-      // print(' great success!');
-      print(updatedSchedule);
-      // currentScheduleSubject.add(schedule);
-    });
+    final result = await saveCurrentSchedule(Params(
+        newSchedule: schedules.value.schedules[schedules.value.selectedIndex]));
+    result.fold((failure) {}, (_) {});
   }
 
   @override

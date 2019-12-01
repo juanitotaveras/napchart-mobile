@@ -8,6 +8,11 @@ class NotificationInfoModel extends NotificationInfo {
   NotificationInfoModel({bool isOn, DateTime notifyTime})
       : super(isOn: isOn, notifyTime: notifyTime);
 
+  factory NotificationInfoModel.fromEntity(NotificationInfo notificationInfo) {
+    return NotificationInfoModel(
+        isOn: notificationInfo.isOn, notifyTime: notificationInfo.notifyTime);
+  }
+
   factory NotificationInfoModel.fromJson(Map<String, dynamic> json) {
     final isOn = json[isOnKey] as bool;
     final notifyTime = json[notifyTimeKey]

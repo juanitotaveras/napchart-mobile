@@ -64,7 +64,8 @@ void main() {
         'alarmInfo': {
           'soundOn': false,
           'vibrationOn': false,
-          'ringTime': '22:00'
+          'ringTime': '22:00',
+          'alarmCode': null
         }
       };
       expect(result, expectedMap);

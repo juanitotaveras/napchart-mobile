@@ -22,6 +22,7 @@ class SleepSchedule extends Equatable {
   SleepSegment getSelectedSegment() {
     final List<SleepSegment> selected =
         segments.where((seg) => seg.isSelected).toList();
+    // assert(selected.length > 0);
     return (selected.length == 0) ? null : selected[0];
   }
 

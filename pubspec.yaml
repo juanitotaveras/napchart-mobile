@@ -23,8 +23,6 @@ dependencies:
     sdk: flutter
   # Service locator
   get_it: ^2.0.1
-  # Bloc for state management
-  flutter_bloc: ^0.21.0
 
   # TODO: Delete this later
   datetime_picker_formfield: ^0.4.3
@@ -46,6 +44,9 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
+
+  android_alarm_manager: ^0.4.4+3
+  vibration: 1.2.2
 
 dev_dependencies:
   flutter_test:

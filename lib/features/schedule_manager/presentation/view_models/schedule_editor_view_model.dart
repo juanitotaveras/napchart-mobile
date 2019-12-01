@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:polysleep/core/constants.dart';
 import 'package:polysleep/core/usecases/usecase.dart';
-import 'package:polysleep/core/utils.dart';
-import 'package:polysleep/features/schedule_manager/data/repositories/schedule_editor_repository_impl.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/alarm_info.dart';
+import 'package:polysleep/features/schedule_manager/domain/entities/notification_info.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/segment_datetime.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_schedule.dart';
 import 'package:polysleep/features/schedule_manager/domain/entities/sleep_segment.dart';
@@ -94,8 +93,12 @@ class ScheduleEditorViewModel implements ViewModelBase {
     DateTime endTime = t.add(Duration(minutes: 60));
     final prevSegments =
         loadedSchedule.segments.map((seg) => seg.clone(isSelected: false));
-    final tempSegment =
-        SleepSegment(startTime: t, endTime: endTime, isSelected: true);
+    final tempSegment = SleepSegment(
+        startTime: t,
+        endTime: endTime,
+        isSelected: true,
+        alarmInfo: AlarmInfo.createDefaultUsingTime(endTime),
+        notificationInfo: NotificationInfo.createDefaultUsingTime(t));
     loadedScheduleSubject
         .add(loadedSchedule.clone(segments: [...prevSegments, tempSegment]));
   }
@@ -168,18 +171,21 @@ class ScheduleEditorViewModel implements ViewModelBase {
   }
 
   onSaveChangesPressed() async {
-    final resp =
-        await saveCurrentSchedule(Params(schedule: this.loadedSchedule));
-    resp.fold((failure) async {
-      // print('there has been an error');
-      // show error state
-    }, (updatedSchedule) async {
-      this.initialSchedule = updatedSchedule;
-      this.loadedScheduleSubject.add(updatedSchedule);
+    if (this.loadedSchedule.getSelectedSegment() != null) {
+      onSelectedSegmentSaved();
+    }
+    final scheduleToSave = this.loadedSchedule;
+    final result =
+        await saveCurrentSchedule(Params(newSchedule: scheduleToSave));
+    result.fold((failure) async {
+      print('failure saving schedule.');
+    }, (_) async {
+      this.initialSchedule = scheduleToSave;
+      this.loadedScheduleSubject.add(scheduleToSave);
     });
   }
 
-  onSelectedSegmentCancelled() async {
+  onSelectedSegmentCancelled() {
     if (this.previousSelectedSegment == null) {
       final newSegs =
           loadedSchedule.segments.where((seg) => !seg.isSelected).toList();
