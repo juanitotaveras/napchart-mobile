@@ -19,16 +19,12 @@ class AndroidPlatformSourceImpl implements PlatformSource {
     }
     try {
       await AndroidAlarmManager.initialize();
-      final bool success = await AndroidAlarmManager.oneShotAt(
-        alarmInfo.getTodayRingTime(DateTime.now()),
-        alarmInfo.alarmCode,
-        executeAlarm,
-        rescheduleOnReboot: false,
-        wakeup: true,
-        allowWhileIdle: true,
-        exact: true,
-        /*alarmClock: true*/
-      );
+      final bool success = await AndroidAlarmManager.periodic(
+          Duration(days: 1), alarmInfo.alarmCode, executeAlarm,
+          exact: true,
+          wakeup: true,
+          rescheduleOnReboot: true,
+          startAt: alarmInfo.getTodayRingTime(DateTime.now()));
       if (!success) {
         throw AndroidException();
       }
@@ -49,6 +45,8 @@ class AndroidPlatformSourceImpl implements PlatformSource {
 
 void executeAlarm(int alarmCode) async {
   final int isolateId = Isolate.current.hashCode;
+  // TODO: Need to access alarmInfo somehow to know
+  // what sound to play and whether to vibrate or not.
   /*
 Use this for a continuous alarm:
 Stream.periodic(const Duration(milliseconds: 500))
@@ -59,8 +57,6 @@ Stream.periodic(const Duration(milliseconds: 500))
     const waitTime = const Duration(milliseconds: 2000);
     vibrate(10, waitTime);
   }
-  // set next alarm now
-  // final bool success = await AndroidAlarmManager.oneShotAt
 }
 
 void vibrate(int count, Duration waitTime) {
