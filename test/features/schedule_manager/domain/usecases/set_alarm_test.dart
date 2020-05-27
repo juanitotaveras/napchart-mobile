@@ -40,7 +40,7 @@ void main() {
   });
 
   test(
-      'If we are changing the time of an alarm that is already on, delte current alarm and re-create',
+      'If we are changing the time of an alarm that is already on, delete current alarm and re-create',
       () async {});
 
   test(

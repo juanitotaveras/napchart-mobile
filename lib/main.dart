@@ -7,8 +7,9 @@ import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:vibration/vibration.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await di.init();
-  await AndroidAlarmManager.initialize();
+  // await AndroidAlarmManager.initialize();
   runApp(MyApp());
 }
 
