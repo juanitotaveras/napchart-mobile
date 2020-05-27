@@ -24,9 +24,6 @@ dependencies:
   # Service locator
   get_it: ^2.0.1
 
-  # TODO: Delete this later
-  datetime_picker_formfield: ^0.4.3
-
   # Value equality
   equatable: ^0.4.0
 
